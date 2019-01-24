@@ -1,0 +1,127 @@
+.maxw {
+  max-width: 1600px;
+}
+a {
+  color: #960046 !important;
+}
+nav {
+  background-color: #bf005a !important;
+}
+nav a {
+  color: white !important;
+}
+nav .collapse {
+  background-color: #960046 !important;
+}
+nav .collapse .nav-item:hover,
+nav .collapse .dropdown-item:hover,
+nav .collapse .nav-link:hover {
+  background-color: #bf005a !important;
+}
+nav .collapse .dropdown-menu {
+  background-color: #bf005a !important;
+}
+nav .collapse .dropdown-item {
+  background-color: #960046 !important;
+}
+.specialLadies .title {
+  color: white;
+  background-color: #7b7b7b;
+}
+.specialLadies .title .titleContainer {
+  background-color: #656565;
+}
+.specialLadies .title button {
+  background-color: #bf005a;
+  color: white;
+}
+.specialLadies .title button:hover {
+  background-color: #960046;
+}
+.specialLadies .id {
+  font-size: 13px;
+}
+.specialLadies .name {
+  color: #bf005a !important;
+}
+.servicesBlocks {
+  max-width: 1100px;
+}
+@media (max-width: 849px) {
+  .servicesBlocks .servicesBlock .card {
+    height: 150px;
+  }
+  .servicesBlocks img {
+    height: 50px !important;
+  }
+}
+@media (min-width: 850px) {
+  .servicesBlocks img {
+    height: 128px !important;
+  }
+}
+@media (min-width: 575px) and (max-width: 630px) {
+  .servicesBlocks .card ul {
+    list-style-type: none;
+    padding-left: 5px;
+  }
+}
+.servicesBlocks h5 {
+  font-size: 12pt !important;
+}
+.servicesBlocks p,
+.servicesBlocks a {
+  font-size: 10pt !important;
+  line-height: 1;
+}
+.servicesBlocks p,
+.servicesBlocks h5 {
+  text-align: center;
+}
+.servicesBlocks ul {
+  padding-left: 20px;
+  margin: 0px;
+}
+.servicesBlocks li {
+  margin: -8px;
+}
+footer {
+  background-color: #292c2f;
+  color: white;
+}
+footer .location {
+  color: #bf005a;
+}
+footer .footerLogo img {
+  width: 200px;
+}
+footer .rights {
+  color: #8f9296;
+}
+footer .footerMenu a {
+  color: #bf005a !important;
+}
+footer .footerAboutHeader {
+  color: #bf005a !important;
+}
+footer .contactBlock {
+  padding-top: 20px;
+}
+footer .contactBlock span {
+  display: block;
+}
+footer .contactBlock .location {
+  font-weight: 700;
+  font-size: 14pt;
+}
+footer .contactBlock i {
+  font-size: 16pt;
+}
+footer .contactBlock:first-child {
+  padding-top: 0px;
+}
+@media (min-width: 768px) and (max-width: 860px) {
+  footer .contactEmail {
+    font-size: 10pt !important;
+  }
+}

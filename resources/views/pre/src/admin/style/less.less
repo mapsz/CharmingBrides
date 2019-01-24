@@ -1,0 +1,60 @@
+.upload{
+	font-size: 100px;
+	color:blue;
+}
+.dropArea{
+	cursor: pointer;
+}
+
+.preview{
+	img{
+		width: 100%;
+		height: auto;    
+		border:solid 1px blue;  
+		border-radius: 4px; 
+	}
+	img.uploaded{
+		border:1px solid limegreen;
+	}
+
+	img.uploaded:hover{
+		border:2px solid red;
+		opacity: 0.5;
+		cursor: pointer;
+	}
+}
+
+.delete {
+    color: red;
+    position: absolute;
+    right:20px;
+    top:10px;
+    display:none;
+}
+
+.video{
+
+	.preview img{
+		border:solid 0px blue !important;  
+	}
+
+	.delete{
+		position: static;
+		display:none;
+		cursor: pointer;
+		border: 1px solid tomato;
+		border-radius: 5px;
+		margin:auto;
+		margin-bottom: 10px;
+		background-color: #fbb2a4;
+	}
+
+	button.delete:hover{
+		background-color: #fe765b;
+	}
+
+	#girlVideo{
+		display:none;
+	}
+
+}
