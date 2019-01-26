@@ -4,3 +4,4 @@
 <link rel="stylesheet" type="text/css" href="{{asset('css/style.css')}}">
 
 <script src='{{asset('js/main.js')}}'></script>
+<script src='{{asset('js/app.js')}}' defer></script>

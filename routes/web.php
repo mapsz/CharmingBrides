@@ -29,6 +29,9 @@ Route::get('/profile', 'ManController@edit')->name('profile')->middleware('auth'
 Route::get('/registration/man', 'ManController@create')->name('manCreate');
 Route::post('/registration/man', 'ManController@store')->name('manStore');
 
+//chat
+Route::get('/chat', 'ChatController@index')->name('chat');
+
 //Admin
 Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','admin']],function(){
 
