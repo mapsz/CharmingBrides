@@ -15,8 +15,9 @@ class CreateMenTable extends Migration
     {
         Schema::create('men', function (Blueprint $table) {            
             $table->increments('id');
-            $table->unsignedInteger('user');
-            $table->foreign('user')->references('id')->on('users');
+            $table->unsignedInteger('user_id');
+            $table->decimal('balance', 8, 2);
+            $table->foreign('user_id')->references('id')->on('users');
             $table->char('name', 35)->nullable();
             $table->char('surname', 35)->nullable();
             $table->timestamps();

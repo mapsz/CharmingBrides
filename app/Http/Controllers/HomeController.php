@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Storage;
+
+Use App\ChatHistory;
+
 
 class HomeController extends Controller
 {
@@ -23,6 +27,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+        // ChatHistory::chatDisconnect('private-privateChat.54');
         return view('home');
     }
 }

@@ -31,9 +31,15 @@ class GirlController extends Controller
     public function index()
     {
 
-        $girls = Girl::all();
+        //Get men fro DB
+        $grilsDB = Girl::with('user')->get();
 
-        return view('admin.pages.girls')->with('girls',$girls);
+        //Form men for front end
+        foreach ($grilsDB as $k => $grilDB) {
+            $grilsDB[$k]['id'] = $grilDB->user->id;
+        }
+
+        return view('admin.pages.girls')->with('girls',json_encode($grilsDB));
 
     }
 

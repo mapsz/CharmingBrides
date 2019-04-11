@@ -3,15 +3,18 @@
 <head>
 	@include('admin.partials._head')
 </head>
-<body>
-	<header>
-		@include('admin.partials._header')
-	</header>
-	<div class="content">
-		@yield('content')
+<body>	
+	<div id="app">
+		<header>
+			@include('admin.partials._header')
+		</header>
+		<div class="content">
+			@yield('content')
+		</div>
+		<footer>
+			@include('admin.partials._footer')
+		</footer>
 	</div>
-	<footer>
-		@include('admin.partials._footer')
-	</footer>
+	<script src='{{asset('js/app.js')}}'></script>
 </body>
 </html>

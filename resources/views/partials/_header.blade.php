@@ -72,7 +72,13 @@
 				<!-- contacts -->
 				<li class="nav-item">
 					<a class="nav-link" href="#">Contacts <span class="sr-only">(current)</span></a>
-				</li>														
+				</li>	
+				<!-- chat -->
+				@if(Auth::check())
+					<li class="nav-item">
+						<a class="nav-link" href="{{ route('chat') }}">Chat<span class="sr-only">(current)</span></a>
+					</li>				
+				@endif		
 			</ul>
 			@if(Auth::check())
 				<a class="nav-link" href="{{ route('profile') }}">  <i class="icon-user-plus"></i> Profile</a>

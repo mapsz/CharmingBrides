@@ -31,6 +31,24 @@ Route::post('/registration/man', 'ManController@store')->name('manStore');
 
 //chat
 Route::get('/chat', 'ChatController@index')->name('chat');
+Route::get('/room', 'ChatController@getRoom')->name('getRoom');
+Route::post('/room', 'ChatController@storeRoom')->name('getRoom');
+// Route::post('/chat/invite', 'ChatController@intviteCompanion')->name('chatInvite');
+
+Route::post('/chat/messages', 'ChatController@storeMessage')->name('storeMessage');
+Route::get('/chat/messages', 'ChatController@getMessages')->name('getMessages');
+Route::get('/chat/recentRooms', 'ChatController@getRecentRooms')->name('getRecentRooms');
+Route::get('/chat/getHardOnline', 'ChatController@getHardOnline')->name('getHardOnline')->middleware(['auth','admin']);
+
+
+//Admin Chat
+Route::post('/chat/admin/setOnline', 'ChatController@setHardOnline')->name('setHardOnline')->middleware(['auth','admin']);
+Route::delete('/chat/admin/deleteOnline', 'ChatController@deleteHardOnline')->name('deleteHardOnline')->middleware(['auth','admin']);
+
+//Membership
+Route::get('/memberships/current', 'admin\MembershipsController@getCurrentMembership');
+//History
+Route::get('/memberships/history', 'admin\MembershipsController@getHistoryMembership');
 
 //Admin
 Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','admin']],function(){
@@ -52,8 +70,23 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 	//Uspdate
 
 	//Destroy
-	Route::get('/mans', function () {
-	    return view('admin.pages.mans');
-	})->name('adminManIndex');
 
+
+	// Men
+	//index
+	Route::get('/men', 					'admin\ManController@index')->name('adminManIndex');
+	//Membership
+	Route::post('/user/membership', 		'admin\ManController@attachMembership')->name('adminManAttachMembership');
+
+	// Membership
+	//index
+	Route::get('/memberships', 'admin\MembershipsController@index')->name('adminMembershipIndex');
+	//Get
+	Route::get('/memberships/get', 'admin\MembershipsController@get')->name('adminMembershipGet');
+	//Create
+	Route::get('/memberships/create', 'admin\MembershipsController@create')->name('adminMembershipCreate');
+	//Store
+	Route::post('/memberships', 'admin\MembershipsController@store')->name('adminMembershipStore');
+
+	//gg
 });

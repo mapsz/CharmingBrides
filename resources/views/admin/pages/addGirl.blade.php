@@ -3,7 +3,8 @@
 @section('content')
 
 <div class="container pt-3">
-
+	
+<script src='{{asset('adminAssets/js/main.js')}}' defer></script>
 	<button class="rand">rand</button>
 
 

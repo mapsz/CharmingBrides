@@ -3,7 +3,7 @@
 @section('content')
 
 	<div id="app">
-		<chat></chat>		
+		<chat class="chatContainer" :prop_user="{{ $user }}"></chat>		
 	</div>
 	
 @endsection
