@@ -32,7 +32,7 @@
 			</select>
 
 		@elseif ($input['field'] == 'input')
-			<?	
+			<?php	
 				if(!isset($input['placeholder'])) 		$input['placeholder'] = "";	
 				if(!isset($input['value']))				$input['value'] = "";
 				if(old($input['name']) !== null)		$input['value'] = old($input['name']);
