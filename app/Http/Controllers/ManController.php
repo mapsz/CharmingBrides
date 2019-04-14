@@ -61,7 +61,7 @@ class ManController extends Controller
                             ]);
             //Prepare man
             $manData = [
-                'user'      => $user->id,
+                'user_id'   => $user->id,
                 'name'      => $request->name,
                 'surname'   => $request->surname,
             ];
