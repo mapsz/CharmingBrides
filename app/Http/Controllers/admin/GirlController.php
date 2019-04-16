@@ -176,7 +176,7 @@ class GirlController extends Controller
 
         //  Girl data
         $girlData = [
-            'user' => NULL,
+            'user_id' => NULL,
             'name' => $request->name,
             'birth' => $request->year.'-'.$request->month.'-'.$request->day,
             'location' => $request->location,
@@ -216,7 +216,7 @@ class GirlController extends Controller
             //Prepare User
             $id = User::create(['email' => $request->email, 'password' => Hash::make(rand())])->id;
             //Prepare Girl
-            $girlData['user'] = $id;
+            $girlData['user_id'] = $id;
             $girlId = Girl::create($girlData)->id;
 
             //Save Photos            
