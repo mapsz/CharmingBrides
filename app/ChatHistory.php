@@ -38,7 +38,7 @@ class ChatHistory extends Model
     	$roomId = intval(explode('.',$room)[1]);
 
     	//Get start/stop
-    	$stop_at 	= Carbon::now(); //Stop
+    	$stop_at 	= Time(); //Stop
     	$history 	= ChatHistory::where('room_id', '=', $roomId)->where('stop_at', '=', NULL)->first();
     	if($history === null) return false;
     	$start_at 	= $history->created_at;
