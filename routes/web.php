@@ -14,7 +14,7 @@
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 
 Route::get('/', function () {
     return view('pages.home');
@@ -32,7 +32,6 @@ Route::post('/registration/man', 'ManController@store')->name('manStore');
 //chat
 Route::get('/chat', 'ChatController@index')->name('chat');
 Route::get('/room', 'ChatController@getRoom')->name('getRoom');
-Route::post('/room', 'ChatController@storeRoom')->name('getRoom');
 // Route::post('/chat/invite', 'ChatController@intviteCompanion')->name('chatInvite');
 
 Route::post('/chat/messages', 'ChatController@storeMessage')->name('storeMessage');
@@ -88,5 +87,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 	//Store
 	Route::post('/memberships', 'admin\MembershipsController@store')->name('adminMembershipStore');
 
-	//gg
+	//Chat histories
+	//index
+	Route::get('/chat/history', 'admin\ChatHistoryController@index')->name('adminChatHistoryIndex');	
 });

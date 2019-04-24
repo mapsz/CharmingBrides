@@ -8,6 +8,7 @@ use Storage;
 Use App\ChatHistory;
 
 
+
 class HomeController extends Controller
 {
     /**
@@ -27,7 +28,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // ChatHistory::chatDisconnect('private-privateChat.54');
-        return view('home');
+
+
+        return view('pages.home');
     }
 }

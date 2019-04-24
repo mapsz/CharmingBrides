@@ -10,23 +10,20 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class PrivateChat implements ShouldBroadcast
+class ChatNotification
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private $roomId;
-    public $body;
-    public $message;
+    public $from;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($roomId, $message)
+    public function __construct($from)
     {
-        $this->roomId = $roomId;
-        $this->message = $message;
+        $this->from = $from;
     }
 
     /**
@@ -34,11 +31,8 @@ class PrivateChat implements ShouldBroadcast
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
-
-
     public function broadcastOn()
     {
-        return new PresenceChannel('privateChat.' . $this->roomId); //@@@ надо private channel kakto
+        return new PresenceChannel('chatNotification.' . $this->from);
     }
-
 }

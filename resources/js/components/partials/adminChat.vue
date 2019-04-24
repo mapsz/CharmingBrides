@@ -137,9 +137,6 @@
         		this.$emit('selectUser', user);
         	},
 
-        	leaveRoom(){
-        		this.$emit('leaveRoom');
-        	},
 
         	debug(x){
                 if(this.isDebug){

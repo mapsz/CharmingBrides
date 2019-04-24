@@ -1,20 +1,25 @@
 <template>
         <div class="container-fluid h-100 py-2">
                 
-            <loading :loading="loading"></loading>
+            <loading :loading="loading.screen"/>
+
+            <div v-if="reconnect" class="reconnect">
+                <div class="reconnect-container">
+                    <p class="text-danger"><b>Connection Lost!</b></p>
+                    <center>
+                        <button class="btn btn-primary" @click="ReconnectOnline()">Reconnect</button>
+                    </center>
+                </div>
+            </div>
 
             <admin-chat 
                 v-if="prop_user.man >= 3" 
                 @onlineReset="onlineReset()"
                 @selectUser="selectUser"
-                @leaveRoom="leaveRoom"
-            >                        
-            </admin-chat>
-
-            <button @click="startRoomTimer()">test</button>
+            />              
 
             <div class="row justify-content-center h-100">
-                 <!-- Online -->
+                <!-- Online -->
                 <div class="col-md-3 col-xl-3 chat">
                     <div class="card mb-sm-3 mb-md-0 contacts_card">
                         <div class="card-header">
@@ -61,7 +66,13 @@
                 </div>
                 <!-- Chat -->
                 <div class="col-md-6 col-xl-6 chat">
-                    <div class="card">
+                    <div class="card">                        
+                        <div style="display:none;" class="loading freeze">
+                            <center><button class="btn btn-primary m-4" @click="startPayedChat()">Start Chat</button></center>
+                        </div>  
+                        <div v-show="loading.room" class="loading">
+                            <span class="p-2" style="color:white">Loading...</span>
+                        </div>  
                         <!-- Header -->
                         <div class="card-header msg_head">
                             <div v-if="room" class="d-flex bd-highlight">
@@ -75,7 +86,7 @@
                                 <!-- Info -->
                                 <div class="user_info">
                                     <span>
-                                        Chat with {{room.companion.name}} {{room.companion.surname}}
+                                        {{room.companion.name}} {{room.companion.surname}}
                                     </span>
                                     <p>{{room.id}} - room</p>
                                 </div>
@@ -113,12 +124,7 @@
 
                             
                         <!-- Body -->
-                        <div class="card-body msg_card_body" v-chat-scroll>
-                            <div v-show="freeze" class="freeze">
-                                <center>
-                                    <button class="btn btn-primary m-4" @click="startPayedChat()">Start Chat</button>
-                                </center>
-                            </div>
+                        <div class="card-body msg_card_body" v-chat-scroll>                        
                             <div v-for="message in messages">
                                 <!-- Messages -->
 
@@ -156,17 +162,6 @@
                                         class="rounded-circle user_img_msg">
 
                                 </div>
-
-                                <!-- right message -->
-                      <!--           <div class="d-flex justify-content-end mb-4">
-                                    <div class="msg_cotainer_send">
-                                        Hi Maryam i am good tnx how about you?
-                                        <span class="msg_time_send">8:55 AM, Today</span>
-                                    </div>
-                                    <div class="img_cont_msg">
-                                        <img src="https://2.bp.blogspot.com/-8ytYF7cfPkQ/WkPe1-rtrcI/AAAAAAAAGqU/FGfTDVgkcIwmOTtjLka51vineFBExJuSACLcBGAs/s320/31.jpg" class="rounded-circle user_img_msg">
-                                    </div>
-                                </div> -->
                             </div>
                         </div>
                         
@@ -176,43 +171,31 @@
                             <!-- <div class="freeze"></div> -->
                             <div class="input-group">
                                 <!-- Attach -->
-                                <!-- <div class="input-group-append">
-                                    <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
-                                </div> -->
+                                <div class="input-group-append">
+                                    <span class="input-group-text attach_btn">
+                                        <fa-icon icon="paperclip" />
+                                    </span>
+                                </div>
                                 <!-- Send message -->
                                 <!-- Text body -->
                                 <textarea 
                                     v-on:keyup.enter="sendMessage()" 
-                                    v-model="message" 
                                     name="text" 
                                     class="form-control type_msg" 
                                     placeholder="Type your message..."
                                 ></textarea>
+                                <div @click="emojiPickerShow = !emojiPickerShow" class="input-group-append">
+                                    <div class="input-group-text emoji_picker">
+                                        <fa-icon icon="smile"/>
+                                    </div>
+                                </div>
                                 <!-- Send button -->
                                 <div class="input-group-append" @click="sendMessage()">
-                                    <span class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></span>
+                                    <span class="input-group-text send_btn">
+                                        Send <fa-icon icon="arrow-right" class="pl-1"/>
+                                    </span>
                                 </div>
-                            </div>
-                            <!-- No invites -->
-                          <!--   <div 
-                                v-if="room.userConfirm == 0 && room.companionConfirm == 0" 
-                                class="input-group">
-                                <button class="btn" @click="inviteCompanion()">Invite</button>
-                            </div> -->
-                            <!-- Invite from companion -->
-                           <!--  <div 
-                                v-if="room.userConfirm == 0 && room.companionConfirm == 1" 
-                                class="input-group">
-                                <span>You got invite!</span>
-                                <button class="btn" @click="inviteCompanion()">Confirm</button>
-                            </div> -->
-                            <!-- Invite from user -->
-                            <!--  <div 
-                                v-if="room.userConfirm == 1 && room.companionConfirm == 0" 
-                                class="input-group">
-                                <span>You invited {{room.companion.name}}!</span>
-                                <button class="btn" @click="">Cancel</button>
-                            </div>     -->                       
+                            </div>                      
                         </div>
 
 
@@ -255,6 +238,14 @@
                                 </li>
                             </ul>
                         </div>
+<picker 
+    v-show="emojiPickerShow"
+    native
+    @select="addEmoji" 
+    title="Pick your emoji…" 
+    emoji="point_up" 
+    :style="{ position: 'absolute', bottom: '20px', right: '20px' }" 
+/>
                         <div class="card-footer"></div>
                     </div>
                 </div>
@@ -263,7 +254,26 @@
 </template>
 
 <script>
-    import VueChatScroll from 'vue-chat-scroll'
+
+    import VueChatScroll from 'vue-chat-scroll';
+
+    // Font Awsome   
+    import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+    Vue.component('fa-icon', FontAwesomeIcon); 
+    import { library } from '@fortawesome/fontawesome-svg-core';    
+    Vue.config.productionTip = false;
+    //icons
+    import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+    library.add(faArrowRight);
+    import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
+    library.add(faPaperclip);
+    import { faSmile } from '@fortawesome/free-solid-svg-icons';
+    library.add(faSmile);
+
+    //Emoji picker
+    import { Picker } from 'emoji-mart-vue';
+    Vue.component('picker', Picker); ;
+
     export default {
         components: {
             VueChatScroll, 
@@ -272,23 +282,54 @@
         props:['prop_user'],
         data(){
             return {
-                loading: false,
+                loading: {
+                    screen: true,
+                    room: false,
+                },
                 user: {},
-                isDebug: false,
+                isDebug: true,
                 room: false,
                 connected: false,
                 freeze:false,
                 timer: {
-                        d3,
+                        d3: d3.interval((elapsed) => {/**/},99999),
                         time:'0:00',
                         total:'0:00'
                     },
-                message: "",
                 messages:[],
                 onlineUsers: [],
                 recentRooms: [],
+                reconnect:false,
+                chatOnlineConnection:{},
+                chatPrivateConnection:{},
+                emojiPickerShow:false,
+                
             }
         },
+        watch: {
+            chatOnlineConnection: {
+                handler: function (val, oldVal) {this.setChatOnline();},
+                deep: true
+            }, 
+            room:{
+                handler: function (val, oldVal) {this.roomHandler(val, oldVal);},
+                deep: true               
+            },
+            freeze:function(val) {
+
+                if(!val || !this.room || !this.user.man) {
+                    $('.freeze').hide();
+                    return;
+                }
+                $('.freeze').show();                
+                //Freeze size
+                let headHeight = $('.msg_head').outerHeight();
+                let bodyHeight = $('.chat').outerHeight();
+                let newHeight = bodyHeight - headHeight;
+                $('.freeze').outerHeight(newHeight+'px');
+                $('.freeze').css('margin-top',headHeight);
+            }     
+        },        
         mounted() {
             //set user
             this.user = this.prop_user;
@@ -302,15 +343,57 @@
             //Get Balance / Membership
             this.getUserMembership(this.user.id);
 
-            //Refresh timer
-            this.refreshRoomTimer();
         },
         methods: {
-            async joinOnline(){
-                this.debug('online users');
-                this.onlineUsers =[];
+            //Emoji
+            addEmoji(emoji){
+                $('.type_msg').val($('.type_msg').val() + emoji.native); //@@@ between text
+            },
+            //@@@ close on blank click
+
+            //Online
+            async setChatOnline(){
+                //Get connection
+                let c = this.chatOnlineConnection;
+                //Refresh
+                let chatOnline = false;
+                //Debug
+                // this.debug(c.hasOwnProperty('subscription') +' '+c.subscription.hasOwnProperty('subscribed')+' '+c.subscription.subscribed);
+                // console.log(c);
+                console.log('sub - '+c.subscription.subscribed +' pend - '+c.subscription.subscriptionPending);
                 
-                let r = await window.Echo.join(`chat`)
+                if( c.hasOwnProperty('subscription') && 
+                    c.subscription.hasOwnProperty('subscribed') &&
+                    c.subscription.subscribed)
+                {   //Success
+                    chatOnline = true;
+                    this.stopLoading();
+                }else{
+                    //Freeze chat
+                    this.startLoading();
+                    //Refresh users
+                    this.onlineUsers = [];
+                }  
+
+                //Exit if success
+                if(chatOnline) return true;
+
+                //Show reconnect            
+                setTimeout(()=>{
+                    //Show reconnect
+                    let c = this.chatOnlineConnection;
+                    if(!c.hasOwnProperty('subscription'))               { this.reconnect = true; return; }    
+                    if(!c.subscription.hasOwnProperty('subscribed'))    { this.reconnect = true; return; }
+                    if(!c.subscription.subscribed)                      { this.reconnect = true; return; }
+                
+                },5000)
+            },
+            async joinOnline(){
+                //leave old chat
+                this.leaveOnline();
+
+                //Echo connect                
+                let c = await window.Echo.join(`chat`)
                     .here((users) => {
                         this.setOnlineUsers(users);                                      
                         this.debug(users);                                        
@@ -324,287 +407,26 @@
                         this.setOnlineUsers(user,true);
                     });
 
-                console.log(r);
+                //Save connection params
+                this.chatOnlineConnection = c;
 
+                return true;
+            },
+            ReconnectOnline(){
+                //@@@
+                window.location.reload()
             },
             async leaveOnline(){
                 this.onlineUsers =[];
                 await window.Echo.leave('chat');
+                this.onlineChat = false;
                 return true;
             },
             async onlineReset(){
                 await this.leaveOnline();
-                this.joinOnline();        
-            },
-            async selectRoom(companionId){
-
-                //Exit current room
-                if(typeof this.room.id !== 'undefined'){
-                    this.leaveRoom();
-                }
-
-                //Stop prev room
-                this.stopPayedChat();
-                this.disconnectRoom();
-
-                //Get Room
-                var room = await this.getRoom(companionId);
-                if(!room){
-                    this.debug('error getting room');
-                    return false; //@@@ add some error
-                } 
-
-                //Create room
-                if(room >= 1){
-                    this.debug('creating new room');
-                    room = await this.storeRoom(companionId);
-                }
-                if(!room){
-                    this.debug('error getting room');
-                    return false; //@@@ add some error
-                } 
-
-                //Set room
-                this.setRoom(room);
-
-                //Connect Room
-                if(!this.user.man){
-                    this.connectRoom();
-                }
-
-                //Set messages
-                this.getMessages();
-
-                //Freeze chat                       
-                this.freezeRoom();  
-            },
-            leaveRoom(){
-                //Disconnect room
-                this.disconnectRoom();
-                //False room
-                this.room = false;
-                //Clear messages
-                this.messages = [];
-            },
-            async getRoom(companionId){
-                this.startLoading();
-               var r = await axios.get('/room', {
-                        params: {
-                            'companionId':companionId,
-                            'userId':this.user.id
-                        }
-                    })
-                    .then((r) => {
-                        if(!r.data) return false;
-
-                        if(r.data.error == 1){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
-                            return false;
-                        }
-
-                        if(r.data.noRoom){
-                            this.debug(r.data.text);
-                            return 2;
-                        }
-
-                        return r.data;
-                    })
-                    .catch((r) => {this.debug(r);return false;});
-
-                this.stopLoading();
-                return r;
-            },            
-            setRoom(room){
-                this.room = room;
-                this.room.counter = "0:00";        
-                this.setChatConfirms();               
-            },
-            startPayedChat(){
-                console.log('start payed chat')//@@@
-
-                //@@@ start chat
-
-                //Connect room                
-                this.connectRoom();
-                //Unfreeze
-                this.unFreezeRoom();
-                //Start timer
-                this.startRoomTimer();
-            },
-            stopPayedChat(){
-                //Disconnect room
-                this.disconnectRoom();
-                //Freeze
-                this.freezeRoom();
-                //Stop timer
-                this.stopRoomTimer();
-            },
-            startRoomTimer(){
-                this.timer.d3 = d3.interval((elapsed) => {
-
-                    //Timer
-                    let seconds = parseInt(elapsed / 1000);
-                    let minutes = parseInt(seconds / 60); 
-                    let _seconds = seconds % 60;
-                    this.timer.time = minutes+":"+_seconds;
-
-                    //Total
-                    let pricePerSecond = this.user.membership.chat_price / 60;
-                    this.timer.total = (pricePerSecond * seconds).toFixed(2);
-                    console.log(this.timer.time);
-
-                    //Balance
-                    // this.user.membership.balance = this.user.membership.balance - this.timer.total;
-                    //@@@
-                    
-                }, 999);
-            },
-            stopRoomTimer(){
-                this.timer.d3.stop();
-                this.timer.time = "0:00";
-                this.timer.total = "0:00";
-            },
-            refreshRoomTimer(){
-                this.timer.d3 = d3.interval((elapsed) => {/*refresh */}, 10);
-                this.stopRoomTimer();
-            },
-            freezeRoom(){
-                $('.freeze').height(368); //@@@ dinamic height
-
-                if(this.user.man)
-                    this.freeze = true;
-                else
-                    this.freeze = false;     
-
-                $('.freeze').height(368); //@@@ dinamic height           
-            },
-            unFreezeRoom(){
-
-                this.freeze = false;
-            },
-            connectRoom(){
-                window.Echo.join('privateChat.' + this.room.id) //@@@ private chat
-                    .listen('PrivateChat', ({message}) => {
-                        this.debug(message);
-                        this.messages.push(message);
-                    })                            
-            },
-            disconnectRoom(){
-                let l = window.Echo.leave('privateChat.' + this.room.id);
-                this.debug('privateChat.' + this.room.id);
-            },
-            setRoomCompanion(id){
-                this.room.companion = this.onlineUsers.filter(x => x.id === id)[0];
-                this.debug(this.room);
-            },
-            setChatConfirms(){
-                //User man
-                if(this.user.man){
-                    //Man
-                    this.room.userConfirm       = this.room.man_confirm;
-                    this.room.companionConfirm  = this.room.girl_confirm;
-                }else{
-                    //Girl
-                    this.room.userConfirm       = this.room.girl_confirm;
-                    this.room.companionConfirm  = this.room.man_confirm;
-                }
-            },
-            async storeRoom(companionId){
-                this.startLoading();
-                var r = await axios.post('/room', 
-                        {
-                            'companionId':companionId,
-                            'userId':this.user.id
-                        })
-                    .then((r) => {
-                        if(!r.data) return false;
-
-                        if(r.data.error){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
-                            return false;
-                        }
-
-                        return r.data;
-                    })
-                    .catch((r) => {this.debug(r);return false;});
-
-                this.stopLoading();
-                return r;
-            },
-            inviteCompanion(){
-                // Check no companion
-                if(!this.room.companion){
-                    this.debug('no companion');
-                    return false;
-                }
-
-                // Send invite
-               axios.post('/chat/invite', {
-                    'userId' : this.user.id,
-                    'roomId' : this.room.id,
-               })
-                    .then((r) => {
-                        if(!r.data) return false;
-
-                        if(r.data.error){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
-                            return false;
-                        }
-
-                        if(!r.data.room){
-                            this.debug('bad room invites');
-                        }
-
-                        this.setRoom(r.data.room);
-                    })
-                    .catch((r) => {this.debug(r);return false;});
-            },
-            async getMessages(){
-                var r = await axios.get('/chat/messages', {
-                        params: {
-                            'userId':this.user.id,
-                            'roomId':this.room.id,
-                        }
-                    })
-                    .then((r) => {
-                        if(!r.data) return false;
-
-                        if(r.data.error){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
-                            return false;
-                        }
-
-                        if(!r.data.messages){
-                            this.debug('no messages');
-                        }
-
-                        this.messages = r.data.messages;
-
-                    })
-                    .catch((r) => {this.debug(r);return false;});             
-            },
-            async sendMessage(){
-
-                //Clear message
-                let message = this.message;
-                this.message = "";
-
-                //Post message
-                axios.post('/chat/messages', {
-                        'userId':this.user.id,
-                        'roomId':this.room.id,
-                        'body': message
-                    })
-                    .then((r) => {
-                        if(!r.data) return false;
-
-                        if(r.data.error){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
-                            return false;
-                        }
-                    })
-                    .catch((r) => {this.debug(r);return false;});
-            },
+                await this.joinOnline();
+                return true;        
+            }, 
             async setRecentRoom(){
 
                 //Get rooms
@@ -637,30 +459,35 @@
                 return false;
             },
             photoPath(id){
-
                 //Get user
-                let user = false;
+                let _user = false;
 
                 do{
+                    //Check self
+                    _user = (this.user.id == id?this.user:false);
+                    if(_user){
+                        break;
+                    } 
+
                     //Check in online
-                    user = this.onlineUsers.find(x => x.id == id)
-                    if(user){
+                    _user = this.onlineUsers.find(x => x.id == id)
+                    if(_user){
                         break;
                     } 
                     
                     //Check in recent chats
-                    user = this.recentRooms.find(x => x.companion.id == id);
-                    if(user.hasOwnProperty('companion')){
+                    _user = this.recentRooms.find(x => x.companion.id == id);
+                    if(_user){
                         break;
-                    } 
+                    }
 
                 }while(false);
 
                 
-                if(user){
+                if(_user){
                     let path = 'media/';
-                    user.man ? path+='mans' : path+='girls';
-                    path+='/zoom/'+user.id+'_0.jpg';
+                    _user.man ? path+='mans' : path+='girls';
+                    path+='/zoom/'+_user.id+'_0.jpg';
                     return path;
                 }else{
                     this.debug('error getting user '+id+' path');
@@ -708,8 +535,10 @@
                 }
             },
             selectUser(user){
+                this.loading.room = true;
                 this.user = user;
-                this.leaveRoom();
+                this.disconnectRoom();
+                this.loading.room = false;
             },
             async getUserMembership(userId){
                 var r = await axios.get('/memberships/current', {
@@ -738,13 +567,199 @@
 
                 return true;
             },
-            startLoading(){
 
-                this.loading = true;
+            // Private Room
+            async roomHandler(val, oldVal){
+                //Exit room
+                if(!val) return;                
+
+                //Set room loading
+                this.loading.room = true;
+
+                //Set messages
+                await this.getMessages();
+
+                //Connect
+                if(!this.user.man || (val.connect)){
+                    //Connect room
+                    await this.connectRoom();
+                    //Check connect
+                    // @@@
+                    //Start timer
+                    if(this.user.man) this.startRoomTimer();
+
+                    this.loading.room = false;
+                    return;
+                }
+
+                //Freeze room                
+                this.stopPayedChat();
+                this.loading.room = false;
+                return;
+            },
+            async selectRoom(companionId){
+                this.loading.room = true;
+                this.disconnectRoom();
+                this.unFreezeRoom();
+
+                //Get Room
+                var room = await this.getRoom(companionId);
+                if(!room){
+                    this.debug('error getting room');
+                    this.loading.room = false;
+                    return false; //@@@ add some error
+                } 
+
+                //Set room
+                room.connect = false;
+                this.room = room;
+            },
+            async connectRoom(){
+                let c = await window.Echo.join('privateChat.' + this.room.id) //@@@ private chat
+                    .listen('PrivateChat', ({message}) => {
+                        this.debug(message);
+                        this.messages.push(message);
+                    })
+
+                //Save connection params
+                this.chatPrivateConnection = c;  
+
+                return;                        
+            },
+            async disconnectRoom(){
+                //Exit if no room
+                this.chatPrivateConnection = {};
+                if(!this.room) return;
+                //Disconncet room
+                let l = await window.Echo.leave('privateChat.' + this.room.id);                
+                this.debug('Disconnect privateChat.' + this.room.id);  
+                //Remove room
+                this.room.connect = false;
+
+                return;
+            }, 
+            async getRoom(companionId){
+               var r = await axios.get('/room', {
+                        params: {
+                            'companionId':companionId,
+                            'userId':this.user.id
+                        }
+                    })
+                    .then((r) => {
+                        if(!r.data) return false;
+
+                        if(r.data.error == 1){
+                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
+                            return false;
+                        }
+
+                        return r.data;
+                    })
+                    .catch((r) => {this.debug(r);return false;});
+                return r;
+            },  
+            //Payed chat
+            startPayedChat(){
+                this.unFreezeRoom();
+                this.room.connect = true;
+            },
+            stopPayedChat(){
+                this.freezeRoom();
+                this.stopRoomTimer(); 
+                this.disconnectRoom();              
+                this.room.connect = false;
+            },
+            startRoomTimer(){
+                this.unFreezeRoom();
+                this.timer.d3 = d3.interval((elapsed) => {
+
+                    //Timer
+                    let seconds = parseInt(elapsed / 1000);
+                    let minutes = parseInt(seconds / 60); 
+                    let _seconds = seconds % 60;
+                    this.timer.time = minutes+":"+_seconds;
+
+                    //Total
+                    let pricePerSecond = this.user.membership.chat_price / 60;
+                    this.timer.total = (pricePerSecond * seconds).toFixed(2);
+                    console.log(this.timer.time);
+
+                    //Balance
+                    // this.user.membership.balance = this.user.membership.balance - this.timer.total;
+                    //@@@
+                    
+                }, 999);
+            },
+            stopRoomTimer(){
+                this.timer.d3.stop();
+                this.timer.time = "0:00";
+                this.timer.total = "0:00";
+            },
+            freezeRoom(){
+                if(this.user.man)
+                    this.freeze = true;
+                else
+                    this.freeze = false;
+            },
+            unFreezeRoom(){
+                //
+                this.freeze = false;
+            },
+            //Messages
+            async getMessages(){
+                var r = await axios.get('/chat/messages', {
+                        params: {
+                            'userId':this.user.id,
+                            'roomId':this.room.id,
+                        }
+                    })
+                    .then((r) => {
+                        if(!r.data) return false;
+
+                        if(r.data.error){
+                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
+                            return false;
+                        }
+
+                        if(!r.data.messages){
+                            this.debug('no messages');
+                        }
+
+                        this.messages = r.data.messages;
+
+                    })
+                    .catch((r) => {this.debug(r);return false;});             
+            },
+            async sendMessage(){
+
+                //Clear message
+                let message = $('.type_msg').val();
+                $('.type_msg').val("");
+
+                //Post message
+                axios.post('/chat/messages', {
+                        'userId':this.user.id,
+                        'roomId':this.room.id,
+                        'body': message
+                    })
+                    .then((r) => {
+                        if(!r.data) return false;
+
+                        if(r.data.error){
+                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
+                            return false;
+                        }
+                    })
+                    .catch((r) => {this.debug(r);return false;});
+            },
+
+
+            //Other
+            startLoading(){
+                this.loading.screen = true;
             },
             stopLoading(){
-
-                this.loading = false;
+                this.loading.screen = false;
             },
             debug(x){
                 if(this.isDebug){
@@ -757,21 +772,45 @@
 </script>
 
 <style scoped>
-
-    .chatContainer{
-            height: 100%;
-            margin: 0;
-            background: #7F7FD5;
-            background: -webkit-linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
-            background: linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+    .reconnect{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index:300;
     }
-    .freeze {
+    .reconnect-container{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border: 1px black solid;
+        border-radius: 7px; 
+        padding:10px;
+        background-color: #fdffe0;
+        font-size: 22pt;       
+    }
+    .chatContainer{
+        height: 100%;
+        margin: 0;
+        background: #7F7FD5;
+        background: -webkit-linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+        background: linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+    }
+    .loading {
+        height: 100%;
         width: 100%;
         background-color: #000000bf;
-        margin: -20px;
         position: absolute;
-        z-index: 999;
+        z-index: 300;
+        border: 2px solid black;
+        border-radius: 10px;        
     }
+    .freeze {
+        z-index: 200;
+        background-color: #00082eeb !important;
+        border: 1px solid black !important;
+        border-radius: 0px 0px 10px 10px !important;        
+    }    
     .chat{
         margin-top: auto;
         margin-bottom: auto;
@@ -827,6 +866,12 @@
         border:0 !important;
         color: white !important;
         cursor: pointer;
+    }
+    .emoji_picker{
+        background-color: rgba(0,0,0,0.3) !important;
+        border:0 !important;
+        color: white !important;
+        cursor: pointer;        
     }
     .send_btn{
         border-radius: 0 15px 15px 0 !important;
@@ -992,5 +1037,5 @@
             margin-bottom: 15px !important;
         }
     }    
-
 </style>
+

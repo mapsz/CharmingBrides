@@ -38,7 +38,7 @@ class ChatHistory extends Model
     	$roomId = intval(explode('.',$room)[1]);
 
     	//Get start/stop
-    	$stop_at 	= Time(); //Stop
+    	$stop_at 	= Carbon::now(); //Stop
     	$history 	= ChatHistory::where('room_id', '=', $roomId)->where('stop_at', '=', NULL)->first();
     	if($history === null) return false;
     	$start_at 	= $history->created_at;
@@ -47,10 +47,16 @@ class ChatHistory extends Model
     	//Get man from room
     	$userId = Room::getManFromRoom($roomId);
 
+
     	//Update balance
     	$amount = User::payChat($userId, $stop_at->timestamp - $start_at->timestamp);
 
     	//Update history
     	$history->update(['stop_at' => $stop_at, 'price' => $amount]);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo('App\Room');
     }
 }

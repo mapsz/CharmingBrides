@@ -16,17 +16,22 @@
 // });
 
 use app\User;
+use Illuminate\Support\Facades\Auth;
 use App\ChatHistory;
+use App\Room;
 // use Illuminate\Support\Collection;
 
 //Online
-Broadcast::channel('chat', function ($currentUser) {
+Broadcast::channel('chat', function ($authtUser) {
+
+	//Check user auth
+	if(Auth::user()->id != $authtUser->id && !Auth::user()->role > 2) return false;
 
 	// Get user info
-	$currentUser = User::getWithInfo($currentUser->id);
+	$authtUser = User::getWithInfo($authtUser->id);
 
 	// Check if admin
-	if($currentUser['man'] > 2){
+	if($authtUser['man'] > 2){
 		// Get hard online
 		$hardOnlines = User::getHardOnline();
 		if(isset($hardOnlines[0])){
@@ -42,20 +47,42 @@ Broadcast::channel('chat', function ($currentUser) {
 		}	
 	}else{
 		//User log in
-		return $currentUser;
+		return $authtUser;
 	}
 });
 
 Broadcast::channel('privateChat.{roomId}', function ($user, $roomId) {
+
+	//Check user auth
+	if(Auth::user()->id != $user->id && !Auth::user()->role > 2) return false;
+
+	//Check correct room
+    $room = Room::with('user')->get()->find($roomId);
+    $exit = true;
+    foreach ($room['user'] as $key => $v) {
+         if($v->id == $user->id){
+         	$exit = false;
+         	break;
+         }
+    }
+	if($exit) return false;
 
 	//Add Chat history if man
 	$user = User::getWithInfo($user->id);
 	if($user['man'] === true){
 		$history = new ChatHistory();
 		$history->room_id = $roomId;
-		$history->save();
+		if(!$history->save()) return false;
 	}
 
 	return $user;
 	// return $user->room->contains($roomId);
+});
+
+Broadcast::channel('chatNotification.{userId}', function ($user, $userId) {
+
+	if(Auth::user()->id != $user->id && !Auth::user()->role > 2) return false;
+
+	return $user;
+
 });

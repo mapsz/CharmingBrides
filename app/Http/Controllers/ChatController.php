@@ -50,36 +50,9 @@ class ChatController extends Controller
             return response()->json(['error' => '1', 'text' => 'Admin cant chat']);
         }
 
-        // Check user not companion
-        if($userId == $companionId) return response()->json(['error' => '1', 'text' => 'Cant get room with self']);
-
-        // Get user and companion rooms
-        $room = $this->searchRoom($userId, $companionId);
-        if(!$room) return response()->json(['noRoom' => '2', 'text' => 'Room not found']);
-
-        //Add companion
-        $room['companion'] = User::getWithInfo($companionId);
-        if(!$room['companion']){
-            return response()->json(['error' => '1', 'text' => 'Error geting companion']);
-        }
-
-
-        return $room;
-    }
-
-    public function storeRoom(Request $request){
-
-        // Get user id
-        $userId = $this->getUser($request->userId);
-        if(!$userId) return response()->json(['error' => '1', 'text' => 'No user id']);
-
-        //Get companion
-        $companionId = $request->companionId;
-        if(!$companionId) return response()->json(['error' => '1', 'text' => 'No companion id']);
-
-        //Check user is admin
-        if(Auth::user()->role > 2 && Auth::user()->id == $userId){
-            return response()->json(['error' => '1', 'text' => 'Admin cant chat']);
+        //Check user leged in
+        if(Auth::user()->id != $userId && Auth::user()->role < 3){
+            return response()->json(['error' => '1', 'text' => 'Bad login']);
         }
 
         // Check user not companion
@@ -90,20 +63,34 @@ class ChatController extends Controller
         $companion   = User::getWithInfo($companionId);
         if($currentUser['man'] == $companion['man']){
             return response()->json(['error' => '1', 'text' => 'Cant chat with same gender']);
+        }        
+
+        // Get user and companion rooms
+        $room = $this->searchRoom($userId, $companionId);
+        if(!$room) {
+            //Create room
+            $room = $this->storeRoom($userId,$companionId);
         }
 
-        // Check if room doest exists
-        if($this->searchRoom($userId, $companionId)) return response()->json(['error' => '1', 'text' => 'Room already exists']);
-
-        // Create room
-        $room = User::find($userId)->room()->create();
-
-         //Add companion
+        //Add companion
         $room['companion'] = $companion;
         if(!$room['companion']){
             return response()->json(['error' => '1', 'text' => 'Error geting companion']);
-        }     
+        }
 
+        $r = [
+            'companion' => $companion,
+            'id'        => $room['id'],
+        ];
+
+        return $r;
+    }
+
+    public function storeRoom($userId,$companionId){
+
+        // Create room
+        $room = User::find($userId)->room()->create();
+ 
         //Attach companion
         $companion = User::find($companionId);
         $companion->room()->attach($room->id);

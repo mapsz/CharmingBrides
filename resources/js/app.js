@@ -20,6 +20,7 @@ Vue.component('VueChatScroll', require('vue-chat-scroll'));
 
 window.d3 = require('d3-timer');
 
+window.moment = require('moment');
 
 
 //Componens
@@ -37,6 +38,7 @@ Vue.component('men-component', require('./components/admin/men.vue'));
 Vue.component('girls-component', require('./components/admin/girls.vue'));
 Vue.component('memberships-component', require('./components/admin/memberships.vue'));
 Vue.component('create-membership-component', require('./components/admin/createMembership.vue'));
+Vue.component('chat-history-component', require('./components/admin/chatHistory.vue'));
 
 
 const app = new Vue({
