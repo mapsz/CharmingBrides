@@ -13,6 +13,7 @@ class ChatHistory extends Model
     //
     public static function chatDisconnect($room, $connection){
 
+
     	//Check if private room
     	if(!strpos($room, 'privateChat')){
     		return false;
@@ -34,7 +35,11 @@ class ChatHistory extends Model
             } 
         }
 
-    	//Get room id
+    	
+        //@@@
+        echo '@@@@@@@';
+
+        //Get room id
     	$roomId = intval(explode('.',$room)[1]);
 
     	//Get start/stop
