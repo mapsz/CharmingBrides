@@ -5,7 +5,7 @@ namespace App\Http\Controllers\admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-use App\chatHistory;
+use App\ChatHistory;
 use Carbon\Carbon;
 use App\User;
 
@@ -15,7 +15,7 @@ class ChatHistoryController extends Controller
     {
 
     	//Get histories from DB
-        $chatHistories = chatHistory::with('room.user')->get()->sortByDesc('stop_at');
+        $chatHistories = ChatHistory::with('room.user')->get()->sortByDesc('stop_at');
 
         
         $r = [];
