@@ -53,8 +53,12 @@ Broadcast::channel('chat', function ($authtUser) {
 
 Broadcast::channel('privateChat.{roomId}', function ($user, $roomId) {
 
+	
+
 	//Check user auth
 	if(Auth::user()->id != $user->id && !Auth::user()->role > 2) return false;
+
+	if(Auth::user()->role > 2) return $user;
 
 	//Check correct room
     $room = Room::with('user')->get()->find($roomId);
