@@ -47,7 +47,7 @@ class ChatController extends Controller
 
         //Check user is admin
         if(Auth::user()->role > 2 && Auth::user()->id == $userId){
-            return response()->json(['error' => '1', 'text' => 'Admin cant chat']);
+            return response()->json(['error' => '1', 'text' => 'Admin cant chat, Please choose girl!']);
         }
 
         //Check user leged in
@@ -56,7 +56,7 @@ class ChatController extends Controller
         }
 
         // Check user not companion
-        if($userId == $companionId) return response()->json(['error' => '1', 'text' => 'Cant get room with self']);
+        if($userId == $companionId) return response()->json(['error' => '1', 'text' => 'Cant chat with self']);
 
         // Check if different genders
         $currentUser = User::getWithInfo($userId);
@@ -181,7 +181,7 @@ class ChatController extends Controller
 
          //Check user is admin
         if(Auth::user()->role > 2 && Auth::user()->id == $userId){
-            return response()->json(['error' => '1', 'text' => 'Admin cant chat']);
+            return response()->json(['error' => '1', 'text' => 'Admin cant chat, Please choose girl!']);
         }
 
         //Check user belong to room

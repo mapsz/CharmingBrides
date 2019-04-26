@@ -22,6 +22,27 @@ window.d3 = require('d3-timer');
 
 window.moment = require('moment');
 
+window.VueNotifications = require ('vue-notifications');
+window.miniToastr = require ('mini-toastr');
+
+import VueNotifications from 'vue-notifications'
+import miniToastr from 'mini-toastr'// https://github.com/se-panfilov/mini-toastr
+
+miniToastr.init()
+
+function toast ({title, message, type, timeout, cb}) {
+  return miniToastr[type](message, title, timeout, cb)
+}
+
+const options = {
+  success: toast,
+  error: toast,
+  info: toast,
+  warn: toast
+}
+
+Vue.use(VueNotifications, options);
+
 
 //Componens
 Vue.component('example-component', require('./components/ExampleComponent.vue'));

@@ -329,7 +329,29 @@
                 $('.freeze').outerHeight(newHeight+'px');
                 $('.freeze').css('margin-top',headHeight);
             }     
-        },        
+        },  
+          notifications: {
+            showSuccessMsg: {
+              type: VueNotifications.types.success,
+              title: 'Hello there',
+              message: 'That\'s the success!'
+            },
+            showInfoMsg: {
+              type: VueNotifications.types.info,
+              title: 'Hey you',
+              message: 'Here is some info for you'
+            },
+            showWarnMsg: {
+              type: VueNotifications.types.warn,
+              title: 'Wow, man',
+              message: 'That\'s the kind of warning'
+            },
+            showErrorMsg:{
+              type: VueNotifications.types.error,
+              title: 'Error!',
+              message: ""
+            }
+          },      
         mounted() {
             //set user
             this.user = this.prop_user;
@@ -341,10 +363,10 @@
             this.joinOnline();
 
             //Get Balance / Membership
-            this.getUserMembership(this.user.id);
-
+            this.getUserMembership(this.user.id)
         },
         methods: {
+
             //Emoji
             addEmoji(emoji){
                 $('.type_msg').val($('.type_msg').val() + emoji.native); //@@@ between text
@@ -444,7 +466,8 @@
                         if(!r.data.error){
                             return r.data.rooms;                           
                         }else{
-                            this.debug(r.data.text)
+                            this.debug(r.data.text);
+                            this.showErrorMsg({message:r.data.text});
                             return false;
                         }
                     })
@@ -490,7 +513,9 @@
                     path+='/zoom/'+_user.id+'_0.jpg';
                     return path;
                 }else{
-                    this.debug('error getting user '+id+' path');
+                    let error = 'error getting user '+id+' path'
+                    this.debug(error);
+                    this.showErrorMsg({message:error})
                     return false;
                 }
             },
@@ -605,7 +630,9 @@
                 //Get Room
                 var room = await this.getRoom(companionId);
                 if(!room){
-                    this.debug('error getting room');
+                    let error = 'error getting room';
+                    this.debug(error);
+                    this.showErrorMsg({message:error});
                     this.loading.room = false;
                     return false; //@@@ add some error
                 } 
@@ -649,6 +676,7 @@
                         if(!r.data) return false;
 
                         if(r.data.error == 1){
+                            this.showErrorMsg({message:r.data.text});
                             this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
                             return false;
                         }
@@ -718,6 +746,7 @@
 
                         if(r.data.error){
                             this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
+                            this.showErrorMsg({message:r.data.text});
                             return false;
                         }
 
@@ -747,6 +776,7 @@
 
                         if(r.data.error){
                             this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
+                            this.showErrorMsg({message:r.data.text});
                             return false;
                         }
                     })
