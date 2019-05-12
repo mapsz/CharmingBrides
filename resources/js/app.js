@@ -53,14 +53,24 @@ Vue.component('loading', require('./components/partials/loading.vue'));
 Vue.component('admin-chat', require('./components/partials/adminChat.vue'));
 Vue.component('chat', require('./components/Chat.vue'));
 
+//Girls
+Vue.component('girls-special-ladies-component', require('./components/girls/specialLadies.vue'));
+Vue.component('girl-component', require('./components/girls/girl.vue'));
+
 
 // Admin panel
 Vue.component('men-component', require('./components/admin/men.vue'));
-Vue.component('girls-component', require('./components/admin/girls.vue'));
 Vue.component('memberships-component', require('./components/admin/memberships.vue'));
 Vue.component('create-membership-component', require('./components/admin/createMembership.vue'));
 Vue.component('chat-history-component', require('./components/admin/chatHistory.vue'));
+//girls
+Vue.component('girls-list-component', require('./components/admin/girls/list.vue'));
+Vue.component('admin-girls-special-ladies-component', require('./components/admin/girls/specialLadies.vue'));
 
+// _admin Panel
+Vue.component('admin-panel-list-component', require('./components/_adminPanel/listComponent.vue'));
+Vue.component('admin-panel-create-component', require('./components/_adminPanel/createComponent.vue'));
+Vue.component('admin-panel-create-wrapper-component', require('./components/_adminPanel/createWrapperComponent.vue'));
 
 const app = new Vue({
     el: '#app'

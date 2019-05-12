@@ -269,7 +269,7 @@
 			<div class="col-sm-9">
 				@include('admin.partials._input')	
 				{{-- Modal Open Button --}}
-				<button type="button" class="btn" data-toggle="modal" data-target="#photoModal">Edit Photos</button>
+				<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#photoModal">Add Photos</button>
 				{{-- Modal --}}
 				<div id="photoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 					<div class="modal-dialog modal-lg">
@@ -304,22 +304,18 @@
 								</div>
 								{{-- Prieview --}}
 								<div class="preview">
-									<div class="row">
-										@for ($i = 0; $i <= 4; $i++)							
-											<div class="col">
-												<i class="icon-cancel delete" data-id="{{$i}}"></i>
-												<img class="item mb-1" src="{{asset('adminAssets/img/preview.png')}}" data-id="{{$i}}">	
-											</div>							
-										@endfor		
-									</div>
-									<div class="row">
-										@for ($i = 5; $i <= 9; $i++)	
-											<div class="col">
-												<i class="icon-cancel delete" data-id="{{$i}}"></i>
-												<img class="item mb-1" src="{{asset('adminAssets/img/preview.png')}}" data-id="{{$i}}">
-											</div>							
-										@endfor		
-									</div>
+                  <?php $k = 0; ?>
+                  @for ($j = 1; $j <= 2; $j++)
+  									<div class="row">
+  										@for ($i = 1; $i <= 5; $i++)							
+  											<div class="col">
+  												<i class="icon-cancel delete" data-id="{{$k}}"></i>
+  												<img class="item mb-1" src="{{asset('adminAssets/img/preview.png')}}" data-id="{{$k}}" style="width:100%">
+  											</div>	
+                        <?php $k++; ?>						
+  										@endfor		
+  									</div>
+                    @endfor                   
 								</div>		
 							</div>
 							<div class="modal-footer">
@@ -342,7 +338,7 @@
 			<div class="col-sm-9">
 				@include('admin.partials._input')			
 				{{-- Modal Open Button --}}
-				<button type="button" class="btn" data-toggle="modal" data-target="#passportModal">Edit Passport</button>
+				<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#passportModal">Add Passport</button>
 				{{-- Modal --}}
 				<div id="passportModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 					<div class="modal-dialog modal-lg">
@@ -379,7 +375,7 @@
 									<div class="row">
 										<div class="col-4 offset-4">
 											<i class="icon-cancel delete" data-id="0"></i>
-											<img class="item mb-1" src="{{asset('adminAssets/img/passportPreview.png')}}" data-id="0">
+											<img class="item mb-1" src="{{asset('adminAssets/img/passportPreview.png')}}" data-id="0" style="width:100%">
 										</div>
 									</div>
 								</div>
@@ -405,7 +401,7 @@
 				{{-- input --}}
 				@include('admin.partials._input')
 				{{-- Modal Open Button --}}
-				<button type="button" class="btn" data-toggle="modal" data-target="#videoModal">Edit Video</button>
+				<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#videoModal">Add Video</button>
 				{{-- Modal --}}
 				<div id="videoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 					<div class="modal-dialog modal-lg">
@@ -442,7 +438,7 @@
 									<div class="col-6 offset-3">
 										{{-- Preview --}}
 										<div class="preview">
-											<img class="videoPreview mb-1" src="{{asset('adminAssets/img/videoPreview.png')}}">
+											<img class="videoPreview mb-1" src="{{asset('adminAssets/img/videoPreview.png')}}" style="width:100%">
 										</div>
 										{{-- Remove --}}
 										<div class="col-12">

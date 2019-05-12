@@ -40,14 +40,18 @@ Route::get('/chat/recentRooms', 'ChatController@getRecentRooms')->name('getRecen
 Route::get('/chat/getHardOnline', 'ChatController@getHardOnline')->name('getHardOnline')->middleware(['auth','admin']);
 
 
+//Girls
+//show
+Route::get('/girl/{id}','GirlController@index')->name('showGirl');
+//get special Ladies
+Route::get('/girls/special/ladies','admin\GirlController@getSpecialLadies')->name('getSpecialLadies');
+
+
 //Admin Chat
 Route::post('/chat/admin/setOnline', 'ChatController@setHardOnline')->name('setHardOnline')->middleware(['auth','admin']);
 Route::delete('/chat/admin/deleteOnline', 'ChatController@deleteHardOnline')->name('deleteHardOnline')->middleware(['auth','admin']);
 
-//Membership
-Route::get('/memberships/current', 'admin\MembershipsController@getCurrentMembership');
-//History
-Route::get('/memberships/history', 'admin\MembershipsController@getHistoryMembership');
+
 
 //Admin
 Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','admin']],function(){
@@ -62,8 +66,10 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 	Route::get('/girls/create',		'admin\GirlController@create')->name('adminGirlCreate');	
 	//Store
 	Route::post('/girls/store', 	'admin\GirlController@store')->name('adminGirlStore');	
-	//Show
 
+  //Special Ladies
+  Route::delete('/girls/special/ladies','admin\GirlController@deleteSpecialLadies')->name('deleteSpecialLadies');
+  Route::put('/girls/special/ladies','admin\GirlController@putSpecialLadies')->name('putSpecialLadies');
 	//Edit
 
 	//Uspdate
@@ -74,18 +80,23 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 	// Men
 	//index
 	Route::get('/men', 					'admin\ManController@index')->name('adminManIndex');
-	//Membership
-	Route::post('/user/membership', 		'admin\ManController@attachMembership')->name('adminManAttachMembership');
+	
 
-	// Membership
-	//index
-	Route::get('/memberships', 'admin\MembershipsController@index')->name('adminMembershipIndex');
-	//Get
-	Route::get('/memberships/get', 'admin\MembershipsController@get')->name('adminMembershipGet');
-	//Create
-	Route::get('/memberships/create', 'admin\MembershipsController@create')->name('adminMembershipCreate');
-	//Store
-	Route::post('/memberships', 'admin\MembershipsController@store')->name('adminMembershipStore');
+  // Membership
+  $model = 'membership';
+  $namePrefix = "admin_";
+  Route::get('/'.$model, ucfirst($model).'Controller@index')->name($namePrefix.$model);               //Index
+  Route::get('/'.$model.'/get', ucfirst($model).'Controller@get')->name($namePrefix.'get'.ucfirst($model));     //Get
+  Route::get('/'.$model.'/create', ucfirst($model).'Controller@create')->name($namePrefix.'create'.ucfirst($model));  //Create
+  Route::put('/'.$model, ucfirst($model).'Controller@put')->name($namePrefix.'put'.ucfirst($model));          //Put
+  Route::post('/'.$model, ucfirst($model).'Controller@post')->name($namePrefix.'post'.ucfirst($model));       //Post
+  Route::delete('/'.$model, ucfirst($model).'Controller@destroy')->name($namePrefix.'delete'.ucfirst($model));    //Delete
+  //Membership
+  Route::get('/memberships/current', 'admin\MembershipsController@getCurrentMembership');
+  //History
+  Route::get('/memberships/history', 'admin\MembershipsController@getHistoryMembership');
+  //attach membership
+  Route::post('/user/membership',     'admin\ManController@attachMembership')->name('adminManAttachMembership');
 
 	//Chat histories
 	//index

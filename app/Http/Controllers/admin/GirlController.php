@@ -9,6 +9,8 @@ use Validator;
 use App\User;
 use App\Girl;
 use App\Media;
+use App\SpecialLady;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use App\Rules\FilesJsonMax;
@@ -23,6 +25,60 @@ use Illuminate\Support\Facades\Storage;
 
 class GirlController extends Controller
 {
+
+
+    public function getSpecialLadies(){
+
+
+        $girls = SpecialLady::with('user')->with('user.girl')->get()->toArray();
+
+        $data = [];
+        $r = [];
+        foreach ($girls as $key => $value) {
+            $r['id']      = $value['user']['id'];
+            $r['name']    = $value['user']['girl']['name'];
+            $r['location']= $value['user']['girl']['location'];
+            $r['birth']   = $value['user']['girl']['birth']; 
+            $r['age']     = Carbon::parse($r['birth'])->age;
+
+            array_push($data, $r);
+        }
+
+        return response()->json(['error' => '0', 'data' => $data]);
+    }
+
+    public function deleteSpecialLadies(request $request){
+        $delete = SpecialLady::where('user_id','=',$request->id);
+        // dd($delete);
+        $id = $delete->delete();
+        return response()->json(['error' => '0', 'id' => $id]);  
+    }
+
+    public function putSpecialLadies(request $request){
+
+        
+
+        //Check max specials
+        $maxSpecials = 8;
+        $currentSpecials = SpecialLady::count();
+        if(($maxSpecials - $currentSpecials) <= 0){
+            return response()->json(['error' => '1', 'text' => 'Max speacial ladies - '.$maxSpecials]);
+        }
+
+        $put = new SpecialLady;
+
+        $put->timestamps = false;
+        $put->user_id = $request->id;       
+
+        //Save
+        if($put->save()){
+            return response()->json(['error' => '0']);
+        }else{
+            return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+        }
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -220,10 +276,10 @@ class GirlController extends Controller
             $girlId = Girl::create($girlData)->id;
 
             //Save Photos            
-            $photos = new Media($photos,$girlId);
+            $photos = new Media($photos,$id);
             $photos->savePhotos();
             //Save Passport
-            $passport = new Media($passport,$girlId);
+            $passport = new Media($passport,$id);
             $passport->savePassport();            
 
             //Store to DB

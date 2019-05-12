@@ -13,14 +13,14 @@ return [
 	'galleryHeight' => 711,
 
 	// Path
-	'zoomGirlPath' 				 => public_path("media\\girls\\zoom\\"),
-	'galleryGirlPath'			 => public_path("media\\girls\\gallery\\"),
-	'passportPath'				 => public_path("media\\girls\\passport\\"),
-	'videoGirlPath'				 => public_path("media\\girls\\video\\"),
+	'zoomPath' 				 => public_path("media\\zoom\\"),
+	'galleryPath'			 => public_path("media\\gallery\\"),
+	'passportPath'				 => public_path("media\\passport\\"),
+	'videoPath'				 => public_path("media\\video\\"),
 	//archive
-	'zoomGirlArchivePath' 		 => public_path("media\\girls\\zoom\\archive\\"),
-	'galleryGirlArchivePath'	 => public_path("media\\girls\\gallery\\archive\\"),
-	'passportArchivePath'		 => public_path("media\\girls\\passport\\archive\\"),
-	'videoGirlArchivePath'		 => public_path("media\\girls\\video\\archive\\"),
+	'zoomArchivePath' 		 => public_path("media\\zoom\\archive\\"),
+	'galleryArchivePath'	 => public_path("media\\gallery\\archive\\"),
+	'passportArchivePath'		 => public_path("media\\passport\\archive\\"),
+	'videoArchivePath'		 => public_path("media\\video\\archive\\"),
 
 ];

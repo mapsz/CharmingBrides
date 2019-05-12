@@ -9,6 +9,7 @@ use App\Man;
 use App\Girl;
 use App\Membership;
 use Auth;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -52,10 +53,11 @@ class User extends Authenticatable
 
         // Check girl
         if($user->girl){
-            $r['man']     = false; 
-            $r['name']    = $user->girl['name'];
-            $r['surname'] = $user->girl['surname'];
-            $r['birth']   = $user->girl['birth']; 
+            $r['man']         = false; 
+            $r['name']        = $user->girl['name'];
+            $r['location']    = $user->girl['location'];
+            $r['birth']       = $user->girl['birth']; 
+            $r['age']         = Carbon::parse($r['birth'])->age;
             return $r; 
         }
 

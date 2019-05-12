@@ -44,15 +44,15 @@ class Media
         $this->galleryHeight          = config('media.galleryHeight');
 
         // Path
-        $this->zoomPath               = config('media.zoomGirlPath');
-        $this->galleryPath            = config('media.galleryGirlPath');
+        $this->zoomPath               = config('media.zoomPath');
+        $this->galleryPath            = config('media.galleryPath');
         $this->passportPath           = config('media.passportPath');
-        $this->videoPath              = config('media.videoGirlPath');
+        $this->videoPath              = config('media.videoPath');
         //archive
-        $this->zoomArchivePath       = config('media.zoomGirlArchivePath');
-        $this->galleryArchivePath    = config('media.galleryGirlArchivePath');
-        $this->passportArchivePath   = config('media.passportGirlArchivePath');
-        $this->videoArchivePath      = config('media.videoGirlArchivePath');   
+        $this->zoomArchivePath       = config('media.zoomArchivePath');
+        $this->galleryArchivePath    = config('media.galleryArchivePath');
+        $this->passportArchivePath   = config('media.passportArchivePath');
+        $this->videoArchivePath      = config('media.videoArchivePath');   
 
         // Files
         $this->files                 = $files;

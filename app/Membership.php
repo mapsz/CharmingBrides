@@ -5,70 +5,146 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\User;
 
-class Membership extends Model
+class Membership extends _adminPanel
 {
 
+    //Data
+    protected $route     = 'admin/membership';
+    protected $single    = 'membership';
+    protected $multi     = 'memberships';    
+    protected $columns  = [
+        ['name' => 'id'],
+        ['name' => 'name'],
+        ['name' => 'price'],
+        ['name' => 'letter_price', 'caption' => 'Letter price'],
+        ['name' => 'chat_price', 'caption' => 'Chat price'],
+        ['name' => 'period'],
+        [
+          'name' => 'client_visible',
+          'caption' => 'client visible',
+          'attributes' => [
+                  ['id' => 0,'name' => 'no'],
+                  ['id' => 1,'name' => 'yes']
+             ],
+        ],
+    ];
+    protected $inputs    = [
+              [ //Name
+                  'name' => 'name',
+                  'type' => 'text',
+                  'example' => 'Gold Membership'
+              ],
+              [ //Price
+                'name' => 'price',
+                'type' => 'text',
+                'example' => '35.50',
+              ],
+              [ //Letter price
+                'name' => 'letter_price',
+                'caption' => 'letter price',
+                'type' => 'text',
+                'example' => '3.50',
+              ],
+              [ //Chat price
+                'name' => 'chat_price',
+                'caption' => 'chat price',
+                'type' => 'text',
+                'example' => '1.50',
+              ],
+              [ // period
+                'name' => 'period',
+                'type' => 'text',
+                'example' => '180',
+              ],
+              [ // client visible
+                'name' => 'client_visible',
+                'caption' => 'Client visible',
+                'type' => 'radio',
+                'attributes' => [
+                  ['id' => 0,'name' => 'no'],
+                  ['id' => 1,'name' => 'yes']
+                     ],
+              ],
+    ];
 
-    public static function getCurrentMembership($user_id){
+    public function __construct(){
+        parent::__construct($this->single, $this->multi, $this->page, $this->inputs);
+    }
 
-    	//Get memberships
-        $user = user::with('membership')->with('man')->find($user_id);
+    // public function validate($request){
 
-        if(!isset($user->membership[0]))
-        	return false;
+    //     $val = $request->validate([
+    //         'vehicle_type_id'          => 'required',
+    //         'number'                   => 'required|min:3',
+    //         'mileage_tracker'         => 'required',
+    //         'mileage'                => 'required',
+    //     ]);
 
-        //Remove out off date memberships
-        $memberships = [];
-        $i = 0;
-        foreach ($user->membership as $membership) {
-        	$endDate = $membership->pivot->created_at->timestamp + $membership->period * 24 * 60 * 60;
+    //     return $val;
+    // }
+  
+    // public static function getCurrentMembership($user_id){
 
-        	if ($endDate > now()->timestamp){
-        		$memberships[$i] = $membership;
-        		$memberships[$i]['endDate'] = $endDate;
-        		$i++;
-        	}        	
-        }
+    // 	//Get memberships
+    //     $user = user::with('membership')->with('man')->find($user_id);
 
-        if(!count($memberships)) return false;
+    //     if(!isset($user->membership[0]))
+    //     	return false;
 
-        //Find profitable membership
-        // profitable
-        $minLetterPrice = 9999;
-        foreach ($memberships as $membership){
-        	if($membership->letter_price < $minLetterPrice) $minLetterPrice = $membership->letter_price;
-        }
+    //     //Remove out off date memberships
+    //     $memberships = [];
+    //     $i = 0;
+    //     foreach ($user->membership as $membership) {
+    //     	$endDate = $membership->pivot->created_at->timestamp + $membership->period * 24 * 60 * 60;
 
-        //Remove not profitable memberships
-        foreach ($memberships as $k => $membership){
-        	if($membership->letter_price > $minLetterPrice) unset($memberships[$k]);
-        }
+    //     	if ($endDate > now()->timestamp){
+    //     		$memberships[$i] = $membership;
+    //     		$memberships[$i]['endDate'] = $endDate;
+    //     		$i++;
+    //     	}        	
+    //     }
 
-        if(!count($memberships)) return false;
+    //     if(!count($memberships)) return false;
 
-        //Get longest end date membership
-        $latestDate = [
-        	'latestDate' => 0,
-        	'k' => 0,
-        ];
-        foreach ($memberships as $k => $membership){
-        	if($membership->endDate > $latestDate['latestDate']){
-        		$latestDate['latestDate'] = $membership->endDate;
-        		$latestDate['k'] = $k;
-        	}
-        }
+    //     //Find profitable membership
+    //     // profitable
+    //     $minLetterPrice = 9999;
+    //     foreach ($memberships as $membership){
+    //     	if($membership->letter_price < $minLetterPrice) $minLetterPrice = $membership->letter_price;
+    //     }
+
+    //     //Remove not profitable memberships
+    //     foreach ($memberships as $k => $membership){
+    //     	if($membership->letter_price > $minLetterPrice) unset($memberships[$k]);
+    //     }
+
+    //     if(!count($memberships)) return false;
+
+    //     //Get longest end date membership
+    //     $latestDate = [
+    //     	'latestDate' => 0,
+    //     	'k' => 0,
+    //     ];
+    //     foreach ($memberships as $k => $membership){
+    //     	if($membership->endDate > $latestDate['latestDate']){
+    //     		$latestDate['latestDate'] = $membership->endDate;
+    //     		$latestDate['k'] = $k;
+    //     	}
+    //     }
        
-       $CurrentMembership = $memberships[$latestDate['k']];
-       $CurrentMembership->balance = $user->man->balance;
+    //    $CurrentMembership = $memberships[$latestDate['k']];
+    //    $CurrentMembership->balance = $user->man->balance;
 
-       return $CurrentMembership;
-    }
+    //    return $CurrentMembership;
+    // }
 
-    public static function getChatPrice($userId){
-        $membership = Membership::getCurrentMembership($userId);
-        return $membership->chat_price / 60;
-    }
+    // public static function getChatPrice($userId){
+    //     $membership = Membership::getCurrentMembership($userId);
+    //     return $membership->chat_price / 60;
+    // }
 
+
+    //Relations
     public function user()
     {
         return $this->belongsToMany('App\User')->withTimestamps();

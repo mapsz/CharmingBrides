@@ -12,7 +12,7 @@
         <a class="nav-link" href="{{ route('adminManIndex') }}">Men</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ route('adminMembershipIndex') }}">Memberships</a>
+        <a class="nav-link" href="{{ route('admin_membership') }}">Memberships</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ route('adminChatHistoryIndex') }}">Chat Histories</a>
