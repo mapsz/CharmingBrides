@@ -66,6 +66,8 @@ Vue.component('chat-history-component', require('./components/admin/chatHistory.
 //girls
 Vue.component('girls-list-component', require('./components/admin/girls/list.vue'));
 Vue.component('admin-girls-special-ladies-component', require('./components/admin/girls/specialLadies.vue'));
+//Messages
+Vue.component('message-send-component', require('./components/letters/send.vue'));
 
 // _admin Panel
 Vue.component('admin-panel-list-component', require('./components/_adminPanel/listComponent.vue'));

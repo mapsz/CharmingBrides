@@ -11,7 +11,7 @@
         <div v-if="prop_auth">
           <!-- loged in -->
             <div class="row text-center font-weight-bold">
-              <div class="action-item col-4 p-3">
+              <div @click="sendLetter();" class="action-item col-4 p-3">
                 <fa-icon :icon="['far', 'envelope']" class="fa-5x d-block mx-auto" />
                 Send me a letter
               </div>
@@ -44,6 +44,10 @@
         </div>
       </div>
     </div>
+
+  <!-- Letter -->
+  <message-send-component :p-user="girl" :p-letter="letter" />
+
   </div>
 </template>
 
@@ -78,11 +82,17 @@
         data(){
             return {
                 girl:false,
+                letter:false,
             }
         }, 
         mounted() {
           this.girl = JSON.parse(this.prop_girl);
         },
+        methods:{
+          sendLetter(){
+            this.letter = true;
+          }
+        }
         
     }
 
