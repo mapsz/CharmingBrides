@@ -17,6 +17,9 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ route('adminChatHistoryIndex') }}">Chat Histories</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('admin_letter') }}">Letters</a>
+      </li>
     </ul>
   </div>
 </nav>

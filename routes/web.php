@@ -51,7 +51,12 @@ Route::get('/girls/special/ladies','admin\GirlController@getSpecialLadies')->nam
 Route::post('/chat/admin/setOnline', 'ChatController@setHardOnline')->name('setHardOnline')->middleware(['auth','admin']);
 Route::delete('/chat/admin/deleteOnline', 'ChatController@deleteHardOnline')->name('deleteHardOnline')->middleware(['auth','admin']);
 
-
+// Letter
+$model = 'letter';
+$namePrefix = "";
+Route::get('/letters', ucfirst($model).'Controller@userIndex')->name($namePrefix.$model);               //Index
+Route::put('/'.$model, ucfirst($model).'Controller@put')->name($namePrefix.'put'.ucfirst($model));          //Put
+Route::get('/'.$model.'/user/{user?}', ucfirst($model).'Controller@getUserLetters')->name('getUserLetters');          //Put
 
 //Admin
 Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','admin']],function(){
@@ -97,6 +102,16 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/memberships/history', 'admin\MembershipsController@getHistoryMembership');
   //attach membership
   Route::post('/user/membership',     'admin\ManController@attachMembership')->name('adminManAttachMembership');
+
+  // Letter
+  $model = 'letter';
+  $namePrefix = "admin_";
+  Route::get('/'.$model, ucfirst($model).'Controller@index')->name($namePrefix.$model);               //Index
+  Route::get('/'.$model.'/get', ucfirst($model).'Controller@get')->name($namePrefix.'get'.ucfirst($model));     //Get
+  Route::get('/'.$model.'/create', ucfirst($model).'Controller@create')->name($namePrefix.'create'.ucfirst($model));  //Create
+  Route::put('/'.$model, ucfirst($model).'Controller@put')->name($namePrefix.'put'.ucfirst($model));          //Put
+  Route::post('/'.$model, ucfirst($model).'Controller@post')->name($namePrefix.'post'.ucfirst($model));       //Post
+  Route::delete('/'.$model, ucfirst($model).'Controller@destroy')->name($namePrefix.'delete'.ucfirst($model));    //Delete
 
 	//Chat histories
 	//index

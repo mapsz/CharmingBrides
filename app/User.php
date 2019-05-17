@@ -114,13 +114,17 @@ class User extends Authenticatable
 
         return $this->hasMany('App\Message');
     }
+    public function letter(){
+
+        return $this->hasMany('App\Letter');
+    }
     public function room(){
 
         return $this->belongsToMany(Room::Class);
     }  
     public function membership(){
 
-        return $this->belongsToMany('App\Membership')->withTimestamps();
+        return $this->belongsToMany('App\Membership');
     }   
 
 

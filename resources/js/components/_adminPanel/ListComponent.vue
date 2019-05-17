@@ -4,7 +4,7 @@
     <div class="container">
         <div class="">
             <h1 class="text-capitalize">{{prop_name.m}}</h1>
-            <div class="mb-1">
+            <div v-if="prop_settings.add" class="mb-1">
               <a :href="prop_name.s+'/create'">
                 <button type="button" class="btn btn-success">Add new</button>
               </a>
@@ -18,9 +18,9 @@
                     {{column.caption}}
                   </th>
                   <!-- Edit -->
-                  <th scope="col" style="font-size:16pt">Edit</th>
+                  <th scope="col" v-if="prop_settings.edit" style="font-size:16pt">Edit</th>
                   <!-- Delete -->
-                  <th scope="col" style="font-size:16pt">Delete</th>
+                  <th scope="col" v-if="prop_settings.delete" style="font-size:16pt">Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -39,11 +39,11 @@
                     <span v-else class="caption">{{row[key.name]}}</span>
                   </td>
                   <!-- Edit -->
-                  <td class="float">
+                  <td v-if="prop_settings.edit" class="float">
                     <button @click="editRow(row.id)" type="button" class="btn btn-warning border border-primary">Edit</button>
                   </td>
                   <!-- Delete -->
-                  <td class="float">
+                  <td v-if="prop_settings.delete" class="float">
                     <button data-toggle="modal" data-target="#delete-modal" @click="toDelete=row.id" type="button" class="btn btn-danger border border-primary">Delete</button>
                   </td>
                 </tr>
@@ -103,7 +103,7 @@
 
 <script>
     export default {
-        props:['prop_data','prop_name','prop_inputs','prop_route'],
+        props:['prop_data','prop_name','prop_inputs','prop_route','prop_settings'],
         data(){
             return {
                 data:[],

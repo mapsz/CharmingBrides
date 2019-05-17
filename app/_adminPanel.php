@@ -10,6 +10,11 @@ class _adminPanel extends Model
     protected $single;
     protected $multi;
     protected $page;
+
+    protected $edit      = true; 
+    protected $delete    = true; 
+    protected $add       = true; 
+
     protected $inputs = [];
     protected $data = [];
     protected $dbData = [];    
@@ -58,6 +63,13 @@ class _adminPanel extends Model
 
         //Return inputs
         return $this->inputs;     
+    }
+    public function getSettings(){
+        return [
+          'add'     => $this->add,
+          'edit'    => $this->edit,
+          'delete'   => $this->delete,
+        ];     
     }
 
     //Data

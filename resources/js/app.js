@@ -14,6 +14,9 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+ //Assets
+ window.assets = '/';
+
 //Modules
 var VueChatScroll = require('vue-chat-scroll');
 Vue.component('VueChatScroll', require('vue-chat-scroll'));
@@ -57,6 +60,9 @@ Vue.component('chat', require('./components/Chat.vue'));
 Vue.component('girls-special-ladies-component', require('./components/girls/specialLadies.vue'));
 Vue.component('girl-component', require('./components/girls/girl.vue'));
 
+//Letter
+Vue.component('letter-component', require('./components/letters/letter_list.vue'));
+Vue.component('message-send-component', require('./components/letters/letter_send.vue'));
 
 // Admin panel
 Vue.component('men-component', require('./components/admin/men.vue'));
@@ -66,8 +72,7 @@ Vue.component('chat-history-component', require('./components/admin/chatHistory.
 //girls
 Vue.component('girls-list-component', require('./components/admin/girls/list.vue'));
 Vue.component('admin-girls-special-ladies-component', require('./components/admin/girls/specialLadies.vue'));
-//Messages
-Vue.component('message-send-component', require('./components/letters/send.vue'));
+
 
 // _admin Panel
 Vue.component('admin-panel-list-component', require('./components/_adminPanel/listComponent.vue'));

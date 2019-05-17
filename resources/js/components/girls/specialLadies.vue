@@ -7,7 +7,7 @@
       >
         <div class="card h-100 shadow">
           <a :href="'/girl/'+girl.id">
-            <img class="card-img-top " :src="'/public/media/gallery/'+girl.id+'_0.jpg'" alt="Juliya">
+            <img class="card-img-top " :src="assets+'/media/gallery/'+girl.id+'_0.jpg'" alt="Juliya">
             <div class="card-body media">
               <div class="align-self-end">
                 <h5 class="card-title name">{{girl.name}}</h5>
@@ -29,6 +29,7 @@
     export default {
         data(){
             return {
+                assets:assets,
                 girls:[],
             }
         }, 

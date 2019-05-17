@@ -22,6 +22,7 @@ abstract class _adminPanelController extends Controller
         $names   = $model->getNames();  //Names
         $page   = $model->getPage();    //Page
         $route = $model->getRoute(); 
+        $settings = $model->getSettings(); 
         if($page == "") $page = 'list';
        
         //Encode
@@ -29,12 +30,14 @@ abstract class _adminPanelController extends Controller
         $inputs = json_encode($inputs);
         $names   = json_encode($names);
         $route   = json_encode($route);
+        $settings   = json_encode($settings);
 
         return view('_adminPanel.'.$page)
           ->with('data', $data)
           ->with('inputs', $inputs)
           ->with('name', $names)
-          ->with('route',$route);
+          ->with('route',$route)
+          ->with('settings',$settings);
       }
 
     public function create(){
@@ -44,13 +47,19 @@ abstract class _adminPanelController extends Controller
         $inputs = $model->getInputs();  //Inputs
         $names   = $model->getNames();  //Names
         $route = $model->getRoute(); 
+        $settings = $model->getSettings(); 
         //Encode
-        $inputs = json_encode($inputs);
-        $names   = json_encode($names);
-        $route   = json_encode($route);
+        $inputs     = json_encode($inputs);
+        $names      = json_encode($names);
+        $route      = json_encode($route);
+        $settings   = json_encode($settings);
 
         //View
-        return view('_adminPanel.create')->with('inputs', $inputs)->with('name', $names)->with('route',$route);
+        return view('_adminPanel.create')
+                    ->with('inputs', $inputs)
+                    ->with('name', $names)
+                    ->with('route',$route)
+                    ->with('settings',$settings);
     }
 
     public function get(){

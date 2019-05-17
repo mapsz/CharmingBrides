@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row my-3">
       <div class="col-3">
-        <img class="w-100" :src="'/public/media/gallery/'+girl.id+'_0.jpg'" alt="Juliya">
+        <img class="w-100" :src="assets+'/media/gallery/'+girl.id+'_0.jpg'" alt="Juliya">
       </div>
       <div class="col-9" style="color: #bf005a;">
         <h1 class="" style="color:#740f0f">{{girl.name}}, {{girl.age}}</h1>
@@ -46,7 +46,7 @@
     </div>
 
   <!-- Letter -->
-  <message-send-component :p-user="girl" :p-letter="letter" />
+  <message-send-component @closeLetter="letter = false" :p-user="girl" :p-letter="letter" />
 
   </div>
 </template>
@@ -81,6 +81,7 @@
         props:['prop_girl','prop_auth'],
         data(){
             return {
+                assets:assets,
                 girl:false,
                 letter:false,
             }
