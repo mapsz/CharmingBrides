@@ -15,7 +15,7 @@ window.Vue = require('vue');
  */
 
  //Assets
- window.assets = '/';
+ window.assets = '';
 
 //Modules
 var VueChatScroll = require('vue-chat-scroll');
