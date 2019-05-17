@@ -126,7 +126,7 @@ class Media
 	
 	protected function saveFile($file, $path, $name){
 		//Save file
-        $r = $file->save('\\'.$path.$name);
+        $r = $file->save($path.$name);
 
         if($r){
             //Add rollback
