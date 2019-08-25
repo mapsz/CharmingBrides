@@ -18,8 +18,7 @@ class ManController extends _adminPanelController
         parent::__construct($this->model);
     }
 
-    public function create()
-    {
+    public function create(){
         //Get Model
         $model = new $this->model();
         //Get Data
@@ -36,29 +35,25 @@ class ManController extends _adminPanelController
                     ->with('route',$route);    
     }
 
-    public function put(Request $request)
-    {
-         //Get Model
-        $model = new $this->model; 
-        
-        //Validate
-        $validate = $model->validate($request); 
-
-        //Save
-        $man_id = $model->saveRow($request->all());       
-        
-        if($man_id){
-          $user_id = Man::find($man_id)->user_id;
-          $user = User::find($user_id);
-          Auth::login($user);
-          return response()->json(['error' => '0','id' => $user_id]);
-        }else{
-          return response()->json(['error' => '1', 'text' => 'something gone wrong']);
-        }
+    public function put(Request $request){
+      //
+       //Get Model
+      $model = new $this->model;       
+      //Validate
+      $validate = $model->validate($request); 
+      //Save
+      $man_id = $model->saveRow($request->all());
+      if($man_id){
+        $user_id = Man::find($man_id)->user_id;
+        $user = User::find($user_id);
+        Auth::login($user);
+        return response()->json(['error' => '0','id' => $user_id]);
+      }else{
+        return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+      }      
     }
 
-    public function edit(Man $man)
-    {
+    public function edit(Man $man){
         $men['email'] = Auth::user()->email;
         return view('pages.profile')->with('men',$men);
     }
