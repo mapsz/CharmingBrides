@@ -2,6 +2,6 @@
 
 @section('content')
 
-  <letter-component/>
+  <letter1-component/>
 
 @endsection

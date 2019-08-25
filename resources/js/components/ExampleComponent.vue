@@ -1,23 +1,42 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card card-default">
-                    <div class="card-header">Example Component</div>
-
-                    <div class="card-body" >
-                        I'm an example component.
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="container-fluid">
+        <!-- Example -->
+        me example
     </div>
 </template>
 
 <script>
-    export default {
+    export default {        
+        mixins: [ ],
+        props:[],
+        data(){
+          return {
+            //
+          }
+        },
+        computed:{
+          requiredAll:function(){
+            //
+          },
+        },
+        watch: {
+          pEditData: {
+            deep:true,
+            handler:function(){this.setValues();},
+            //
+          },
+          question: function (newQuestion, oldQuestion) {
+            this.answer = 'Waiting for you to stop typing...'
+            this.debouncedGetAnswer()
+          }      
+        },                
         mounted() {
             console.log('Component mounted.')
+        },
+        methods: {
+          async hihi(){
+            
+          }
         }
     }
 </script>

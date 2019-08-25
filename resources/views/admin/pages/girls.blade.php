@@ -2,25 +2,22 @@
 
 @section('content')
 	
-    <div class="container-fluid">
-    	<div class="row">
-	    	<div class="col-3">		
-	    		{{-- Add New	 --}}	
-	    		<div class="col-12 p-5">
-		  	        <a href="{{ route('adminGirlCreate') }}">
-			            <button class="btn btn-primary">
-			                Add New Girl
-			            </button>
-			        </a>
-		        </div>
-				{{-- Special Ladies --}}
-				<admin-girls-special-ladies-component />
-	    	</div>
-	    	<div class="col-9">
+<div class="row">
+  
+  <div class="col-2">
+    <admin-girls-special-ladies-component>
+  </div>
 
-				<girls-list-component :girls="{{$girls}}"/>
-			</div>
-		</div>
-    </div>
+  <div class="col-10">
+    <admin-panel-main-component 
+      :p-name="{{ $name }}" 
+      :p-data="{{ $data }}" 
+      :p-inputs="{{ $inputs }}" 
+      :p-route="{{ $route }}" 
+      :p-settings="{{ $settings }}" 
+    />  
+  </div>
+
+</div>
 
 @endsection

@@ -2,6 +2,6 @@
 
 @section('content')
 
-  <girl-component prop_girl = "{{$girl}}" prop_auth="{{Auth::check()}}" />
+  <girl-component p-girl = "{{$girl}}" p-auth="{{$auth}}" p-user-is-man="{{$userIsMan}}" />
 
 @endsection

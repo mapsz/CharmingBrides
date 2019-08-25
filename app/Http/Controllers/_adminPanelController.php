@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 abstract class _adminPanelController extends Controller
 {
@@ -12,7 +14,7 @@ abstract class _adminPanelController extends Controller
   		$this->model 	= $model;
    	}
 
-    public function index(){
+    public function _index(){
         //Get Model
         $model = new $this->model();
 
@@ -23,7 +25,6 @@ abstract class _adminPanelController extends Controller
         $page   = $model->getPage();    //Page
         $route = $model->getRoute(); 
         $settings = $model->getSettings(); 
-        if($page == "") $page = 'list';
        
         //Encode
         $data   = json_encode($data);
@@ -32,15 +33,15 @@ abstract class _adminPanelController extends Controller
         $route   = json_encode($route);
         $settings   = json_encode($settings);
 
-        return view('_adminPanel.'.$page)
+        return view($page)
           ->with('data', $data)
           ->with('inputs', $inputs)
           ->with('name', $names)
           ->with('route',$route)
           ->with('settings',$settings);
-      }
+    }
 
-    public function create(){
+    public function _create(){
         //Get Model
         $model = new $this->model();
         //Get Data
@@ -62,39 +63,51 @@ abstract class _adminPanelController extends Controller
                     ->with('settings',$settings);
     }
 
-    public function get(){
-        //Get Model
-        $model = new $this->model();
-        //Get Data
-        $data   = $model->getData();
-        //Encode
-        $data   = json_encode($data);       
-        return response()->json(['error' => '0', 'data' => $data]);
+    public function _get(Request $request){
+
+      //Get request
+      $id       = (isset($request->id))      ? $request->id       : false;
+      $columns  = (isset($request->columns)) ? $request->columns  : false;
+      //To array
+      if(is_array($columns)){
+        foreach ($columns as $k => $v) {
+          $columns[$k] = (array)json_decode($v);
+        }
+      }
+      //Get Model
+      $model = new $this->model();
+      //Settings
+      if($id)       $model->setSingleId($id);      
+      if($columns)  $model->setColumns($columns);      
+      //Get Data
+      $data   = $model->getData()['data'];
+      if($id)
+        $data = $data[0];
+      //Encode
+      $data   = json_encode($data);       
+      return response()->json(['error' => '0', 'data' => $data]);
     } 
 
-    public function put(Request $request){
+    public function _put(Request $request){
 
         //Get Model
         $model = new $this->model; 
         
         //Validate
-        $model->validate($request); 
-
-        //Put
-        $put = new $this->model;
-        foreach ($model->getInputs() as $key => $value) {
-           $put[$value['name']] = $request[$value['name']];
-        }
+        $validate = $model->validate($request); 
 
         //Save
-        if($put->save()){
-            return response()->json(['error' => '0', 'id' => $put->id]);
+        $r = $model->saveRow($request->all());
+
+        //response
+        if($r){
+            return response()->json(['error' => '0', 'id' => $r]);
         }else{
             return response()->json(['error' => '1', 'text' => 'something gone wrong']);
         }
     }
 
-    public function post(Request $request){
+    public function _post(Request $request){
 
         //Get Model
         $model = new $this->model; 
@@ -119,9 +132,127 @@ abstract class _adminPanelController extends Controller
         }
     }
 
-    public function destroy(Request $request){
-        $delete = $this->model::find($request->id);
-        $id = $delete->delete();
-        return response()->json(['error' => '0', 'id' => $id]);    
+    public function _destroy(Request $request){
+
+        $model = new $this->model; 
+
+        if($model->deleteRow($request->id)){
+          return response()->json(['error' => '0']);
+        }
+        else{
+          return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+        }      
+    }
+
+    public function _attach(Request $request){
+
+        //Get model
+        $model = $this->model::find($request->modelId);
+
+        //Validate
+        $validate = $model->attachValidate($request);         
+        if($validate['error']) return response()->json(['error' => '1', 'text' => $validate['text']]);
+
+        //Attach
+        $targetName = $request['targetName'];
+        $attach = $model->$targetName();
+
+        //Save
+        $save = $attach->attach($request->targetId);
+
+        if($save == null){
+          return response()->json(['error' => '0']);
+        }else{
+          return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+        }      
+    }
+
+    public function _detach(Request $request){
+        //@@@
+        $target = $request->target;
+        $model = $this->model::find($request->model);
+
+        $model->$target()->detach($request->detachId);
+
+        return response()->json(['error' => '0', 'id' => 33]);
+    }    
+
+    public function _search(Request $request){
+
+      //Get request data
+      $columns = $request->columns;
+      $search  = $request->search;
+
+      //Convert to array
+      $columns = json_decode($columns);
+      foreach ($columns as $k => $v) {
+        $columns[$k] = (array)$v;
+      }
+
+      //Get Model
+      $model = new $this->model();
+
+      //Settings
+      $model->setColumns($columns);
+      $model->setSearch($search);
+
+      //Get Data
+      $data   = $model->getData();       
+
+      return response()->json(['error' => '0', 'data' => $data]);
+    }
+
+    public function _getRecent(Request $request){
+
+      //Settings
+      $columns = $request->columns;
+      $order = ['row' => 'id', 'order' => 'desc'];
+      $count = (isset($request->rows)) ? $request->rows : 10 ;    
+
+      //Convert to array
+      $columns = json_decode($columns);
+      foreach ($columns as $k => $v) {
+        $columns[$k] = (array)$v;
+      }
+
+      //Get Model
+      $model = new $this->model();
+
+      //Settings
+      $model->setColumns($columns);
+      $model->setOrder($order);
+      $model->setCount($count);
+
+      //Get Data
+      $data   = $model->getData(); 
+
+      return response()->json(['error' => '0', 'data' => $data]);
+    }
+
+    public function _fileUpload(Request $request){
+
+      $file = $request->file('file');
+
+      //Catch file
+      $fileEnc = $this->model::cacheFile($file);
+
+      //Response
+      if(!$fileEnc)
+        //Error
+        return response('Could not save file', 500)
+                  ->header('Content-Type', 'text/plain');
+      else{
+        //Success
+        return response($fileEnc, 200)
+                  ->header('Content-Type', 'text/plain');
+      }
+    }
+
+    public function test($test){
+
+      $this->model::saveFromCache($test);
+
+      dd();
+
     }
 }

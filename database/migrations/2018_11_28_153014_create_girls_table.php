@@ -26,11 +26,13 @@ class CreateGirlsTable extends Migration
             $table->unsignedTinyInteger('eyes')->nullable();
             $table->unsignedTinyInteger('religion')->nullable();
             $table->unsignedTinyInteger('education')->nullable();
+            $table->string('proffesion', 55)->nullable();
             $table->unsignedTinyInteger('maritial')->nullable();
             $table->tinyInteger('children')->nullable();
             $table->unsignedTinyInteger('smoking')->nullable();
             $table->unsignedTinyInteger('alcohol')->nullable();
             $table->unsignedTinyInteger('english')->nullable();
+            $table->string('languages', 255)->nullable();
             $table->unsignedTinyInteger('prefferFrom')->nullable();
             $table->unsignedTinyInteger('prefferTo')->nullable();
             $table->string('info', 3500)->nullable();

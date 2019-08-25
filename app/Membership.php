@@ -9,14 +9,16 @@ class Membership extends _adminPanel
 {
 
     //Data
-    protected $route     = 'admin/membership';
     protected $single    = 'membership';
-    protected $multi     = 'memberships';    
+    protected $multi     = 'memberships';  
+    protected $route     = [ 'prefix' => 'admin/' ];
+      
     protected $columns  = [
         ['name' => 'id'],
         ['name' => 'name'],
         ['name' => 'price'],
-        ['name' => 'letter_price', 'caption' => 'Letter price'],
+        ['name' => 'letter_price', 'caption' => 'Short Letter'],
+        ['name' => 'long_letter_price', 'caption' => 'Long Letter'],
         ['name' => 'chat_price', 'caption' => 'Chat price'],
         ['name' => 'period'],
         [
@@ -30,20 +32,26 @@ class Membership extends _adminPanel
     ];
     protected $inputs    = [
               [ //Name
-                  'name' => 'name',
-                  'type' => 'text',
-                  'example' => 'Gold Membership'
+                'name' => 'name',
+                'type' => 'text',
+                'example' => 'Gold Membership'
               ],
               [ //Price
                 'name' => 'price',
                 'type' => 'text',
                 'example' => '35.50',
               ],
-              [ //Letter price
+              [ //Short Letter price
                 'name' => 'letter_price',
-                'caption' => 'letter price',
+                'caption' => 'short letter',
                 'type' => 'text',
                 'example' => '3.50',
+              ],
+              [ //Long Letter price
+                'name' => 'long_letter_price',
+                'caption' => 'long letter',
+                'type' => 'text',
+                'example' => '4.50',
               ],
               [ //Chat price
                 'name' => 'chat_price',
@@ -63,7 +71,7 @@ class Membership extends _adminPanel
                 'attributes' => [
                   ['id' => 0,'name' => 'no'],
                   ['id' => 1,'name' => 'yes']
-                     ],
+                ],
               ],
     ];
 
@@ -83,60 +91,60 @@ class Membership extends _adminPanel
     //     return $val;
     // }
   
-    // public static function getCurrentMembership($user_id){
+    public static function getCurrentMembership($user_id){
 
-    // 	//Get memberships
-    //     $user = user::with('membership')->with('man')->find($user_id);
+    	//Get memberships
+        $user = user::where('id','=',$user_id)->with('membership')->with('man')->first();
 
-    //     if(!isset($user->membership[0]))
-    //     	return false;
+        if(!isset($user->membership[0]))
+        	return self::where('id','=',0)->first();
 
-    //     //Remove out off date memberships
-    //     $memberships = [];
-    //     $i = 0;
-    //     foreach ($user->membership as $membership) {
-    //     	$endDate = $membership->pivot->created_at->timestamp + $membership->period * 24 * 60 * 60;
+        //Remove out off date memberships
+        $memberships = [];
+        $i = 0;
+        foreach ($user->membership as $membership) {
+        	$endDate = $membership->pivot->created_at->timestamp + $membership->period * 24 * 60 * 60;
 
-    //     	if ($endDate > now()->timestamp){
-    //     		$memberships[$i] = $membership;
-    //     		$memberships[$i]['endDate'] = $endDate;
-    //     		$i++;
-    //     	}        	
-    //     }
+        	if ($endDate > now()->timestamp){
+        		$memberships[$i] = $membership;
+        		$memberships[$i]['endDate'] = $endDate;
+        		$i++;
+        	}        	
+        }
 
-    //     if(!count($memberships)) return false;
+        if(!count($memberships)) return false;
 
-    //     //Find profitable membership
-    //     // profitable
-    //     $minLetterPrice = 9999;
-    //     foreach ($memberships as $membership){
-    //     	if($membership->letter_price < $minLetterPrice) $minLetterPrice = $membership->letter_price;
-    //     }
+        //Find profitable membership
+        // profitable
+        $minLetterPrice = 9999;
+        foreach ($memberships as $membership){
+        	if($membership->letter_price < $minLetterPrice) $minLetterPrice = $membership->letter_price;
+        }
 
-    //     //Remove not profitable memberships
-    //     foreach ($memberships as $k => $membership){
-    //     	if($membership->letter_price > $minLetterPrice) unset($memberships[$k]);
-    //     }
+        //Remove not profitable memberships
+        foreach ($memberships as $k => $membership){
+        	if($membership->letter_price > $minLetterPrice) unset($memberships[$k]);
+        }
 
-    //     if(!count($memberships)) return false;
+        if(!count($memberships)) return false;
 
-    //     //Get longest end date membership
-    //     $latestDate = [
-    //     	'latestDate' => 0,
-    //     	'k' => 0,
-    //     ];
-    //     foreach ($memberships as $k => $membership){
-    //     	if($membership->endDate > $latestDate['latestDate']){
-    //     		$latestDate['latestDate'] = $membership->endDate;
-    //     		$latestDate['k'] = $k;
-    //     	}
-    //     }
+        //Get longest end date membership
+        $latestDate = [
+        	'latestDate' => 0,
+        	'k' => 0,
+        ];
+        foreach ($memberships as $k => $membership){
+        	if($membership->endDate > $latestDate['latestDate']){
+        		$latestDate['latestDate'] = $membership->endDate;
+        		$latestDate['k'] = $k;
+        	}
+        }
        
-    //    $CurrentMembership = $memberships[$latestDate['k']];
-    //    $CurrentMembership->balance = $user->man->balance;
+       $CurrentMembership = $memberships[$latestDate['k']];
+       $CurrentMembership->balance = $user->man->balance;
 
-    //    return $CurrentMembership;
-    // }
+       return $CurrentMembership;
+    }
 
     // public static function getChatPrice($userId){
     //     $membership = Membership::getCurrentMembership($userId);

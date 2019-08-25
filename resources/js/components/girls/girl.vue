@@ -1,16 +1,97 @@
 <template>
   <div class="container">
+
+    <div v-if="pUserIsMan >= 3" class="row pt-3 girl-admin-info">
+      <div class="col-12 my-3">
+        <div class="row">
+          <h2 class="col-12">Admin Info</h2>    
+        </div>
+        <div class="row">
+          <!-- passport -->
+          <div class="col-2">
+            <div class="girl-passport">
+              <img class="w-100" :src="assets+'/media/passport/'+girl.id+'_0.jpg'" alt="Juliya">
+            </div>  
+          </div>
+          <!-- for admin info -->
+          <div class="col-3">
+            <!-- name -->
+            <div class="row">
+              <div class="col-5">name</div>
+              <div class="col-7" style="color: #bf005a;"> {{girl.forAdminName}}</div> 
+            </div>
+            <!-- surname-->
+            <div class="row">
+              <div class="col-5">surname</div>
+              <div class="col-7" style="color: #bf005a;"> {{girl.forAdminSurname}}</div> 
+            </div>
+            <!-- fathername  -->
+            <div class="row">
+              <div class="col-5">fathername</div>
+              <div class="col-7" style="color: #bf005a;"> {{girl.forAdminFathersName}}</div> 
+            </div>
+            <!-- phone number  -->
+            <div class="row">
+              <div class="col-5">number</div>
+              <div class="col-7" style="color: #bf005a;"> {{girl.forAdminPhoneNumber}}</div> 
+            </div>            
+          </div>
+          <!-- letter -->
+          <div class="col-7">
+            <!-- subject -->
+            <div class="row">
+              <div class="col" style="color: #bf005a;"><b> {{girl.firstLetterSubject}}</b></div> 
+            </div>
+            <!-- letter-->            
+            <div class="row">
+              <div class="col" style="color: #bf005a;"> {{girl.firstLetter}}</div> 
+            </div>         
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row my-3">
       <div class="col-3">
-        <img class="w-100" :src="assets+'/media/gallery/'+girl.id+'_0.jpg'" alt="Juliya">
+        <div class="girl-main-image">
+          <img class="w-100" :src="assets+'/media/gallery/'+girl.id+'_0.jpg'" alt="Juliya">
+        </div>
+        <div v-if="pAuth" class="girl-more-info">
+          <div class="girl-more-info-rows text-capitalize">
+            <div v-for="(v,k) in moreInfo" class="row">
+              <div class="col-5">
+                {{k}}
+              </div>
+              <div class="col-7" style="color: #bf005a;">
+                {{v}}
+              </div>
+            </div>
+          </div>
+        </div>        
       </div>
       <div class="col-9" style="color: #bf005a;">
         <h1 class="" style="color:#740f0f">{{girl.name}}, {{girl.age}}</h1>
         <p>From {{girl.location}}</p>
 
-        <div v-if="prop_auth">
+        <div v-if="pAuth">
           <!-- loged in -->
-            <div class="row text-center font-weight-bold">
+
+            <!-- Gallery -->
+            <div class="row">
+              <gallery :images="images" :index="index" @close="index = null"></gallery>
+              <div
+                class="girl-image col"
+                v-for="(image, imageIndex) in images"
+                :key="imageIndex"
+                @click="index = imageIndex"
+                :style="{ backgroundImage: 'url(' + image + ')', height: '100px' }"
+              ></div>
+
+              <!-- @@@ main photo -->
+            </div>
+
+            <!-- Man options -->
+            <div v-if="pUserIsMan == 1" class="row text-center font-weight-bold">
               <div @click="sendLetter();" class="action-item col-4 p-3">
                 <fa-icon :icon="['far', 'envelope']" class="fa-5x d-block mx-auto" />
                 Send me a letter
@@ -37,6 +118,10 @@
               </div>
             </div>
 
+            <!-- info -->
+            <div v-if="pAuth" class="row girl-info">
+              {{girl.info}}
+            </div>
         </div>
         <div v-else>
           <!-- not loged in -->
@@ -52,6 +137,9 @@
 </template>
 
 <script>
+
+    // Vue gallery
+    import VueGallery from 'vue-gallery';
 
     // Font Awsome   
     import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -78,16 +166,58 @@
 
 
     export default {
-        props:['prop_girl','prop_auth'],
+        components: {
+          'gallery': VueGallery
+        },      
+        props:['p-girl','p-auth','p-user-is-man'],
         data(){
             return {
                 assets:assets,
+                images: [],       
+                index: null,         
                 girl:false,
                 letter:false,
             }
         }, 
+        computed:{
+          moreInfo:function(){
+            let mi = {
+              'Birth'         : this.girl.birth,
+              'Height'        : this.girl.height,
+              'Weight'        : this.girl.weight,
+              'Hair'          : this.girl.hair,
+              'Eyes'          : this.girl.eyes,
+              'Religion'      : this.girl.religion,
+              'Education'     : this.girl.education,
+              'Profession'    : this.girl.profession,
+              'Maritial'      : this.girl.maritial,
+              'Children'      : this.girl.children,
+              'Smoking'       : this.girl.smoking,
+              'Alcohol'       : this.girl.alcohol,
+              'English'       : this.girl.english,
+              'Languages'     : this.girl.languages,
+              'Preffer Age'   : this.girl.prefferFrom +" - "+this.girl.prefferTo, //@@@
+            }
+
+            // console.log(this.girl);
+            $.each(mi, (index, val) => {
+               if(val == undefined || val == "" || val == null){
+                delete(mi[index]);
+               }
+            });
+
+            return mi;
+          },
+        },        
         mounted() {
-          this.girl = JSON.parse(this.prop_girl);
+          this.girl = JSON.parse(this.pGirl);
+
+          this.images = [
+                  assets+'/media/gallery/'+this.girl.id+'_1.jpg',
+                  assets+'/media/gallery/'+this.girl.id+'_2.jpg',
+                  assets+'/media/gallery/'+this.girl.id+'_3.jpg',
+                  assets+'/media/gallery/'+this.girl.id+'_4.jpg',
+                ];
         },
         methods:{
           sendLetter(){
@@ -99,8 +229,25 @@
 
 </script>
 
+<style scoped>
+
+  .girl-image {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    border: 1px solid #ebebeb;
+    margin: 5px;
+    cursor:pointer;
+  }
+
+  .girl-admin-info {
+      background-color: #ffc8004a;
+  }
+
+</style>
 
 <style>
+  
   .action-item{
     background: radial-gradient(50% 50%, #bf005a38, #f8fafc); 
     cursor:pointer;
@@ -108,8 +255,5 @@
   .action-item:hover{
     color: #740f0f;
   }
-  
-
-
 
 </style>

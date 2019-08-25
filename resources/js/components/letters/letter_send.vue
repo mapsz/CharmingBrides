@@ -44,16 +44,16 @@
 
 <script>
     export default {
-      props:['p-user','p-letter'],
+      props:['p-user','p-letter','pFrom'],
       data(){
-          return {
-              showLetter:this. pLetter,
-              letter:{
-                subject:"",
-                body:"",
-              },
-              errors:false,
-          }
+        return {
+          showLetter:this. pLetter,
+          letter:{
+            subject:"",
+            body:"",
+          },
+          errors:false,
+        }
       },
       watch: {
         pLetter:function(vNew,vOld){
@@ -80,7 +80,8 @@
                     data: {
                       'subject':this.letter.subject,
                       'body':this.letter.body,
-                      'to_user_id':this.pUser.id
+                      'to_user_id':this.pUser.id,
+                      'user_id':this.pFrom,
                     },
                   })
                   .then((r) => {                    
@@ -98,6 +99,7 @@
 
                     //Success                    
                     $('#letterModal').modal('hide');
+                    this.$emit('send-success');
                     this.letterRefresh();
                     return r.data.id;
                   })

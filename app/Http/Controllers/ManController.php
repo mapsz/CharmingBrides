@@ -2,131 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Man;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use App\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\User;
+use App\Man;
 
-class ManController extends Controller
+class ManController extends _adminPanelController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+  
+    protected $model     = 'App\Man';
+
+    public function __construct(){
+        parent::__construct($this->model);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        //
-        return view('pages.registrationMan');
+        //Get Model
+        $model = new $this->model();
+        //Get Data
+        $inputs = $model->getInputs();  //Inputs
+        $route = $model->getRoute();        
+        $route['prefix'] = "";
+        //Encode
+        $inputs     = json_encode($inputs);
+        $route      = json_encode($route);
 
-        // ->with('girls',$girls)
+        //View
+        return view('pages.registrationMan')
+                    ->with('inputs', $inputs)
+                    ->with('route',$route);    
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function put(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'name' => 'required|string|min:2',
-            'surname' => 'required|string|min:2',
-        ]);
 
-        // Store
-        try {
+         //Get Model
+        $model = new $this->model; 
+        
+        //Validate
+        $validate = $model->validate($request); 
 
-            DB::beginTransaction();
-
-            //Prepare User
-            $user = User::create(['email' => $request->email,
-                                'password' => Hash::make($request->password),
-                                'role' => 2,
-                            ]);
-            //Prepare man
-            $manData = [
-                'user_id'   => $user->id,
-                'name'      => $request->name,
-                'surname'   => $request->surname,
-            ];
-            Man::create($manData);
-
-            //Store to DB
-            DB::commit();
-
-         } catch (Exception $e) {
-            // Rollback from DB
-            DB::rollback();
-            return redirect()->back()->with('errors', ['error register!']);
+        //Save
+        $man_id = $model->saveRow($request->all());       
+        
+        if($man_id){
+          $user_id = Man::find($man_id)->user_id;
+          $user = User::find($user_id);
+          Auth::login($user);
+          return response()->json(['error' => '0','id' => $user_id]);
+        }else{
+          return response()->json(['error' => '1', 'text' => 'something gone wrong']);
         }
-
-        Auth::login($user);
-        return redirect()->route('profile');
-
-
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Man  $man
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Man $man)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Man  $man
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Man $man)
     {
-        //
-        // dd(Auth::user());
         $men['email'] = Auth::user()->email;
         return view('pages.profile')->with('men',$men);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Man  $man
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Man $man)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Man  $man
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Man $man)
-    {
-        //
     }
 }

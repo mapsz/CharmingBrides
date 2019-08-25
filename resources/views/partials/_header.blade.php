@@ -73,6 +73,12 @@
 				<li class="nav-item">
 					<a class="nav-link" href="#">Contacts <span class="sr-only">(current)</span></a>
 				</li>	
+        <!-- Letters -->
+        @if(Auth::check())
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('letter') }}">Letters<span class="sr-only">(current)</span></a>
+          </li>       
+        @endif            
 				<!-- chat -->
 				@if(Auth::check())
 					<li class="nav-item">

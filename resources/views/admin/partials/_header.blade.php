@@ -6,10 +6,10 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="{{ route('adminGirlIndex') }}">Girls</a>
+        <a class="nav-link" href="{{ route('admin_girl') }}">Girls</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ route('adminManIndex') }}">Men</a>
+        <a class="nav-link" href="{{ route('admin_man') }}">Men</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ route('admin_membership') }}">Memberships</a>
@@ -19,6 +19,9 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ route('admin_letter') }}">Letters</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('admin_agent') }}">Agents</a>
       </li>
     </ul>
   </div>

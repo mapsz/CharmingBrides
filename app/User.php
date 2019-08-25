@@ -38,13 +38,16 @@ class User extends Authenticatable
         // Add data
         $r['id'] = $id; 
         $r['man'] = false; 
+        $r['role']    = 0;
         $r['name']    = "";
         $r['surname'] = "";
         $r['birth']   = "";
 
         // Get user
-        $user = self::with('man')->with('girl')->get()->find($id); 
+        $user = self::with('man')->with('girl')->with('agent')->get()->find($id); 
 
+        if(!$user) return false;
+        
         // Check admin
         if($user->role >= 3){
             $r['man'] = $user->role; 
@@ -55,6 +58,7 @@ class User extends Authenticatable
         if($user->girl){
             $r['man']         = false; 
             $r['name']        = $user->girl['name'];
+            $r['role']        = $user['role'];
             $r['location']    = $user->girl['location'];
             $r['birth']       = $user->girl['birth']; 
             $r['age']         = Carbon::parse($r['birth'])->age;
@@ -63,10 +67,17 @@ class User extends Authenticatable
 
         // Check man
         if($user->man){
-            $r['man']     = true; 
+            $r['man']     = 1; 
             $r['name']    = $user->man['name'];
+            $r['role']    = $user['role'];
             $r['surname'] = $user->man['surname'];
             $r['birth']   = $user->man['birth']; 
+            return $r; 
+        }
+
+        // Check agent
+        if($user->agent){
+            $r['man']     = 3; 
             return $r; 
         }
 
@@ -109,6 +120,10 @@ class User extends Authenticatable
     public function girl(){
 
         return $this->hasOne('App\Girl');
+    }    
+    public function agent(){
+
+        return $this->hasOne('App\Agent');
     }
     public function message(){
 
@@ -118,13 +133,17 @@ class User extends Authenticatable
 
         return $this->hasMany('App\Letter');
     }
+    public function inLetter(){
+
+        return $this->hasMany('App\Letter', 'to_user_id');
+    }    
     public function room(){
 
-        return $this->belongsToMany(Room::Class);
+        return $this->belongsToMany('App\Room');
     }  
     public function membership(){
 
-        return $this->belongsToMany('App\Membership');
+        return $this->belongsToMany('App\Membership')->withPivot('created_at');
     }   
 
 

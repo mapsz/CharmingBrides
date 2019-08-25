@@ -37,7 +37,7 @@
                                     <div class="d-flex bd-highlight" >
                                         <div class="img_cont">
                                             <img 
-                                                :src = "photoPath(onlineUser.id)"
+                                                :src = "assets+'/media/gallery/'+onlineUser.id+'_0.jpg'"
                                                 class="rounded-circle user_img">
                                             <span class="online_icon"></span>
                                         </div>
@@ -135,7 +135,7 @@
 
                                     <img 
                                       v-if="message.user_id == user.id"
-                                      :src="photoPath(message.user_id)"
+                                      :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
                                       class="rounded-circle user_img_msg">
 
                                     <div 
@@ -158,7 +158,7 @@
 
                                     <img 
                                         v-if="message.user_id != user.id"
-                                        :src="photoPath(message.user_id)"
+                                        :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
                                         class="rounded-circle user_img_msg">
 
                                 </div>
@@ -220,7 +220,7 @@
                                     <div class="d-flex bd-highlight">
                                         <div class="img_cont">
                                             <img 
-                                                :src="photoPath(r.companion.id)" 
+                                                :src="assets+'/media/gallery/'r.companion.id+'_0.jpg'"
                                                 class="rounded-circle user_img">
                                             <span 
                                                 v-bind:class="{'offline': !isOnline(r.companion.id)}"
@@ -255,6 +255,19 @@
 
 <script>
 
+     // Websockets
+    import Echo from 'laravel-echo'
+    window.Pusher = require('pusher-js');
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: process.env.MIX_PUSHER_APP_KEY,
+        cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+        // encrypted: true,
+        wsHost: window.location.hostname,
+        wsPort: 6001,
+        disableStats: true,
+    });
+
     import VueChatScroll from 'vue-chat-scroll';
 
     // Font Awsome   
@@ -272,7 +285,7 @@
 
     //Emoji picker
     import { Picker } from 'emoji-mart-vue';
-    Vue.component('picker', Picker); ;
+    Vue.component('picker', Picker);
 
     export default {
         components: {
@@ -303,6 +316,8 @@
                 chatOnlineConnection:{},
                 chatPrivateConnection:{},
                 emojiPickerShow:false,
+                //files
+                assets:assets,
                 
             }
         },
@@ -330,28 +345,28 @@
                 $('.freeze').css('margin-top',headHeight);
             }     
         },  
-          notifications: {
-            showSuccessMsg: {
-              type: VueNotifications.types.success,
-              title: 'Hello there',
-              message: 'That\'s the success!'
-            },
-            showInfoMsg: {
-              type: VueNotifications.types.info,
-              title: 'Hey you',
-              message: 'Here is some info for you'
-            },
-            showWarnMsg: {
-              type: VueNotifications.types.warn,
-              title: 'Wow, man',
-              message: 'That\'s the kind of warning'
-            },
-            showErrorMsg:{
-              type: VueNotifications.types.error,
-              title: 'Error!',
-              message: ""
-            }
-          },      
+        notifications: {
+          showSuccessMsg: {
+            type: VueNotifications.types.success,
+            title: 'Hello there',
+            message: 'That\'s the success!'
+          },
+          showInfoMsg: {
+            type: VueNotifications.types.info,
+            title: 'Hey you',
+            message: 'Here is some info for you'
+          },
+          showWarnMsg: {
+            type: VueNotifications.types.warn,
+            title: 'Wow, man',
+            message: 'That\'s the kind of warning'
+          },
+          showErrorMsg:{
+            type: VueNotifications.types.error,
+            title: 'Error!',
+            message: ""
+          }
+        },      
         mounted() {
             //set user
             this.user = this.prop_user;

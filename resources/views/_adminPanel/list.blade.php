@@ -1,11 +1,11 @@
 @extends('admin.main')
 
 @section('content')
-	<admin-panel-list-component 
-    :prop_name="{{ $name }}" 
-    :prop_data="{{ $data }}" 
-    :prop_inputs="{{ $inputs }}" 
-    :prop_route="{{ $route }}" 
-    :prop_settings="{{ $settings }}" 
+	<admin-panel-main-component 
+    :p-name="{{ $name }}" 
+    :p-data="{{ $data }}" 
+    :p-inputs="{{ $inputs }}" 
+    :p-route="{{ $route }}" 
+    :p-settings="{{ $settings }}" 
   />
 @endsection

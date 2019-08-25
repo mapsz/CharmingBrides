@@ -62,17 +62,6 @@ class MembershipsController extends Controller
     }
 
 
-    public function getCurrentMembership(Request $request){
 
-        //Check user is admin
-        if(!Auth::user()->role > 2){
-            if(Auth::user()->id != $request->user_id) return response()->json(['error' => '1', 'text' => 'Bad user']);
-        } //@@@ походу не пашет проверка
-
-        $membership  = Membership::getCurrentMembership($request->user_id);
-
-        return response()->json(['error' => false, 'membership' => $membership]);
-
-    }
 
 }

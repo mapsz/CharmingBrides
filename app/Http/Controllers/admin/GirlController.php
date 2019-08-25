@@ -29,7 +29,6 @@ class GirlController extends Controller
 
     public function getSpecialLadies(){
 
-
         $girls = SpecialLady::with('user')->with('user.girl')->get()->toArray();
 
         $data = [];
@@ -55,9 +54,6 @@ class GirlController extends Controller
     }
 
     public function putSpecialLadies(request $request){
-
-        
-
         //Check max specials
         $maxSpecials = 8;
         $currentSpecials = SpecialLady::count();
