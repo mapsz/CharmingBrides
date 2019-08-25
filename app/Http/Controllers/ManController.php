@@ -38,7 +38,6 @@ class ManController extends _adminPanelController
 
     public function put(Request $request)
     {
-
          //Get Model
         $model = new $this->model; 
         
