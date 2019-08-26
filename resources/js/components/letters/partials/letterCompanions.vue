@@ -4,7 +4,7 @@
         <div 
           v-for="companion in pCompanions"
           class="user-item list-group-item list-group-item-action"
-          v-bind:class="{'item-active' : pActiveCompanion.id == companion.user_id}"
+          v-bind:class="{'item-active' : pActiveCompanion.id == companion.id}"
           @click="setActive(companion)"
         >
           <div class="item-wrapper row">
@@ -12,7 +12,7 @@
             <div class="img-wrapper col-4 text-center">
               <img 
                 class="" 
-                :src="assets+'/media/gallery/'+companion.user_id+'_0.jpg'" 
+                :src="assets+'/media/gallery/'+companion.id+'_0.jpg'" 
                 :alt="companion.name"
               >
             </div>

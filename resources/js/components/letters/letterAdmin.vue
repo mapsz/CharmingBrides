@@ -24,23 +24,39 @@
 
           </div>
         </div>
-        <letter-component :p-user="user"/>
+        <letter-component :p-user="pUser" :p-user-from="user" />
     </div>
 </template>
 
 <script>
-    export default {        
+    export default {    
+        props:['p-user'],    
         mixins: [ mMoreAxios, mNotifications, mLoading ],
         data(){
           return {
             assets:assets,
-            user:false,
+            user:false,            
             girls:[],
           }
         },
-        mounted() {
-            console.log('Component mounted.')
-            this.getUsers();
+        async mounted() {
+
+          let l = this.showLoading('.admin-girls-list');
+
+          //Get girls
+          await this.getUsers();
+
+          //check pre from
+          let girl = undefined;
+          let queryString = this.getUrlVars();
+          if(queryString.from !== undefined){
+            girl = this.girls.find(x => x.id == queryString.from);
+            if(girl !== undefined){
+              this.user = girl;
+            }
+          }
+
+          this.hideLoading(l);
         },
         methods: {
           async getUsers(){
@@ -53,7 +69,18 @@
           },
           setGirl(){
             //
-          }
+          },
+          getUrlVars(){
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for(var i = 0; i < hashes.length; i++)
+            {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+          }  
         }
     }
 </script>

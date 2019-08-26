@@ -92,15 +92,14 @@ class Letter extends _adminPanel
         if($dublicate) continue;
 
         //Formate companion
-        $add = $value;
-        if($add['girl'] != null){ 
-          $add = $add['girl'];
+        $add = [];
+        if($value['girl'] != null){ 
+          $add['name'] = $value['girl']['name'];
           $add['man'] = false;
-        }elseif($add['man'] != null){
-          $add = $add['man'];
+        }elseif($value['man'] != null){          
+          $add['name'] = $value['man']['name'];
           $add['man'] = true;
         }
-        $add['genre_id'] = $add['id'];
         $add['user_id'] = $value['id'];
         $add['id'] = $value['id'];
         $add['email'] = $value['email'];

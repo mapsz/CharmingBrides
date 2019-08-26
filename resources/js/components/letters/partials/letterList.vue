@@ -3,7 +3,7 @@
     <ul>
       <li v-for="currentLetter in pLetters">
         <!-- Letter -->
-        from:{{currentLetter.user_id}}  To:{{currentLetter.to_user_id}}<br>
+        From:{{getName(currentLetter.user_id)}}  To:{{getName(currentLetter.to_user_id)}}<br>
         <b>{{currentLetter.subject}}</b><br>
         <!-- Payed -->
         <div>
@@ -38,10 +38,17 @@
 
 <script>
     export default {        
-        props:['p-letters','p-user'],
+        props:['p-letters','p-user','p-companion'],
         methods: {
           payLetter(letter){
             this.$emit('pay-letter',letter);
+          },
+          getName(id){
+            if(id == this.pUser.id){
+              return this.pUser.name;
+            }else{
+              return this.pCompanion.name;
+            }
           }
         }
     }

@@ -75,7 +75,12 @@ Route::group(['middleware' => ['auth']],function(){
   Route::post('/'.$model.'/long/length', ucfirst($model).'Controller@postLongLetterLength')
     ->name('postLongLetterLength');
 
-    Route::get('/letter/get/girls', ucfirst($model).'Controller@getGirls')->name('getGirls');    
+  Route::get('/letter/get/girls', ucfirst($model).'Controller@getGirls')->name('getGirls');  
+
+  Route::get('/letter/get/companion', ucfirst($model).'Controller@getSingleCompanion')->name('getSingleCompanion');    
+
+
+        
 
 });
 
@@ -133,6 +138,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/'.$model.'/recent/get', ucfirst($model).'Controller@_getRecent')->name($namePrefix.'recent'.ucfirst($model));  //Get Recent 
   Route::post('/'.$model.'/file/upload', ucfirst($model).'Controller@_fileUpload')
         ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload   
+
 
 });
 

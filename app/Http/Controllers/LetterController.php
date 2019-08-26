@@ -7,6 +7,7 @@ use App\LetterPay;
 use App\User;
 use App\Membership;
 use App\Agent;
+use App\Girl;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -75,6 +76,26 @@ class LetterController extends _adminPanelController
 
 
       return response()->json(['error' => 0, 'data' => $companions]);
+    }
+
+    public function getSingleCompanion(Request $request){
+
+      $user = User::getWithInfo(Auth::User()->id);
+      //Get companion
+      if(isset($request->id)){
+        $companion = User::getWithInfo($request->id);
+      }else{
+         return response()->json(['error' => 1]);
+      }
+
+      //Genre check
+      if($companion['man'] == $user['man']) return response()->json(['error' => 2]);
+
+      //role check
+      if($companion['role'] == 0 && $user['man'] == false) return response()->json(['error' => 3]);
+
+      return response()->json(['error' => 0, 'data' => $companion]);
+
     }
 
     public function getLetters(Request $request){
@@ -172,17 +193,33 @@ class LetterController extends _adminPanelController
       //Validate
       $user = User::getWithInfo(Auth::User()->id);
 
+      //User
       if($user['man'] < 3) 
         return response()->json(['error' => 1, 'text' => 'bad user']);
 
-      $girls = Agent::where('user_id','=',$user['id'])->with('girl')->first()->toArray();
+      // Agent
+      if($user['man'] == 3) {
+        $girls = Agent::where('user_id','=',$user['id'])->with('girl')->first()->toArray();
+        if(!isset($girls['girl']))
+          $girls = [];
+        else
+          $girls = $girls['girl'];
+      }
+
+      //Admin
+      if($user['man'] == 4) {
+        $girls = User::has('girl')
+                      ->where('role',1)
+                      ->with('girl')
+                      ->get()->toArray();
+      }
 
       //Set array
       $girlsArray = [];
-      foreach ($girls['girl'] as $k => $v) {
-        $girlsArray[$k]['id']     = $v['user_id'];
-        $girlsArray[$k]['man']    = 3;
-        $girlsArray[$k]['name']   = $v['name'];
+      foreach ($girls as $k => $v) {
+        $girlsArray[$k]['id']     = $v['id'];
+        $girlsArray[$k]['man']    = false;
+        $girlsArray[$k]['name']   = $v['girl']['name'];
       }
 
       return response()->json(['error' => '0', 'data' => $girlsArray]);
