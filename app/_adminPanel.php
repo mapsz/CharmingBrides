@@ -329,7 +329,7 @@ class _adminPanel extends Model
                 $d[$c['name']] = $val;          
             }            
 
-            $d['_id'] = $dbValue['id'];
+            if(isset($dbValue['id'])) $d['_id'] = $dbValue['id'];            
             array_push($formatedData, $d);
 
         }

@@ -8,7 +8,7 @@
 <script>
     export default {        
         mixins: [ ],
-        props:[],
+        props:['p-row','p-attr'],
         data(){
           return {
             //

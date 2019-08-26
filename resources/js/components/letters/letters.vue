@@ -11,10 +11,10 @@
         </div>
         <!-- Letter list -->
         <div class="letter-list col-9">
-          <div v-if="activeCompanion" @click="sendLetter();" class="send-letter action-item">
+          <button v-if="activeCompanion" @click="sendLetter();" class="btn send-letter action-item">
             <fa-icon :icon="['far', 'envelope']" class="fa" />
             Send letter
-          </div>
+          </button>
           <letter-list-component 
             :p-letters = "activeLetters"
             :p-user = "pUser"

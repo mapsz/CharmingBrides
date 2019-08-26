@@ -27,11 +27,13 @@ class Letter extends _adminPanel
     protected $columns  = [
         [
           'name' => 'girl',
-          'component' => 'admin-letter-girl-component'
+          'component' => 'admin-letter-user-component',
+          'attr' => ['man'=>'girl','route'=>'letters'],
         ],
         [
           'name' => 'man',
-          'component' => 'admin-letter-man-component'
+          'component' => 'admin-letter-user-component',
+          'attr' => ['man'=>'man','route'=>'letters'],
         ],
         [
           'name' => 'letters',
@@ -44,7 +46,7 @@ class Letter extends _adminPanel
         [
           'name' => 'pay_summ',
           'caption' => 'pay summary',
-        ],
+        ] 
     ];
     protected $inputs    = [
     ];

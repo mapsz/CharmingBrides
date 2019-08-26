@@ -8,8 +8,15 @@
             	v-for="hardOnlineUser in hardOnline"
             	class="col p-1">
                     <div                       
-                      class="hardOnlineUser" @click="selectUser(hardOnlineUser.id)">
-                        <img :src="'media\\girls\\zoom\\' + hardOnlineUser.id + '_0.jpg'" alt="" width="100px"><br>
+                      class="hardOnlineUser"                       
+                      @click="selectUser(hardOnlineUser.id)"
+                    >
+                        <img 
+                          v-bind:class="{'active-girl': user.id == hardOnlineUser.id}"
+                          :src="'media\\gallery\\' + hardOnlineUser.id + '_0.jpg'" 
+                          alt="" 
+                          width="100px">
+                          <br>
                         <span 
                           v-bind:class="{'text-warning': user.id == hardOnlineUser.id}">
                             {{hardOnlineUser.name}}
@@ -40,7 +47,6 @@
     export default {
     	data(){
             return {
-            	isDebug: 1,
                 hardOnline:[],
                 setHardOnlineId: "",
                 user: false,
@@ -59,13 +65,12 @@
                         if(!r.data) return false;
 
                         if(r.data.error){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
                             return false;
                         }
 
                         return r.data;
                     })
-                    .catch((r) => {this.debug(r);return false;});
+                    .catch((r) => {return false;});
 
                 return this.hardOnline = r;
         	},
@@ -84,13 +89,12 @@
                         if(!r.data) return false;
 
                         if(r.data.error){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
                             return false;
                         }
 
                         return r.data;
                     })
-                    .catch((r) => {this.debug(r);return false;});
+                    .catch((r) => {return false;});
 
 
 
@@ -113,13 +117,12 @@
                         if(!r.data) return false;
 
                         if(r.data.error){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
                             return false;
                         }
 
                         return r.data;
                     })
-                    .catch((r) => {this.debug(r);return false;});
+                    .catch((r) => {return false;});
 
                 if(r){
 	                this.getHardOnline();
@@ -135,14 +138,7 @@
         		let user = this.hardOnline.find(x => x.id === id);
         		this.user = user;
         		this.$emit('selectUser', user);
-        	},
-
-
-        	debug(x){
-                if(this.isDebug){
-                    console.log(x);
-                }
-            },
+        	}
         }
     }
 </script>
@@ -158,5 +154,9 @@
 	.hardOnlineUser{
 		cursor: pointer;
 	}
+
+  .active-girl{
+    border:solid limegreen 3px;
+  }
 
 </style>

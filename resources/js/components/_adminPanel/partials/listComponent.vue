@@ -60,8 +60,7 @@
               <td v-for="key in columns">
                 <!-- Custom components -->
                 <span v-if="key.component">
-
-                  <component :is="key.component" :p-attr="key.component.attr" :p-row="row"></component>
+                  <component :is="key.component" :p-attr="key.attr" :p-row="row"></component>
                 </span>
                 <!-- List -->
                 <span v-else-if="typeof(key.list) == 'object'">

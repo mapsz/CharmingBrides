@@ -1,15 +1,15 @@
 <template>
         <div class="container-fluid h-100 py-2">
-                
+
             <loading :loading="loading.screen"/>
 
             <div v-if="reconnect" class="reconnect">
-                <div class="reconnect-container">
-                    <p class="text-danger"><b>Connection Lost!</b></p>
-                    <center>
-                        <button class="btn btn-primary" @click="ReconnectOnline()">Reconnect</button>
-                    </center>
-                </div>
+              <div class="reconnect-container">
+                <p class="text-danger"><b>Connection Lost!</b></p>
+                <center>
+                  <button class="btn btn-primary" @click="ReconnectOnline()">Reconnect</button>
+                </center>
+              </div>
             </div>
 
             <admin-chat 
@@ -17,7 +17,6 @@
                 @onlineReset="onlineReset()"
                 @selectUser="selectUser"
             />              
-
             <div class="row justify-content-center h-100">
                 <!-- Online -->
                 <div class="col-md-3 col-xl-3 chat">
@@ -47,7 +46,7 @@
                                         </div>
                                     </div>
                                 </li>
-                  <!--               <li>
+                              <!--  <li>
                                     <div class="d-flex bd-highlight">
                                         <div class="img_cont">
                                             <img src="https://2.bp.blogspot.com/-8ytYF7cfPkQ/WkPe1-rtrcI/AAAAAAAAGqU/FGfTDVgkcIwmOTtjLka51vineFBExJuSACLcBGAs/s320/31.jpg" class="rounded-circle user_img">
@@ -66,7 +65,7 @@
                 </div>
                 <!-- Chat -->
                 <div class="col-md-6 col-xl-6 chat">
-                    <div class="card">                        
+                    <div class="card">
                         <div style="display:none;" class="loading freeze">
                             <center><button class="btn btn-primary m-4" @click="startPayedChat()">Start Chat</button></center>
                         </div>  
@@ -124,7 +123,7 @@
 
                             
                         <!-- Body -->
-                        <div class="card-body msg_card_body" v-chat-scroll>                        
+                        <div class="card-body msg_card_body" v-chat-scroll>
                             <div v-for="message in messages">
                                 <!-- Messages -->
 
@@ -197,59 +196,57 @@
                                 </div>
                             </div>                      
                         </div>
-
-
-
                     </div>
                 </div>
                 <div class="col-md-3 col-xl-3 chat">
-                    <div class="card mb-sm-3 mb-md-0 contacts_card">
-                        <div class="card-header">
-                            <div class="online_title">
-                                <span>Recent chats</span>
-                            </div>
+                  <div class="card mb-sm-3 mb-md-0 contacts_card">
+                    <div class="card-header">
+                        <div class="online_title">
+                            <span>Recent chats</span>
                         </div>
-                        <div class="card-body contacts_body">
-                            <!-- recent chat list -->
-                            <ul  class="contacts">
-
-                                <li       
-                                    v-for="r in recentRooms"
-                                    @click="selectRoom(r.companion.id)"                               
-                                    v-bind:class="{'active': room.id == r.id}">
-                                    <div class="d-flex bd-highlight">
-                                        <div class="img_cont">
-                                            <img 
-                                                :src="assets+'/media/gallery/'r.companion.id+'_0.jpg'"
-                                                class="rounded-circle user_img">
-                                            <span 
-                                                v-bind:class="{'offline': !isOnline(r.companion.id)}"
-                                                class="online_icon">                        
-                                            </span>
-                                        </div>
-                                        <div class="user_info">
-                                            <span>{{r.companion.name}}</span>
-                                            <p>
-                                                {{r.companion.name}} is 
-                                                {{isOnline(r.companion.id)?'online':'offline'}}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-<picker 
-    v-show="emojiPickerShow"
-    native
-    @select="addEmoji" 
-    title="Pick your emoji…" 
-    emoji="point_up" 
-    :style="{ position: 'absolute', bottom: '20px', right: '20px' }" 
-/>
-                        <div class="card-footer"></div>
                     </div>
+                    <div class="card-body contacts_body">
+                        <!-- recent chat list -->
+                        <ul  class="contacts">
+
+                            <li       
+                                v-for="r in recentRooms"
+                                @click="selectRoom(r.companion.id)"                               
+                                v-bind:class="{'active': room.id == r.id}">
+                                <div class="d-flex bd-highlight">
+                                    <div class="img_cont">
+                                         <img 
+                                            :src = "assets+'/media/gallery/'+r.companion.id+'_0.jpg'"
+                                            class="rounded-circle user_img">   
+                                        <span 
+                                            v-bind:class="{'offline': !isOnline(r.companion.id)}"
+                                            class="online_icon">                        
+                                        </span>
+                                    </div>
+                                    <div class="user_info">
+                                        <span>{{r.companion.name}}</span>
+                                        <p>
+                                            {{r.companion.name}} is 
+                                            {{isOnline(r.companion.id)?'online':'offline'}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <picker 
+                        v-show="emojiPickerShow"
+                        native
+                        @select="addEmoji" 
+                        title="Pick your emoji…" 
+                        emoji="point_up" 
+                        :style="{ position: 'absolute', bottom: '20px', right: '20px' }" 
+                    ></picker>
+                    <div class="card-footer"></div>
+                  </div>
                 </div>
             </div>
+
         </div>
 </template>
 
@@ -292,6 +289,7 @@
             VueChatScroll, 
             d3,
         },
+        mixins: [ mMoreAxios, mNotifications, mLoading ],
         props:['prop_user'],
         data(){
             return {
@@ -300,7 +298,6 @@
                     room: false,
                 },
                 user: {},
-                isDebug: true,
                 room: false,
                 connected: false,
                 freeze:false,
@@ -317,8 +314,7 @@
                 chatPrivateConnection:{},
                 emojiPickerShow:false,
                 //files
-                assets:assets,
-                
+                assets:assets,          
             }
         },
         watch: {
@@ -432,15 +428,12 @@
                 //Echo connect                
                 let c = await window.Echo.join(`chat`)
                     .here((users) => {
-                        this.setOnlineUsers(users);                                      
-                        this.debug(users);                                        
+                        this.setOnlineUsers(users);                                     
                     })
                     .joining((user) => {
-                        this.debug('joining - ' + user.email);
                         this.setOnlineUsers(user);
                     })
                     .leaving((user) => {
-                        this.debug('leaving - ' + user.email);
                         this.setOnlineUsers(user,true);
                     });
 
@@ -472,8 +465,6 @@
                 //Set rooms
                 // console.log(rooms);
                 this.recentRooms = rooms;
-
-                this.debug(this.recentRooms);
             },
             async getRecentRoom(){
                var r = await axios.get('/chat/recentRooms')
@@ -481,12 +472,11 @@
                         if(!r.data.error){
                             return r.data.rooms;                           
                         }else{
-                            this.debug(r.data.text);
                             this.showErrorMsg({message:r.data.text});
                             return false;
                         }
                     })
-                    .catch((r) => {this.debug(r);return false;});
+                    .catch((r) => {return false;});
 
                 return r;                
             },
@@ -529,7 +519,6 @@
                     return path;
                 }else{
                     let error = 'error getting user '+id+' path'
-                    this.debug(error);
                     this.showErrorMsg({message:error})
                     return false;
                 }
@@ -549,6 +538,7 @@
                                     if(del){
                                         this.onlineUsers.splice(this.onlineUsers.indexOf(u), 1);
                                     }else{
+                                      if(u.man != this.user.man)
                                         this.onlineUsers.push(u);
                                     }
                                 }
@@ -558,6 +548,7 @@
                                 if(del){
                                     this.onlineUsers.splice(this.onlineUsers.indexOf(user), 1);
                                 }else{
+                                  if(user.man != this.user.man)                   
                                     this.onlineUsers.push(user);
                                 }
                             }
@@ -569,6 +560,7 @@
                         if(del){
                             this.onlineUsers.splice(this.onlineUsers.indexOf(users), 1);
                         }else{
+                          if(user.man != this.user.man)                   
                             this.onlineUsers.push(users);
                         }
                     }
@@ -581,24 +573,11 @@
                 this.loading.room = false;
             },
             async getUserMembership(userId){
-                var r = await axios.get('/memberships/current', {
-                                        params: {
-                                          user_id: userId
-                                        }
-                  })
-                    .then((r) => {
-                        if(!r.data) return false;
 
-                        if(r.data.error){
-                            console.log('error' + ' ' + r.data.error + ' - ' +r.data.text);
-                            return false;
-                        }
-                        return r.data.membership;
-
-                    })
-                    .catch((r) => {console.log(r);return false;});   
+                var r = await this.ax('get','/memberships/current',{user_id: userId});
 
                 //Set membership
+                this.user.membership = {};
                 if(r){
                     this.user.membership = r;
                 }else{
@@ -646,7 +625,6 @@
                 var room = await this.getRoom(companionId);
                 if(!room){
                     let error = 'error getting room';
-                    this.debug(error);
                     this.showErrorMsg({message:error});
                     this.loading.room = false;
                     return false; //@@@ add some error
@@ -659,7 +637,6 @@
             async connectRoom(){
                 let c = await window.Echo.join('privateChat.' + this.room.id) //@@@ private chat
                     .listen('PrivateChat', ({message}) => {
-                        this.debug(message);
                         this.messages.push(message);
                     })
 
@@ -673,8 +650,7 @@
                 this.chatPrivateConnection = {};
                 if(!this.room) return;
                 //Disconncet room
-                let l = await window.Echo.leave('privateChat.' + this.room.id);                
-                this.debug('Disconnect privateChat.' + this.room.id);  
+                let l = await window.Echo.leave('privateChat.' + this.room.id);           
                 //Remove room
                 this.room.connect = false;
 
@@ -692,13 +668,12 @@
 
                         if(r.data.error == 1){
                             this.showErrorMsg({message:r.data.text});
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
                             return false;
                         }
 
                         return r.data;
                     })
-                    .catch((r) => {this.debug(r);return false;});
+                    .catch((r) => {return false;});
                 return r;
             },  
             //Payed chat
@@ -760,19 +735,17 @@
                         if(!r.data) return false;
 
                         if(r.data.error){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
                             this.showErrorMsg({message:r.data.text});
                             return false;
                         }
 
                         if(!r.data.messages){
-                            this.debug('no messages');
                         }
 
                         this.messages = r.data.messages;
 
                     })
-                    .catch((r) => {this.debug(r);return false;});             
+                    .catch((r) => {return false;});             
             },
             async sendMessage(){
 
@@ -790,12 +763,11 @@
                         if(!r.data) return false;
 
                         if(r.data.error){
-                            this.debug('error' + ' ' + r.data.error + ' - ' +r.data.text);
                             this.showErrorMsg({message:r.data.text});
                             return false;
                         }
                     })
-                    .catch((r) => {this.debug(r);return false;});
+                    .catch((r) => {return false;});
             },
 
 
@@ -805,12 +777,7 @@
             },
             stopLoading(){
                 this.loading.screen = false;
-            },
-            debug(x){
-                if(this.isDebug){
-                    console.log(x);
-                }
-            },
+            }
         }
 
     }

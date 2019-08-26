@@ -90,6 +90,8 @@ Vue.component('chat-history-component', require('./components/admin/chatHistory.
 Vue.component('girls-list-component', require('./components/admin/girls/list.vue'));
 Vue.component('admin-girls-special-ladies-component', require('./components/admin/girls/specialLadies.vue'));
 Vue.component('admin-girl-confirm-component', require('./components/admin/girls/confirm.vue'));
+//Letters
+Vue.component('admin-letter-user-component', require('./components/admin/letters/user.vue'));
 
 
 //men
