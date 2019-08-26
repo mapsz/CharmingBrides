@@ -34,20 +34,20 @@ class Man extends _adminPanel
   protected $inputs    = [
       [ //Email
         'name'      => 'email', 
-        'parent'    => 'user',
+        'parent'    => 'User',
         'type'      => 'email',
         'example'   => 'michael.smith@gmail.com'
       ],
       [ //Password
         'name'      => 'password',
         'type'      => 'password',
-        'parent'    => 'user',
+        'parent'    => 'User',
       ],    
       [ //Password confirm
         'name'      => 'confirm_password',
         'caption'   => 'Confirm Password',
         'type'      => 'password',
-        'parent'    => 'user',
+        'parent'    => 'User',
         'confirm'   => true,
         'hash'      => false,
       ],  

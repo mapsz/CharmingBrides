@@ -47,7 +47,7 @@ class Girl extends _adminPanel
   protected $inputs    = [
       [ //Email
         'name'      => 'email', 
-        'parent'    => 'user',
+        'parent'    => 'User',
         'type'      => 'email',
         'example'   => 'anna.pavlova@gmail.com'
       ],    
