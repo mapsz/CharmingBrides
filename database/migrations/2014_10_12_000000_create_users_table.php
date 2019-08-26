@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password'))->nullable();
             $table->smallInteger('role')->default(0)->comment(
                 "-1:ban, 0:unconfirm, 1:girl, 2:man, 3:moder, 4:admin"
             );
