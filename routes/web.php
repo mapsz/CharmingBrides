@@ -34,6 +34,7 @@ Route::get('/profile', 'ManController@edit')->name('profile')->middleware('auth'
 
 
 //Man
+Route::get('/man/{id}','ManController@index')->name('showMan');
 Route::get('/registration/man', 'ManController@create')->name('manCreate');
 Route::put('/man', 'ManController@put')->name('manStore');
 

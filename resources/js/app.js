@@ -97,6 +97,7 @@ Vue.component('admin-letter-user-component', require('./components/admin/letters
 //men
 Vue.component('men-membership', require('./components/men/menMembership.vue'));
 Vue.component('men-registration', require('./components/men/menRegistration.vue'));
+Vue.component('man-component', require('./components/men/man.vue'));
 
 // _admin Panel
 Vue.component('admin-panel-main-component', require('./components/_adminPanel/mainComponent.vue'));

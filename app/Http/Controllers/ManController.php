@@ -18,6 +18,14 @@ class ManController extends _adminPanelController
         parent::__construct($this->model);
     }
 
+    public function index($id){
+
+      $man = User::where('id',$id)->with('man')->First()->toArray();
+
+      return view('pages.man')->with('man',json_encode($man));
+    }
+
+
     public function create(){
         //Get Model
         $model = new $this->model();

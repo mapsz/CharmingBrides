@@ -10,6 +10,7 @@ class Man extends _adminPanel
   protected $single    = 'man';
   protected $multi     = 'men';        
   protected $route     = [ 'prefix' => 'admin/' ];
+  protected $link      = "/man/";
 
   protected $columns  = [
     [
