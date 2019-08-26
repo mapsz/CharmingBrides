@@ -470,7 +470,7 @@ class _adminPanel extends Model
       // jpeg to jpg
       if($ext == 'jpeg') $ext = 'jpg';
       //Move file
-      if(\File::move($chacheFilePath, $path . '\\' . $name . '.' . $ext))
+      if(\File::move($chacheFilePath, $path . '/' . $name . '.' . $ext))
         return true;
       else
         return false;

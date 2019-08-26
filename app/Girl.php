@@ -266,7 +266,7 @@ class Girl extends _adminPanel
           'name'            => 'photo',
           'type'            => 'file',
           'maxFileCount'    => 8,
-          'path'            => 'media\gallery',
+          'path'            => 'media/gallery',
           'fileName'        => '`parentId`_`i`',
           'maxFileSize'     => '5mb',
           'fileType'        => ['image/*',],   
