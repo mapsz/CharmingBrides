@@ -3,11 +3,11 @@
         <!-- Example -->
         <span v-if="confirm" style="color:limegreen">
           Confirmed
-          <button class="btn btn-sm btn-danger" @click="doConfirm(0)"> </button>
+          <button class="btn btn-sm btn-danger border" @click="doConfirm(0)"> </button>
         </span>
         <span v-else style="color:tomato">
           Unconfirmed
-          <button class="btn btn-sm btn-success" @click="doConfirm(1)"> </button>
+          <button class="btn btn-sm btn-success border" @click="doConfirm(1)"> </button>
         </span>
     </div>
 </template>

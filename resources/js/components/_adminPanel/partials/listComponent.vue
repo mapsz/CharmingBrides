@@ -80,7 +80,7 @@
               </td>
               <!-- Delete -->
               <td v-if="isDelete" class="float">
-                <button data-toggle="modal" data-target="#delete-modal" @click="toDelete=row.id" type="button" class="btn btn-sm btn-danger border border-primary">Delete</button>
+                <button data-toggle="modal" data-target="#delete-modal" @click="toDelete=row._id" type="button" class="btn btn-sm btn-danger border border-primary">Delete</button>
               </td>
               <!-- Attach -->
               <td v-if="isAttachAdd && !isRecentAttached(row.id)" class="float">

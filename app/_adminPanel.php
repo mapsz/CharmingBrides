@@ -326,9 +326,10 @@ class _adminPanel extends Model
                   }
                 }
 
-                $d[$c['name']] = $val;              
-            }
-            
+                $d[$c['name']] = $val;          
+            }            
+
+            $d['_id'] = $dbValue['id'];
             array_push($formatedData, $d);
 
         }
@@ -582,13 +583,15 @@ class _adminPanel extends Model
           return false;
       }
 
+      //@@@
+      if($parentPut->id > 0) return $parentPut->id;
+
       return $inputPut['id'];
     }
     public function deleteRow($id){
 
       //Get row
       $row = $this->find($id);
-
       //Get parent
       $parents =[];
       //get parent models
@@ -599,8 +602,10 @@ class _adminPanel extends Model
       }
       //get parent ids
       foreach ($parents as $k => $v) {
-        $parents[$k]['id'] = $row[$v['model'].'_id'];
+        $parents[$k]['id'] = $row[strtolower($v['model']).'_id'];
       }
+
+      
       //get parent rows
       $parentRows = [];
       foreach ($parents as $v) {
@@ -609,6 +614,8 @@ class _adminPanel extends Model
         $parentRow = $model->find($v['id']);
         array_push($parentRows,$parentRow);
       }
+
+
 
       try {
         DB::beginTransaction();         

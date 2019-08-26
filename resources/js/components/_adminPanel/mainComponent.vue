@@ -2,7 +2,7 @@
     <div class="container">
       <h1 class="text-capitalize">{{pName.m}}</h1>
       <div v-if="pSettings.add" class="mb-1">
-        <a :href="pName.s+'/create'">
+        <a :href="'/' + pRoute.prefix + pRoute.r+'/create'">
           <button type="button" class="btn btn-success">Add new</button>
         </a>
       </div>
