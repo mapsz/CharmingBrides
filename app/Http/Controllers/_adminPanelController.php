@@ -13,7 +13,7 @@ abstract class _adminPanelController extends Controller
   	public function __construct($model) {
   		$this->model 	= $model;
    	}
-
+ 
     public function _index(){
         //Get Model
         $model = new $this->model();
@@ -62,6 +62,39 @@ abstract class _adminPanelController extends Controller
                     ->with('route',$route)
                     ->with('settings',$settings);
     }
+
+    public function _edit($id){
+
+      //Get Model
+      $model = new $this->model();
+
+      //Set single row
+      $model->setSingleId($id);
+      //prepare data
+      $model->getData();
+
+      //Get Data
+      $inputs = $model->getInputs();  //Inputs
+      $names   = $model->getNames();  //Names
+      $route = $model->getRoute(); 
+      $settings = $model->getSettings(); 
+      $editData   = $model->getEditData();
+      //Encode
+      $inputs     = json_encode($inputs);
+      $names      = json_encode($names);
+      $route      = json_encode($route);
+      $settings   = json_encode($settings);
+      $editData   = json_encode($editData);
+
+      //View
+      return view('_adminPanel.edit')
+                  ->with('inputs', $inputs)
+                  ->with('editData', $editData)
+                  ->with('name', $names)
+                  ->with('route',$route)
+                  ->with('settings',$settings);
+    }
+
 
     public function _get(Request $request){
 
@@ -115,18 +148,12 @@ abstract class _adminPanelController extends Controller
         //Validate
         $model->validate($request); 
 
-        //post
-        $post = $this->model::find($request->id);
-        $edit['id'] = $request->id;
-        foreach ($model->getInputs() as $key => $value) {
-            // dump($value['name'].' - '.$request[$value['name']]);
-           $post[$value['name']] = $request[$value['name']];
-           $edit[$value['name']]  = $request[$value['name']];
-        }
+        //Edit
+        $post = $model->editRow($request->all());
         
         //Save
-        if($post->save()){
-            return response()->json(['error' => '0', 'edit' => $edit]);
+        if($post){
+            return response()->json(['error' => '0']);
         }else{
             return response()->json(['error' => '1', 'text' => 'something gone wrong']);
         }

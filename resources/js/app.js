@@ -18,8 +18,14 @@ window.Vue = require('vue');
  window.assets = '';
 
 //Modules
-var VueChatScroll = require('vue-chat-scroll');
-Vue.component('VueChatScroll', require('vue-chat-scroll'));
+// var VueChatScroll = require('vue-chat-scroll');
+// Vue.component('VueChatScroll', require('vue-chat-scroll'));
+
+ // Websockets
+import _echo from 'laravel-echo';
+import _pusher from 'pusher-js';
+window._echo    = _echo;
+window._pusher  = _pusher;
 
 window.d3 = require('d3-timer');
 
@@ -62,8 +68,9 @@ Vue.component('errors', require('./components/partials/errors.vue'));
 
 
 // Chat
-Vue.component('admin-chat', require('./components/partials/adminChat.vue'));
-Vue.component('chat', require('./components/Chat.vue'));
+Vue.component('chat', require('./components/chat/chat.vue'));
+Vue.component('admin-chat', require('./components/chat/partials/adminChat.vue'));
+Vue.component('online-chat', require('./components/chat/partials/online.vue'));
 
 //Girls
 Vue.component('girls-special-ladies-component', require('./components/girls/specialLadies.vue'));
@@ -104,11 +111,17 @@ Vue.component('admin-panel-main-component', require('./components/_adminPanel/ma
 Vue.component('admin-panel-create-wrapper-component', require('./components/_adminPanel/createWrapperComponent.vue'));
 //patials
 Vue.component('juge-create', require('./components/_adminPanel/partials/create/create.vue'));
+Vue.component('juge-edit', require('./components/_adminPanel/partials/create/edit.vue'));
 Vue.component('juge-input', require('./components/_adminPanel/partials/create/input.vue'));
+Vue.component('juge-password-edit-input', require('./components/_adminPanel/partials/create/passwordEditInput.vue'));
+Vue.component('juge-errors', require('./components/_adminPanel/partials/create/errors.vue'));
+Vue.component('juge-required-text', require('./components/_adminPanel/partials/create/requiredText.vue'));
 Vue.component('modal-component', require('./components/_adminPanel/partials/modalComponent.vue'));
 Vue.component('list-component', require('./components/_adminPanel/partials/listComponent.vue'));
 Vue.component('attach-component', require('./components/_adminPanel/partials/attachComponent.vue'));
 Vue.component('file-upload-component', require('./components/_adminPanel/partials/fileUpload.vue'));
+
+
 
 
 const app = new Vue({

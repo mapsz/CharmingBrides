@@ -12,15 +12,12 @@ class Agent extends _adminPanel
     // protected $route     = 'admin/agent';
     protected $route     = [ 'prefix' => 'admin/' ];
 
-    protected $edit      = false;
+    protected $edit      = true;
     // protected $delete    = false;
     // protected $add       = false;
 
     protected $columns  = [
       [
-        'name' => 'id',
-        'caption' => ' agent id',
-      ],      [
         'name' => 'user_id',
         'caption' => 'user id',
         'relation' => 'user.id'

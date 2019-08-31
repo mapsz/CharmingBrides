@@ -9,8 +9,9 @@ use Sopamo\LaravelFilepond\Filepond;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Exception;
-
+ 
 class _adminPanel extends Model
 {	
     //Names
@@ -98,7 +99,7 @@ class _adminPanel extends Model
         //Return page
         return $this->page;             
     }
-    public function getData(){      
+    public function getData(){
         //Set data
         $this->setData();
         //Return data
@@ -107,7 +108,6 @@ class _adminPanel extends Model
     public function getInputs(){
         //Return inputs
         return $this->inputs;     
-
     }
     public function getSettings(){
         return [
@@ -118,6 +118,61 @@ class _adminPanel extends Model
           'subList'   => false,
         ];     
     }
+    public function getEditData(){
+
+      $data = [];
+      foreach ($this->inputs as $input) {
+
+        if(isset($input['parent'])){
+          //Set with relation
+          $data[$input['name']] = $this->dbData[0][$input['parent']][$input['name']];
+        }elseif($input['type'] == 'file'){
+          //Set files
+          $data[$input['name']] = $this->getFiles($this->dbData[0]['id'],$input['name']);
+        }else{
+          //Set simple
+          $data[$input['name']] = $this->dbData[0][$input['name']];          
+        }
+      }
+
+      $data['_id'] = $this->dbData[0]['id'];
+
+      return $data;
+    }
+    public function getFiles($id, $name){
+
+      //Check parent
+      foreach ($this->inputs as $input) {
+        if(isset($input['parent'])){
+          $id = $this->dbData[0][$input['parent']]['id'];
+          break;
+        }
+      }
+
+      //Get input
+      $input = "";
+      foreach ($this->inputs as $v) {
+        if($v['name'] == $name){
+          $input = $v;
+        }
+      }
+
+      //Get files
+      $files = File::files(public_path().'/'.$input['path']);
+
+      // Filter files
+      $filtredFiles = [];
+      foreach ($files as $file) {
+        $name = $file->getFilename();
+        //@@@ nado by name
+        $fileId = substr($name,0,strpos($name, '_'));
+        if($id == $fileId)
+          array_push($filtredFiles, $name);
+      }
+
+      return $filtredFiles;
+    }
+
 
     //Data
     private function setData(){      
@@ -532,7 +587,7 @@ class _adminPanel extends Model
         }
         
         //Hash
-        if(isset($v['hash']) && $v['hash'])$parentPut[$v['name']] = Hash::make($parentPut[$v['name']]);        
+        if(isset($v['hash']) && $v['hash'])$inputPut[$v['name']] = Hash::make($inputPut[$v['name']]);        
       } 
 
       //Save
@@ -588,6 +643,101 @@ class _adminPanel extends Model
 
       return $inputPut['id'];
     }
+    public function editRow($request){
+      //Sort inputs
+      $inputs = $this->sorInputs();
+
+      //Prepare post
+      $post = new $this();
+      // dd($request);
+      $post = $post::find($request['id']);
+      foreach ($inputs['simple'] as $k => $v) {
+        //Skip confirms
+        if(isset($v['confirm']) && $v['confirm']) continue;
+        //Add post
+        if(isset($request[$v['name']])){
+          if(isset($v['hash']) && $v['hash']){
+            //Add hashed
+            $post[$v['name']] = Hash::make($request[$v['name']]);
+          }else{
+            //Add Simple
+            $post[$v['name']] = $request[$v['name']];
+          }
+        }     
+      } 
+
+      //Prepare parent post
+      foreach ($inputs['parent'] as $k => $v) {
+        //Skip confirms
+        if(isset($v['confirm']) && $v['confirm']) continue;
+        //Add parent post
+        if(isset($request[$v['name']])){
+          if(isset($v['hash']) && $v['hash']){
+            //Add hashed
+            $post[$v['parent']][$v['name']] = Hash::make($request[$v['name']]);
+          }else{
+            //Add Simple
+            $post[$v['parent']][$v['name']] = $request[$v['name']];
+          }
+        }     
+      }         
+      
+
+      // dd(11);
+     $post[$v['parent']]->save();
+
+      //Edit
+      try {
+        $put = [];
+        DB::beginTransaction();
+
+        //Edit parents
+        foreach ($inputs['parent'] as $k => $v) {          
+          if(!$post[$v['parent']]->save()){
+            throw new Exception("Error Processing Request", 1);
+          }
+        }
+
+        //Edit simple
+        if(!$post->save()){
+          throw new Exception("Error Processing Request", 2);
+        }
+
+        //@@@ files
+       
+        //Store to DB
+        DB::commit();        
+      } catch (Exception $e) {   
+          DB::rollback();
+          // dd($e);
+          return false;
+      }
+
+      return true;
+
+
+    }
+    private function sorInputs(){
+      $inputs = ['simple' => [],'parent' => [],'files' => []];
+      foreach ($this->inputs as $key => $v) {
+        //Get parent fields
+        if(isset($v['parent']) && $v['parent']){
+          array_push($inputs['parent'], $v);
+          continue;
+        }
+        //Get file fields
+        if($v['type'] == 'file'){
+          array_push($inputs['files'], $v);
+          continue;
+        }
+        //Input fields
+        array_push($inputs['simple'], $v);
+      }
+
+      return $inputs;
+    }
+
+
     public function deleteRow($id){
 
       //Get row

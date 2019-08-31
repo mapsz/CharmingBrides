@@ -1,46 +1,19 @@
  <template>
-    <div class="container-fluid">
+    <div class="container-fluid create">
       <form>    
         <!-- Inputs -->
         <div v-for="input in pInputs">
           <juge-input v-model="data[input.name]" :p-input="input" :p-route="route" :p-required-all="requiredAll"/>
         </div> 
         <!-- Required info -->
-        <div class="pl-3 mb-3" style="color: gray;font-style: italic;">
-          <!-- symbol -->
-          <span style="color:tomato;font-style: normal;">
-            <span v-if="requiredAll">
-              !
-            </span>
-            <span v-else>
-              *
-            </span>
-          </span> 
-          <!-- text -->
-          <span>
-            <span v-if="requiredAll">
-              All fields required.
-            </span>
-            <span v-else>
-              Indicates required fields.
-            </span>  
-          </span>      
-        </div>                       
+        <juge-required-text :p-required-all="requiredAll"/>          
         <!-- errors -->
-        <div v-show="errors" class="alert alert-danger">
-          <ul>
-            <li v-for="error in errors">
-              <!-- <span v-for="err in error" >                         -->
-                {{ error }}
-              <!-- </span>                 -->
-            </li>
-          </ul>
-        </div>
+        <juge-errors :p-errors="errors"/>
         <!-- Save button -->
         <button
           @click="addData()" 
           type="button" 
-          class="btn col-12 btn-success save">
+          class="btn col-12 btn-success create-buton">
             <span>Confirm</span>
         </button>
       </form>
@@ -103,7 +76,7 @@
           //Clear errors
           this.errors = false;
           //Hide save button
-          $('.save').hide();
+          let l = this.showLoading('.create');
 
           let r = await axios({
                 method: 'put',
@@ -136,15 +109,16 @@
               });
 
           //Show buuton
-          $('.save').show();
+          $('.save-buton').show();
 
           //Error
           if(!r){
+            this.hideLoading(l);
             return false;
           }
           //  Success
-          //Send event
-          this.$emit('putSuccess',r);
+          this.hideLoading(l);
+          this.$emit('createSuccess',r);
           return true;   
         },
     }

@@ -37,9 +37,12 @@
 
         //log code
         if(code){
-          console.log(code);
-          this.dlog(9999);   //@@@@
+          console.log('error - '+code);
         } 
+        if(typeof(err) == "string"){
+          this.showErrorMsg({message:err});
+          return;
+        }
 
         $.each(err, (k, v) => {
           if(typeof(this.v) == "object"){

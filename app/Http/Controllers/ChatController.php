@@ -11,6 +11,8 @@ use App\Events\ChatInvite;
 use App\Events\PrivateChat;
 use App\Events\Chat;
 use App\ChatHardOnline;
+use App\ChatHistory;
+use Illuminate\Support\Facades\Log;
 
 class ChatController extends Controller
 {
@@ -22,18 +24,44 @@ class ChatController extends Controller
 
     public function index()
     {
-
-        // $this->getRecentRooms();
-
-            // $user = User::getWithInfo(10);
-            // Chat::dispatch($user);
-
-
-
-            // return 77;
-
         return view('pages.chat')->with('user', json_encode(User::getWithInfo(Auth::id())));
     }
+
+
+    public function startHistory(Request $request){
+
+      if(!isset($request->room) || !isset($request->session)){
+        return response()->json(['error' => '1', 'text' => 'Data error!']);
+      }
+
+      $id = ChatHistory::startHistory($request->room,$request->session);
+
+      if(!$id){
+        return response()->json(['error' => '1', 'text' => 'Connect error!']);
+      }
+
+      return response()->json(['error' => '0', 'data' => $id]);
+    }
+
+    public function stopChat(Request $request){
+      if(!isset($request->roomId) || !isset($request->session)){
+        return response()->json(['error' => '1', 'text' => 'Data error!']);
+      }
+
+      $id = ChatHistory::stopChat($request->roomId,$request->session);
+
+      return response()->json(['error' => '0']);
+    }
+
+    public function payChat(Request $request){
+      if(!isset($request->roomId) || !isset($request->session)){
+        return response()->json(['error' => '0']);
+      }
+
+      $id = ChatHistory::payChat($request->roomId,$request->session);
+
+      return response()->json(['error' => '0']);
+    }    
 
     public function getRoom(Request $request){
 
@@ -169,37 +197,48 @@ class ChatController extends Controller
     // }
 
     public function storeMessage(Request $request){
-        // Get user id
-        $userId = $this->getUser($request->userId);
-        if(!$userId) return response()->json(['error' => '1', 'text' => 'No user id']);
-        //Get room
-        $roomId = $request->roomId;
-        if(!$roomId) return response()->json(['error' => '1', 'text' => 'No room id']);
-        //Get body
-        $body = $request->body;
-        if(!$body) return response()->json(['error' => '1', 'text' => 'No body']);
+      // Get user id
+      $userId = $this->getUser($request->userId);
+      if(!$userId) return response()->json(['error' => '1', 'text' => 'No user id']);
+      //Get room
+      $roomId = $request->roomId;
+      if(!$roomId) return response()->json(['error' => '1', 'text' => 'No room id']);
+      //Get body
+      $body = $request->body;
+      if(!$body) return response()->json(['error' => '1', 'text' => 'No body']);
+      //Get session
+      $session = $request->session;
+      if(!$session) return response()->json(['error' => '1', 'text' => 'No session']);
 
-         //Check user is admin
-        if(Auth::user()->role > 2 && Auth::user()->id == $userId){
-            return response()->json(['error' => '1', 'text' => 'Admin cant chat, Please choose girl!']);
-        }
+       //Check user is admin
+      if(Auth::user()->role > 2 && Auth::user()->id == $userId){
+          return response()->json(['error' => '1', 'text' => 'Admin cant chat, Please choose girl!']);
+      }
 
-        //Check user belong to room
-        if(!$this->userBelongToRoom($userId, $roomId))
-            return response()->json(['error' => '1', 'text' => 'User doesnt belong to this room']);
+      //Check user belong to room
+      if(!$this->userBelongToRoom($userId, $roomId))
+          return response()->json(['error' => '1', 'text' => 'User doesnt belong to this room']);
 
-        //Store message
-        $message = New Message;
-        $message->user_id = $userId;
-        $message->room_id = $roomId;
-        $message->body = $body;
-        $message->save();
+      //Pay Chat
+      if(User::getWithInfo(Auth::user()->id)['man'] === 1){
+        if(!ChatHistory::payChat($roomId, $session)){
+          return response()->json(['error' => 1, 'text' => 'Somethink gone wrong']);
+        }       
+      }
 
-        //Trigger event
-        PrivateChat::dispatch($roomId, $message);
 
-        //return
-        return response()->json(['error' => 0]);
+      //Store message
+      $message = New Message;
+      $message->user_id = $userId;
+      $message->room_id = $roomId;
+      $message->body = $body;
+      $message->save();
+
+      //Trigger event
+      PrivateChat::dispatch($roomId, $message, $session);
+
+      //return
+      return response()->json(['error' => 0]);
     }
 
     public function getMessages(Request $request){

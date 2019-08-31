@@ -6,13 +6,82 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Room;
 use Storage;
+use App\User;
+use Auth;
+// ChatHistory::chatDisconnect($this->channelName, $this); //###
+
 
 class ChatHistory extends Model
 {
 	protected $guarded = [ ];
+
+    public static function payChat($roomId, $session,$history = false){
+      //Get history
+      if(!$history)
+        $history = self::findHistory($roomId, $session);
+
+      if(!$history) return false;        
+
+      //Get last pay
+      $last_pay = ($history->last_pay ? $history->last_pay : $history->created_at) ;
+      $last_pay = Carbon::parse($last_pay);
+
+      //Get current time
+      $currentTime = Carbon::now();
+
+      //Get difference
+      $diffTime = $last_pay->diffInSeconds($currentTime);
+
+      //Exit if already payed
+      if($last_pay > $currentTime) return true;
+
+      //Get man
+      $room = Room::with('user')->with('user.man')->find($roomId);
+      $user  = $room->user[0]->man ? $room->user[0] : ($room->user[1]->man ? $room->user[1] : false);
+
+      //Get chat price
+      $membership = Membership::getCurrentMembership($user->id);
+      $chatPrice = $membership->chat_price;
+      //cost per socond
+      $costPerSec = $chatPrice / 60;
+      //pay summ
+      $paySumm = round($diffTime * $costPerSec,2);
+
+      //Edit balance 
+      $user->man->balance -= $paySumm;
+      if($user->man->balance < 0) $user->man->balance = 0;
+      if(!$user->man->save()) return false;
+
+      //Update last pay
+      $history->last_pay = $currentTime;
+      if(!$history->save()) return false;
+
+      return $paySumm;
+    }
+
+    public static function stopChat($roomId, $session){
+
+      //Get history
+      $h = self::findHistory($roomId, $session);
+      if(!$h) return false;
+
+      //Pay chat
+      self::payChat($roomId, $session,$h);
+
+      //Set stop
+      $h->stop_at = Carbon::now();
+      if(!$h->save()) return false;
+
+      return true;
+    }
+
+    protected static function findHistory($roomId, $session){
+
+      return ChatHistory::where('room_id',$roomId)->where('session',$session)->where('stop_at',null)->orderBy('created_at','desc')->first();
+    }
+
     //
     public static function chatDisconnect($room, $connection){
-
 
     	//Check if private room
     	if(!strpos($room, 'privateChat')){
@@ -39,7 +108,7 @@ class ChatHistory extends Model
         //@@@
         echo '@@@@@@@';
 
-        //Get room id
+      //Get room id
     	$roomId = intval(explode('.',$room)[1]);
 
     	//Get start/stop
@@ -58,6 +127,43 @@ class ChatHistory extends Model
 
     	//Update history
     	$history->update(['stop_at' => $stop_at, 'price' => $amount]);
+    }
+
+    public static function startHistory($room, $session){
+    
+      $user = user::with('man')->find(Auth::id());
+
+      //Chack if man
+      if(!$user->man){
+        return true;
+      }
+
+      //Get membership
+      $membership = Membership::getCurrentMembership($user->id);
+
+      //Check balance
+      if($membership->chat_price > $user->man->balance) return false;
+
+      //Update balance
+      $user->man->balance -= $membership->chat_price;
+      if(!$user->man->save())return false;
+
+      //Create history
+      $history = new ChatHistory();
+
+      $history->room_id = $room;
+      $history->session = $session;
+      $history->last_pay = Carbon::now()->addMinutes(1);
+
+      $id = $history->save();
+
+      if(!$id)return false;
+
+      
+
+
+
+      return $id;
     }
 
     public function room()

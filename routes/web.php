@@ -41,12 +41,17 @@ Route::put('/man', 'ManController@put')->name('manStore');
 //chat
 Route::get('/chat', 'ChatController@index')->name('chat');
 Route::get('/room', 'ChatController@getRoom')->name('getRoom');
+Route::post('/chat/stop', 'ChatController@stopChat');
+Route::post('/chat/pay', 'ChatController@payChat');
 // Route::post('/chat/invite', 'ChatController@intviteCompanion')->name('chatInvite');
 
-Route::post('/chat/messages', 'ChatController@storeMessage')->name('storeMessage');
+Route::put('/chat/messages', 'ChatController@storeMessage')->name('storeMessage');
 Route::get('/chat/messages', 'ChatController@getMessages')->name('getMessages');
 Route::get('/chat/recentRooms', 'ChatController@getRecentRooms')->name('getRecentRooms');
+Route::put('/chat/history', 'ChatController@startHistory');
 Route::get('/chat/getHardOnline', 'ChatController@getHardOnline')->name('getHardOnline')->middleware(['auth','admin']);
+
+// WebSocketsRouter::webSocket('/my-websocket', \App\WebSocketHandlers\MyCustomWebSocketHandler::class);
 
 
 //Girls
@@ -54,6 +59,7 @@ Route::get('/chat/getHardOnline', 'ChatController@getHardOnline')->name('getHard
 Route::get('/girl/{id}','GirlController@index')->name('showGirl');
 //get special Ladies
 Route::get('/girls/special/ladies','GirlController@getSpecialLadies')->name('getSpecialLadies');
+
 
 
 //Admin Chat
@@ -98,6 +104,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);                               //Index
   Route::get('/'.$model.'/get/{id?}', ucfirst($model).'Controller@_get')->name($namePrefix.'get'.ucfirst($model));           //Get
   Route::get('/'.$model.'/create', ucfirst($model).'Controller@_create')->name($namePrefix.'create'.ucfirst($model));  //Create
+  Route::get('/'.$model.'/edit/{id}', ucfirst($model).'Controller@_edit')->name($namePrefix.'edit'.ucfirst($model));     //edit
   Route::put('/'.$model, ucfirst($model).'Controller@_put')->name($namePrefix.'put'.ucfirst($model));                  //Put
   Route::post('/'.$model, ucfirst($model).'Controller@_post')->name($namePrefix.'post'.ucfirst($model));               //Post
   Route::delete('/'.$model, ucfirst($model).'Controller@_destroy')->name($namePrefix.'delete'.ucfirst($model));        //Delete
@@ -107,7 +114,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/'.$model.'/recent/get', ucfirst($model).'Controller@_getRecent')->name($namePrefix.'recent'.ucfirst($model));  //Get Recent 
   Route::post('/'.$model.'/file/upload', ucfirst($model).'Controller@_fileUpload')
         ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload    
-
+ 
   // Men
   $model = 'man';
   $namePrefix = "admin_";
@@ -158,6 +165,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/'.$model.'/get/{id?}', ucfirst($model).'Controller@_get')->name($namePrefix.'get'.ucfirst($model));           //Get
   Route::get('/'.$model.'/create', ucfirst($model).'Controller@_create')->name($namePrefix.'create'.ucfirst($model));  //Create
   Route::put('/'.$model, ucfirst($model).'Controller@_put')->name($namePrefix.'put'.ucfirst($model));                  //Put
+  Route::get('/'.$model.'/edit/{id}', ucfirst($model).'Controller@_edit')->name($namePrefix.'edit'.ucfirst($model));     //edit  
   Route::post('/'.$model, ucfirst($model).'Controller@_post')->name($namePrefix.'post'.ucfirst($model));               //Post
   Route::delete('/'.$model, ucfirst($model).'Controller@_destroy')->name($namePrefix.'delete'.ucfirst($model));        //Delete
   Route::delete('/'.$model.'/detach', ucfirst($model).'Controller@_detach')->name($namePrefix.'detach'.ucfirst($model));    //Detach
@@ -179,6 +187,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);                               //Index
   Route::get('/'.$model.'/get/{id?}', ucfirst($model).'Controller@_get')->name($namePrefix.'get'.ucfirst($model));           //Get
   Route::get('/'.$model.'/create', ucfirst($model).'Controller@_create')->name($namePrefix.'create'.ucfirst($model));  //Create
+  Route::get('/'.$model.'/edit/{id}', ucfirst($model).'Controller@_edit')->name($namePrefix.'edit'.ucfirst($model));     //edit
   Route::put('/'.$model, ucfirst($model).'Controller@_put')->name($namePrefix.'put'.ucfirst($model));                  //Put
   Route::post('/'.$model, ucfirst($model).'Controller@_post')->name($namePrefix.'post'.ucfirst($model));               //Post
   Route::delete('/'.$model, ucfirst($model).'Controller@_destroy')->name($namePrefix.'delete'.ucfirst($model));        //Delete
@@ -195,4 +204,6 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 	//Chat histories
 	//index
 	Route::get('/chat/history', 'admin\ChatHistoryController@index')->name('adminChatHistoryIndex');	
+
+
 });

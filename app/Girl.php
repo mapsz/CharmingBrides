@@ -12,7 +12,6 @@ class Girl extends _adminPanel
   protected $multi          = 'girls';        
   protected $route          = [ 'prefix' => 'admin/' ];
   protected $page           = "";
-  protected $edit           = false;
   protected $link           = "/girl/";
 
   protected $columns  = [
@@ -36,6 +35,11 @@ class Girl extends _adminPanel
       'caption'     => 'confirm',
       'relation'    => 'user.role',
       'component'   => 'admin-girl-confirm-component',          
+    ],
+    [
+      'name'        => 'created_at',
+      'caption'     => 'created at',
+      'timeFormat'  => 'j F y G:i' 
     ],
     [          
       'name' => 'agent',

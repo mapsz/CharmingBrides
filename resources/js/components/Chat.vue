@@ -586,7 +586,6 @@
 
                 return true;
             },
-
             // Private Room
             async roomHandler(val, oldVal){
                 //Exit room
@@ -769,8 +768,6 @@
                     })
                     .catch((r) => {return false;});
             },
-
-
             //Other
             startLoading(){
                 this.loading.screen = true;

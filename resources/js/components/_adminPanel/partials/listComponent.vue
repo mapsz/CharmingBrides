@@ -75,7 +75,9 @@
               </td>
               <!-- Edit -->
               <td v-if="isEdit" class="float">
-                <button @click="editRow(row.id)" type="button" class="btn btn-sm btn-warning border border-primary">Edit</button>
+                <a :href="'/'+route+'/edit/'+row._id">
+                  <button type="button" class="btn btn-sm btn-warning border border-primary">Edit</button>
+                </a>
               </td>
               <!-- Delete -->
               <td v-if="isDelete" class="float">

@@ -2,7 +2,20 @@
     <div class="container-fluid">
       <!-- Custom Component input -->
       <div v-if="input.component !== undefined">
-        <component :is="input.component" :attr="input" :propData="data"></component>
+        <div class="form-group row">
+          <!-- caption -->
+          <div class="col-sm-2"> 
+            <!-- required -->
+            <span v-if="!requiredAll && input.required" class="required">*</span>
+            <!-- label -->
+            <legend class="col-form-label text-capitalize pt-0">{{input.caption}}</legend>
+            <!-- input body -->
+          </div>
+          <!-- input body -->
+          <div class="col-sm-10">    
+            <component :p-attr="input.attr" :p-row="input" :p-route="pRoute" :p-value="pValue" :is="input.component" ></component>
+          </div>
+        </div>
       </div>
 
       <!-- Radio input -->
@@ -240,18 +253,18 @@
 
 <script>
     export default {
-        props:['pInput',"pRequiredAll", "pRoute"],
+        props:['pInput',"pRequiredAll", "pRoute",'pValue'],
         data(){
           return {            
             input: this.pInput,
-            value: "",
+            value: this.pValue,
             data:[],
           }
         },        
         computed:{
           requiredAll:function(){
             if(this.pRequiredAll == undefined) return true;
-            else this.pRequiredAll;            
+            else return this.pRequiredAll;            
           },
         },
         watch: {

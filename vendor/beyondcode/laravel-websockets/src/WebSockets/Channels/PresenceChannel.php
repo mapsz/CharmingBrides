@@ -5,8 +5,6 @@ namespace BeyondCode\LaravelWebSockets\WebSockets\Channels;
 use stdClass;
 use Ratchet\ConnectionInterface;
 
-use App\ChatHistory; //###
-
 class PresenceChannel extends Channel
 {
     protected $users = [];
@@ -49,8 +47,6 @@ class PresenceChannel extends Channel
         if (! isset($this->users[$connection->socketId])) {
             return;
         }
-
-        ChatHistory::chatDisconnect($this->channelName, $this); //###
 
         $this->broadcastToOthers($connection, [
             'event' => 'pusher_internal:member_removed',

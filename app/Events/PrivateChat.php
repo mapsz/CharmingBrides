@@ -9,6 +9,8 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Support\Facades\Auth;
+use app\User;
 
 class PrivateChat implements ShouldBroadcast
 {
@@ -23,10 +25,12 @@ class PrivateChat implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($roomId, $message)
+    public function __construct($roomId, $message, $session)
     {
         $this->roomId = $roomId;
+        // $this->message = $session;
         $this->message = $message;
+      // return false;
     }
 
     /**

@@ -72,6 +72,7 @@ class User extends Authenticatable
             $r['role']    = $user['role'];
             $r['surname'] = $user->man['surname'];
             $r['birth']   = $user->man['birth']; 
+            $r['balance'] = $user->man['balance']; 
             return $r; 
         }
 

@@ -96,8 +96,12 @@ class Membership extends _adminPanel
     	//Get memberships
         $user = user::where('id','=',$user_id)->with('membership')->with('man')->first();
 
-        if(!isset($user->membership[0]))
-        	return self::where('id','=',1)->first();
+        //No membership
+        if(!isset($user->membership[0])){
+           $CurrentMembership = self::where('id','=',1)->first();
+           $CurrentMembership->balance = $user->man->balance;
+        	return $CurrentMembership;
+        }
 
         //Remove out off date memberships
         $memberships = [];
