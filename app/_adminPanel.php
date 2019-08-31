@@ -666,25 +666,26 @@ class _adminPanel extends Model
         }     
       } 
 
-      //Prepare parent post
-      foreach ($inputs['parent'] as $k => $v) {
-        //Skip confirms
-        if(isset($v['confirm']) && $v['confirm']) continue;
-        //Add parent post
-        if(isset($request[$v['name']])){
-          if(isset($v['hash']) && $v['hash']){
-            //Add hashed
-            $post[$v['parent']][$v['name']] = Hash::make($request[$v['name']]);
-          }else{
-            //Add Simple
-            $post[$v['parent']][$v['name']] = $request[$v['name']];
-          }
-        }     
-      }         
-      
+      if(count($inputs['parent']) > 0){
+         //Prepare parent post
+        foreach ($inputs['parent'] as $k => $v) {
+          //Skip confirms
+          if(isset($v['confirm']) && $v['confirm']) continue;
+          //Add parent post
+          if(isset($request[$v['name']])){
+            if(isset($v['hash']) && $v['hash']){
+              //Add hashed
+              $post[$v['parent']][$v['name']] = Hash::make($request[$v['name']]);
+            }else{
+              //Add Simple
+              $post[$v['parent']][$v['name']] = $request[$v['name']];
+            }
+          }     
+        }         
+        
+        $post[$v['parent']]->save();       
+      }
 
-      // dd(11);
-     $post[$v['parent']]->save();
 
       //Edit
       try {
