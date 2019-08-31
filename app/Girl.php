@@ -55,6 +55,21 @@ class Girl extends _adminPanel
         'type'      => 'email',
         'example'   => 'anna.pavlova@gmail.com'
       ],    
+      [ //Password
+        'name'      => 'password',
+        'type'      => 'password',
+        'parent'    => 'User',
+        'required'  => false,
+      ],    
+      [ //Password confirm
+        'name'      => 'confirm_password',
+        'caption'   => 'Confirm Password',
+        'type'      => 'password',
+        'parent'    => 'User',
+        'confirm'   => true,
+        'hash'      => false,
+        'required'  => false,
+      ],      
       [ //Name
         'name' => 'name',
         'type' => 'text',

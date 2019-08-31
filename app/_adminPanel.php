@@ -639,7 +639,7 @@ class _adminPanel extends Model
       }
 
       //@@@
-      if($parentPut->id > 0) return $parentPut->id;
+      if(isset($parentPut->id) && $parentPut->id > 0) return $parentPut->id;
 
       return $inputPut['id'];
     }
