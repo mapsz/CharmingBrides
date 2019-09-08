@@ -15,12 +15,27 @@ class ChatHistory extends Model
 {
 	protected $guarded = [ ];
 
+    public static function roomRead($roomId,$userId){
+      //Get room
+      $r = User::with(['room' => function($q)use($roomId){$q->find($roomId);}])->find($userId);
+
+      //Set time
+      $r->room->first()->pivot->read = Carbon::now();
+
+      //Update
+      $r->room->first()->pivot->save();
+    }
+
     public static function payChat($roomId, $session,$history = false){
       //Get history
       if(!$history)
         $history = self::findHistory($roomId, $session);
 
-      if(!$history) return false;        
+      if(gettype($history) != 'object'){
+        $history = ChatHistory::find($history);
+      }
+
+      if(!$history) return false;     
 
       //Get last pay
       $last_pay = ($history->last_pay ? $history->last_pay : $history->created_at) ;
@@ -36,7 +51,7 @@ class ChatHistory extends Model
       if($last_pay > $currentTime) return true;
 
       //Get man
-      $room = Room::with('user')->with('user.man')->find($roomId);
+      $room = Room::with('user')->with('user.man')->find($history->room_id);
       $user  = $room->user[0]->man ? $room->user[0] : ($room->user[1]->man ? $room->user[1] : false);
 
       //Get chat price
@@ -59,18 +74,23 @@ class ChatHistory extends Model
       return $paySumm;
     }
 
-    public static function stopChat($roomId, $session){
-
+    public static function stopChat($roomId, $session,$history){
       //Get history
-      $h = self::findHistory($roomId, $session);
-      if(!$h) return false;
+      if(!$history)
+        $history = self::findHistory($roomId, $session);
+
+      if(gettype($history) != 'object'){
+        $history = ChatHistory::find($history);
+      }
+
+      if(!$history) return false;        
 
       //Pay chat
-      self::payChat($roomId, $session,$h);
+      self::payChat($history->room_id, $session,$history);
 
       //Set stop
-      $h->stop_at = Carbon::now();
-      if(!$h->save()) return false;
+      $history->stop_at = Carbon::now();
+      if(!$history->save()) return false;
 
       return true;
     }
@@ -155,15 +175,9 @@ class ChatHistory extends Model
       $history->session = $session;
       $history->last_pay = Carbon::now()->addMinutes(1);
 
-      $id = $history->save();
-
-      if(!$id)return false;
-
-      
-
-
-
-      return $id;
+      if(!$history->save())return false;
+  
+      return $history->id;
     }
 
     public function room()

@@ -33,56 +33,57 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public static function getWithInfo($id){
+    public static function getWithInfo($id, $user = false){
       
-        // Add data
-        $r['id'] = $id; 
-        $r['man'] = false; 
-        $r['role']    = 0;
-        $r['name']    = "";
-        $r['surname'] = "";
-        $r['birth']   = "";
-
-        // Get user
+      // Get user
+      if(!$user)
         $user = self::with('man')->with('girl')->with('agent')->get()->find($id); 
 
-        if(!$user) return false;
-        
-        // Check admin
-        if($user->role >= 3){
-            $r['man'] = $user->role; 
-            return $r;
-        }
+      if(!$user) return false;
+      
+      // Add data
+      $r['id'] = $id; 
+      $r['man'] = false; 
+      $r['role']    = 0;
+      $r['name']    = "";
+      $r['surname'] = "";
+      $r['birth']   = "";        
+      
+      // Check admin
+      if($user->role >= 3){
+          $r['man'] = $user->role; 
+          return $r;
+      }
 
-        // Check girl
-        if($user->girl){
-            $r['man']         = false; 
-            $r['name']        = $user->girl['name'];
-            $r['role']        = $user['role'];
-            $r['location']    = $user->girl['location'];
-            $r['birth']       = $user->girl['birth']; 
-            $r['age']         = Carbon::parse($r['birth'])->age;
-            return $r; 
-        }
+      // Check girl
+      if($user->girl){
+          $r['man']         = false; 
+          $r['name']        = $user->girl['name'];
+          $r['role']        = $user['role'];
+          $r['location']    = $user->girl['location'];
+          $r['birth']       = $user->girl['birth']; 
+          $r['age']         = Carbon::parse($r['birth'])->age;
+          return $r; 
+      }
 
-        // Check man
-        if($user->man){
-            $r['man']     = 1; 
-            $r['name']    = $user->man['name'];
-            $r['role']    = $user['role'];
-            $r['surname'] = $user->man['surname'];
-            $r['birth']   = $user->man['birth']; 
-            $r['balance'] = $user->man['balance']; 
-            return $r; 
-        }
+      // Check man
+      elseif($user->man){
+          $r['man']     = 1; 
+          $r['name']    = $user->man['name'];
+          $r['role']    = $user['role'];
+          $r['surname'] = $user->man['surname'];
+          $r['birth']   = $user->man['birth']; 
+          $r['balance'] = $user->man['balance']; 
+          return $r; 
+      }
 
-        // Check agent
-        if($user->agent){
-            $r['man']     = 3; 
-            return $r; 
-        }
+      // Check agent
+      elseif($user->agent){
+          $r['man']     = 3; 
+          return $r; 
+      }
 
-        return false;
+      return false;
     }
 
     public static function getHardOnline(){
@@ -140,7 +141,7 @@ class User extends Authenticatable
     }    
     public function room(){
 
-        return $this->belongsToMany('App\Room');
+        return $this->belongsToMany('App\Room')->withPivot('read');;
     }  
     public function membership(){
 

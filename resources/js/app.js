@@ -69,8 +69,10 @@ Vue.component('errors', require('./components/partials/errors.vue'));
 
 // Chat
 Vue.component('chat', require('./components/chat/chat.vue'));
-Vue.component('admin-chat', require('./components/chat/partials/adminChat.vue'));
+Vue.component('recent-chat', require('./components/chat/partials/recent.vue'));
 Vue.component('online-chat', require('./components/chat/partials/online.vue'));
+Vue.component('admin-chat', require('./components/chat/partials/adminChat.vue'));
+Vue.component('admin-online-girls', require('./components/chat/partials/adminOnlineGirls.vue'));
 
 //Girls
 Vue.component('girls-special-ladies-component', require('./components/girls/specialLadies.vue'));

@@ -71,12 +71,12 @@ Broadcast::channel('privateChat.{roomId}', function ($user, $roomId) {
 	if($exit) return false;
 
 	// Add Chat history if man
-	$user = User::getWithInfo($user->id);
-	if($user['man'] === 1){
-		if (Membership::getCurrentMembership($user['id'])->chat_price > $user['balance']) {
-      return false;
-    }      
- 	}
+	// $user = User::getWithInfo($user->id);
+	// if($user['man'] === 1){
+	// 	if (Membership::getCurrentMembership($user['id'])->chat_price > $user['balance']) {
+ //      return false;
+ //    }      
+ // 	}
 
 	return $user;
 });

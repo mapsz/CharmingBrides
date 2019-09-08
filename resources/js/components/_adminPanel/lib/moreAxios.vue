@@ -75,6 +75,9 @@
         }
         //Error
         if(r.data.error == 1 && r.data.hasOwnProperty('text')){
+          if(r.data.hasOwnProperty('code')){
+            console.log('error code - '+r.data.code)
+          }
           this.axiosErrors = [r.data.text];
           this.axiosErrorsCode = 3;
           if(this.axiosShowErrors) this.showErrors(this.axiosErrors,this.axiosErrorsCode);

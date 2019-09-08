@@ -1,6 +1,6 @@
 <template>
         <div class="container-fluid h-100 py-2">
-
+AAAAAASDFASDFSAFD
             <loading :loading="loading.screen"/>
 
             <div v-if="reconnect" class="reconnect">
@@ -66,11 +66,8 @@
                 <!-- Chat -->
                 <div class="col-md-6 col-xl-6 chat">
                     <div class="card">
-                        <div style="display:none;" class="loading freeze">
-                            <center><button class="btn btn-primary m-4" @click="startPayedChat()">Start Chat</button></center>
-                        </div>  
                         <div v-show="loading.room" class="loading">
-                            <span class="p-2" style="color:white">Loading...</span>
+                          <span class="p-2" style="color:white">Loading...</span>
                         </div>  
                         <!-- Header -->
                         <div class="card-header msg_head">
@@ -124,77 +121,76 @@
                             
                         <!-- Body -->
                         <div class="card-body msg_card_body" v-chat-scroll>
-                            <div v-for="message in messages">
-                                <!-- Messages -->
-
-                                <div 
-                                    v-bind:class="{'justify-content-start': message.user_id == user.id,
-                                                    'justify-content-end' : message.user_id != user.id }"
-                                    class="d-flex mb-4">
-
-                                    <img 
-                                      v-if="message.user_id == user.id"
-                                      :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
-                                      class="rounded-circle user_img_msg">
-
-                                    <div 
-                                        v-bind:class="{
-                                            'man'  : 
-                                                (message.user_id == user.id && user.man) ||
-                                                (message.user_id == room.companion.id && room.companion.man),
-                                            'msg_cotainer'      : message.user_id == user.id,
-                                            'msg_cotainer_send' : message.user_id != user.id
-                                        }"
-                                        >
-                                        {{message.body}}
-                                        <span 
-                                            v-bind:class="{'msg_time'      : message.user_id == user.id,
-                                                           'msg_time_send' : message.user_id != user.id}"
-                                            >                                       
-                                            {{message.created_at}}
-                                        </span>
-                                    </div>
-
-                                    <img 
-                                        v-if="message.user_id != user.id"
-                                        :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
-                                        class="rounded-circle user_img_msg">
-
-                                </div>
+                          <div v-for="message in messages">
+                            <!-- Messages -->
+                            <div 
+                              v-bind:class="{'justify-content-start': message.user_id == user.id,
+                                              'justify-content-end' : message.user_id != user.id }"
+                              class="d-flex mb-4"
+                            >
+                              <img 
+                                v-if="message.user_id == user.id"
+                                :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
+                                class="rounded-circle user_img_msg">
+                              <div 
+                                  v-bind:class="{
+                                    'man'  : 
+                                        (message.user_id == user.id && user.man) ||
+                                        (message.user_id == room.companion.id && room.companion.man),
+                                    'msg_cotainer'      : message.user_id == user.id,
+                                    'msg_cotainer_send' : message.user_id != user.id
+                                  }"
+                              >
+                                {{message.body}}
+                                <span 
+                                  v-bind:class="{'msg_time'      : message.user_id == user.id,
+                                                 'msg_time_send' : message.user_id != user.id}"
+                                  >                                       
+                                  {{message.created_at}}
+                                </span>
+                              </div>
+                              <img 
+                                v-if="message.user_id != user.id"
+                                :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
+                                class="rounded-circle user_img_msg"
+                              >
                             </div>
+                          </div>
                         </div>
                         
                         <!-- Footer -->
                         <div class="card-footer">
                             <!-- Chat -->
-                            <!-- <div class="freeze"></div> -->
-                            <div class="input-group">
-                                <!-- Attach -->
-                                <div class="input-group-append">
-                                    <span class="input-group-text attach_btn">
-                                        <fa-icon icon="paperclip" />
-                                    </span>
+        <!--                   <div style="display:none;" class="loading freeze">
+                            <center><button class="btn btn-primary m-4" @click="startPayedChat()">Start Chat</button></center>
+                          </div>   -->
+                          <div class="input-group">
+                              <!-- Attach -->
+                              <div class="input-group-append">
+                                <span class="input-group-text attach_btn">
+                                  <fa-icon icon="paperclip" />
+                                </span>
+                              </div>
+                              <!-- Send message -->
+                              <!-- Text body -->
+                              <textarea 
+                                v-on:keyup.enter="sendMessage()" 
+                                name="text" 
+                                class="form-control type_msg" 
+                                placeholder="Type your message..."
+                              ></textarea>
+                              <div @click="emojiPickerShow = !emojiPickerShow" class="input-group-append">
+                                <div class="input-group-text emoji_picker">
+                                  <fa-icon icon="smile"/>
                                 </div>
-                                <!-- Send message -->
-                                <!-- Text body -->
-                                <textarea 
-                                    v-on:keyup.enter="sendMessage()" 
-                                    name="text" 
-                                    class="form-control type_msg" 
-                                    placeholder="Type your message..."
-                                ></textarea>
-                                <div @click="emojiPickerShow = !emojiPickerShow" class="input-group-append">
-                                    <div class="input-group-text emoji_picker">
-                                        <fa-icon icon="smile"/>
-                                    </div>
-                                </div>
-                                <!-- Send button -->
-                                <div class="input-group-append" @click="sendMessage()">
-                                    <span class="input-group-text send_btn">
-                                        Send <fa-icon icon="arrow-right" class="pl-1"/>
-                                    </span>
-                                </div>
-                            </div>                      
+                              </div>
+                              <!-- Send button -->
+                              <div class="input-group-append" @click="sendMessage()">
+                                <span class="input-group-text send_btn">
+                                  Send <fa-icon icon="arrow-right" class="pl-1"/>
+                                </span>
+                              </div>
+                          </div>                      
                         </div>
                     </div>
                 </div>
@@ -333,12 +329,12 @@
                     return;
                 }
                 $('.freeze').show();                
-                //Freeze size
-                let headHeight = $('.msg_head').outerHeight();
-                let bodyHeight = $('.chat').outerHeight();
-                let newHeight = bodyHeight - headHeight;
-                $('.freeze').outerHeight(newHeight+'px');
-                $('.freeze').css('margin-top',headHeight);
+                // //Freeze size
+                // let headHeight = $('.msg_head').outerHeight();
+                // let bodyHeight = $('.chat').outerHeight();
+                // let newHeight = bodyHeight - headHeight;
+                // $('.freeze').outerHeight(newHeight+'px');
+                // $('.freeze').css('margin-top',headHeight);
             }     
         },  
         notifications: {

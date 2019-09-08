@@ -43,7 +43,8 @@ Route::get('/chat', 'ChatController@index')->name('chat');
 Route::get('/room', 'ChatController@getRoom')->name('getRoom');
 Route::post('/chat/stop', 'ChatController@stopChat');
 Route::post('/chat/pay', 'ChatController@payChat');
-// Route::post('/chat/invite', 'ChatController@intviteCompanion')->name('chatInvite');
+Route::post('/chat/read', 'ChatController@roomRead');
+Route::post('/chat/invite', 'ChatController@chatInvite');
 
 Route::put('/chat/messages', 'ChatController@storeMessage')->name('storeMessage');
 Route::get('/chat/messages', 'ChatController@getMessages')->name('getMessages');
@@ -66,9 +67,9 @@ Route::get('/girls/special/ladies','GirlController@getSpecialLadies')->name('get
 Route::post('/chat/admin/setOnline', 'ChatController@setHardOnline')->name('setHardOnline')->middleware(['auth','admin']);
 Route::delete('/chat/admin/deleteOnline', 'ChatController@deleteHardOnline')->name('deleteHardOnline')->middleware(['auth','admin']);
 
-// Letter
 Route::group(['middleware' => ['auth']],function(){
   
+  // Letter
   $model = 'letter';
   $namePrefix = "";                
   Route::get('/letters', ucfirst($model).'Controller@index')->name($namePrefix.$model);                      
@@ -86,8 +87,10 @@ Route::group(['middleware' => ['auth']],function(){
 
   Route::get('/letter/get/companion', ucfirst($model).'Controller@getSingleCompanion')->name('getSingleCompanion');    
 
-
-        
+  //Girl 
+  $model = 'girl';
+  $namePrefix = "";
+  Route::get('search/'.$model, ucfirst($model).'Controller@_search')->name($namePrefix.'search'.ucfirst($model));  //Search        
 
 });
 

@@ -3,13 +3,20 @@
     <div class="card mb-sm-3 mb-md-0 contacts_card">
       <div class="card-header">
         <div class="online_title">
-          <span>{{pUser.man ? 'Girls' : 'Mans' }} Online</span>
+          <span>{{pUser.man ? 'Girls' : 'Mans' }} Online</span> 
+          <fa-icon icon="link" 
+            :class="{
+              'text-success'      : pConnection.subscribed,
+              'text-warning'      : pConnection.pending,
+              'text-danger'       : pConnection.canceled
+          }"  
+          />
         </div>
       </div>
       <div class="card-body contacts_body">
         <!-- List -->
         <ul class="contacts">
-          <li v-for="onlineUser in pOnlineUsers" 
+          <li v-for="onlineUser in online" 
             v-bind:id="onlineUser.id" 
             @click="$emit('selectRoom',onlineUser.id)"
             v-bind:class="{'active': pCompanion && pCompanion.id == onlineUser.id}"
@@ -49,11 +56,30 @@
 
 <script>
     export default {        
-        props:['p-user','p-online-users','p-companion'],
+        props:['p-user','p-online-users','p-companion','p-connection'],
         data(){
           return {
             assets:assets,
           }
         },
+        computed:{
+          online:function(){
+              let online = [];
+
+              $.each(this.pOnlineUsers, (i, v) => {
+                //Mans add
+                if(v.man === 1 && this.pUser.man !== 1)
+                  online.push(v);
+
+                //Girls add
+                if(v.man !== 1 && this.pUser.man === 1)
+                  online.push(v);                
+              });
+
+
+              return online;
+
+          }, 
+        }       
     }
 </script>

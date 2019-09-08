@@ -1,220 +1,262 @@
 <template>
-        <div class="container-fluid h-100 py-2">
+  <div class="container-fluid h-100 py-2">
 
-            <loading :loading="loading.screen"/>
+      <loading :loading="loading.screen"/>
 
-            <div v-if="reconnect" class="reconnect">
-              <div class="reconnect-container">
-                <p class="text-danger"><b>Connection Lost!</b></p>
-                <center>
-                  <button class="btn btn-primary" @click="ReconnectOnline()">Reconnect</button>
-                </center>
-              </div>
-            </div>
+      <div v-if="reconnect && !onlineConnection.subscribed" class="reconnect">
+        <div class="reconnect-container">
+          <span>Connected:{{onlineConnection.subscribed}}</span><br>
+          <span>Pending:{{onlineConnection.pending}}</span><br>
+          <span>Canceled:{{onlineConnection.cancelled}}</span>
 
-            <admin-chat 
-                v-if="prop_user.man >= 3" 
-                @onlineReset="onlineReset()"
-                @selectUser="selectUser"
-            />              
-            <div class="row justify-content-center h-100">
-                <!-- Online -->
-                <online-chat
-                  :p-user="user"
-                  :p-online-users="onlineUsers"
-                  :p-companion="room.companion"
-                  @selectRoom="selectRoom"
-                ></online-chat>
-                <!-- Chat -->
-                <div class="col-md-6 col-xl-6 chat">
-                    <div class="card">
-                        <div style="display:none;" class="loading freeze">
-                            <center><button class="btn btn-primary m-4" @click="startPayedChat()">Start Chat</button></center>
-                        </div>  
-                        <div v-show="loading.room" class="loading">
-                            <span class="p-2" style="color:white">Loading...</span>
-                        </div>  
-                        <!-- Header -->
-                        <div class="card-header msg_head">
-                            <div v-if="room" class="d-flex bd-highlight">
-                                <!-- Avatar -->
-                                <div class="img_cont">
-                                    <img 
-                                        :src="assets+'/media/gallery/'+room.companion.id+'_0.jpg'"
-                                        class="rounded-circle user_img">
-                                    <span v-bind:class="{'offline': !isOnline(room.companion.id)}" class="online_icon"></span>
-                                </div>
-                                <!-- Info -->
-                                <div class="user_info">
-                                    <span>
-                                        {{room.companion.name}} {{room.companion.surname}}
-                                    </span>
-                                    <p>{{room.id}} - room</p>
-                                </div>
-                                <!-- Balance -->
-                                <div v-if="user.man" class="user_info">
-                                    <span>
-                                        Balance: {{user.membership.balance}}$
-                                    </span>
-                                    <p>1  minute - {{user.membership.chat_price}}$  {{user.membership.name}}</p>
-                                </div>
-                                <!-- Timer -->
-                                <div v-if="user.man" class="user_info">
-                                    <span>
-                                       {{timer.time}}
-                                    </span>
-                                    <p>Total: - {{timer.total}}$</p>
-                                </div>    
-                                <!-- Stop     -->
-                                <div v-if="user.man" class="user_info">
-                                       <button class="btn btn-primary" @click="stopPayedChat()">Stop</button>
-                                </div>                                 
-                                <!-- @@@ Timer pause -->
-                            </div>
-                            <!-- More @@@ ?? -->
-                            <!-- <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
-                            <div class="action_menu">
-                                <ul>
-                                    <li><i class="fas fa-user-circle"></i> View profile</li>
-                                    <li><i class="fas fa-users"></i> Add to close friends</li>
-                                    <li><i class="fas fa-plus"></i> Add to group</li>
-                                    <li><i class="fas fa-ban"></i> Block</li>
-                                </ul>
-                            </div> -->
-                        </div>
-
-                            
-                        <!-- Body -->
-                        <div class="card-body msg_card_body" v-chat-scroll>
-                            <div v-for="message in messages">
-                                <!-- Messages -->
-
-                                <div 
-                                    v-bind:class="{'justify-content-start': message.user_id == user.id,
-                                                    'justify-content-end' : message.user_id != user.id }"
-                                    class="d-flex mb-4">
-
-                                    <img 
-                                      v-if="message.user_id == user.id"
-                                      :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
-                                      class="rounded-circle user_img_msg">
-
-                                    <div 
-                                        v-bind:class="{
-                                            'man'  : 
-                                                (message.user_id == user.id && user.man) ||
-                                                (message.user_id == room.companion.id && room.companion.man),
-                                            'msg_cotainer'      : message.user_id == user.id,
-                                            'msg_cotainer_send' : message.user_id != user.id
-                                        }"
-                                        >
-                                        {{message.body}}
-                            <!--             <span 
-                                            v-bind:class="{'msg_time'      : message.user_id == user.id,
-                                                           'msg_time_send' : message.user_id != user.id}"
-                                            >                                       
-                                            {{message.created_at}}
-                                        </span> -->
-                                    </div>
-
-                                    <img 
-                                        v-if="message.user_id != user.id"
-                                        :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
-                                        class="rounded-circle user_img_msg">
-
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Footer -->
-                        <div class="card-footer">
-                            <!-- Chat -->
-                            <!-- <div class="freeze"></div> -->
-                            <div class="input-group">
-                                <!-- Attach -->
-                                <div class="input-group-append">
-                                    <span class="input-group-text attach_btn">
-                                        <fa-icon icon="paperclip" />
-                                    </span>
-                                </div>
-                                <!-- Send message -->
-                                <!-- Text body -->
-                                <textarea 
-                                    v-on:keyup.enter="sendMessage()" 
-                                    name="text" 
-                                    class="form-control type_msg" 
-                                    placeholder="Type your message..."
-                                ></textarea>
-                                <div @click="emojiPickerShow = !emojiPickerShow" class="input-group-append">
-                                    <div class="input-group-text emoji_picker">
-                                        <fa-icon icon="smile"/>
-                                    </div>
-                                </div>
-                                <!-- Send button -->
-                                <div class="input-group-append" @click="sendMessage()">
-                                    <span class="input-group-text send_btn">
-                                        Send <fa-icon icon="arrow-right" class="pl-1"/>
-                                    </span>
-                                </div>
-                            </div>                      
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-xl-3 chat">
-                  <div class="card mb-sm-3 mb-md-0 contacts_card">
-                    <div class="card-header">
-                        <div class="online_title">
-                            <span>Recent chats</span>
-                        </div>
-                    </div>
-                    <div class="card-body contacts_body">
-                        <!-- recent chat list -->
-                        <ul  class="contacts">
-
-                            <li       
-                                v-for="r in recentRooms"
-                                @click="selectRoom(r.companion.id)"                               
-                                v-bind:class="{'active': room.id == r.id}">
-                                <div class="d-flex bd-highlight">
-                                    <div class="img_cont">
-                                         <img 
-                                            :src = "assets+'/media/gallery/'+r.companion.id+'_0.jpg'"
-                                            class="rounded-circle user_img">   
-                                        <span 
-                                            v-bind:class="{'offline': !isOnline(r.companion.id)}"
-                                            class="online_icon">                        
-                                        </span>
-                                    </div>
-                                    <div class="user_info">
-                                        <span>{{r.companion.name}}</span>
-                                        <p>
-                                            {{r.companion.name}} is 
-                                            {{isOnline(r.companion.id)?'online':'offline'}}
-                                        </p>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <picker 
-                        v-show="emojiPickerShow"
-                        native
-                        @select="addEmoji" 
-                        title="Pick your emoji…" 
-                        emoji="point_up" 
-                        :style="{ position: 'absolute', bottom: '20px', right: '20px' }" 
-                    ></picker>
-                    <div class="card-footer"></div>
-                  </div>
-                </div>
-            </div>
-
+          <p class="text-danger"><b>Connecting...</b></p>
+          <center>
+            <button class="btn btn-primary" @click="ReconnectOnline()">Reconnect</button>
+          </center>
         </div>
+      </div>
+
+      <admin-chat 
+          v-if="prop_user.man >= 3" 
+          :p-online-users="onlineUsers"
+          @onlineReset="onlineReset()"
+          @selectUser="selectUser"
+      />              
+      <div class="row justify-content-center h-100">
+          <!-- Online -->
+          <online-chat
+            :p-user="user"
+            :p-online-users="onlineUsers"
+            :p-companion="room.companion"
+            :p-connection="onlineConnection"
+            @selectRoom="selectRoom"
+          ></online-chat>
+          <!-- Chat -->
+          <div class="col-md-6 col-xl-6 chat">
+              <div class="center-block card">
+                  <div v-show="loading.room" class="loading">
+                    <span class="p-2" style="color:white">Loading...</span>
+                  </div>  
+                  <!-- Header -->
+                  <div class="card-header msg_head">
+                    <div v-if="room" class="d-flex bd-highlight">
+                      <!-- Avatar -->
+                      <div class="img_cont">
+                        <img 
+                          :src="assets+'/media/gallery/'+companion.id+'_0.jpg'"
+                          class="rounded-circle user_img"
+                        >
+                        <span v-bind:class="{'offline': !onlineUsers.some(e => e.id == companion.id)}" class="online_icon"></span>
+                      </div>
+                      <!-- Info -->
+                      <div class="user_info">
+                        <span>
+                          {{room.companion.name}} {{room.companion.surname}}
+                        </span>
+                        <p>{{room.id}} - room</p>
+                      </div>
+                      <!-- Connection info -->
+                      <div class="user_info">
+                        <fa-icon icon="link" 
+                          :class="{
+                            'text-success'      : privateConnection.subscribed,
+                            'text-warning'      : privateConnection.pending,
+                            'text-danger'       : privateConnection.canceled
+                          }"  
+                        />
+                      </div>                                  
+                      <!-- Balance -->
+                      <div v-if="user.man" class="user_info">
+                        <span>
+                            Balance: {{user.balance}}$
+                        </span>
+                        <p>1  minute - {{user.membership.chat_price}}$  {{user.membership.name}}</p>
+                      </div>
+                      <!-- Timer -->
+                      <div v-if="user.man" class="user_info">
+                        <span>
+                           {{payedChatCaptions.currentTimer}}
+                        </span>
+                        <p>Total: - {{payedChatCaptions.totalPrice}}$</p>
+                      </div>                                      
+                      <!-- Stop     -->
+                      <div v-if="user.man" class="user_info">
+                        <button class="btn btn-primary" @click="stopPayedChat(room.id)">Stop</button>
+                      </div>                                 
+                      <!-- @@@ Timer pause -->
+                    </div>
+                      <!-- More @@@ ?? -->
+                      <!-- <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
+                      <div class="action_menu">
+                          <ul>
+                              <li><i class="fas fa-user-circle"></i> View profile</li>
+                              <li><i class="fas fa-users"></i> Add to close friends</li>
+                              <li><i class="fas fa-plus"></i> Add to group</li>
+                              <li><i class="fas fa-ban"></i> Block</li>
+                          </ul>
+                      </div> -->
+                  </div>
+
+                      
+                  <!-- Body -->
+                  <div class="card-body msg_card_body" v-chat-scroll>
+                    <div v-for="message in messages">
+                      <!-- Messages -->
+                      <div 
+                        v-bind:class="{
+                          'justify-content-start': message.user_id == user.id,
+                          'justify-content-end' : message.user_id != user.id 
+                        }"
+                        class="d-flex mb-4"
+                      >
+                      <img 
+                        v-if="message.user_id == user.id"
+                        :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
+                        class="rounded-circle user_img_msg"
+                      >
+                      <div 
+                        v-bind:class="{
+                          'man'  : 
+                            (message.user_id == user.id && user.man) ||
+                            (message.user_id == companion.id && room.companion.man),
+                          'msg_cotainer'      : message.user_id == user.id,
+                          'msg_cotainer_send' : message.user_id != user.id
+                        }"
+                      >
+                        {{message.body}}
+                        <!--<span 
+                              v-bind:class="{'msg_time'      : message.user_id == user.id,
+                                             'msg_time_send' : message.user_id != user.id}"
+                              >                                       
+                              {{message.created_at}}
+                          </span> -->
+                      </div>
+                      <img 
+                        v-if="message.user_id != user.id"
+                        :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
+                        class="rounded-circle user_img_msg"
+                      >
+                      </div>
+                    </div>
+                  </div>                        
+                  <!-- Footer -->
+                  <div class="send-message card-footer">
+                    <!-- Freeze -->
+                    <div>
+                      <div 
+                        v-if="inviteStatus(companion.id) === 1 && user.man === 1 && roomFreeze" 
+                        class="freeze"
+                      >
+                        <center>
+                          <button class="btn btn-primary m-4" @click="startPayedChat(room.id)">Start Chat</button>
+                        </center>
+                      </div>
+                      <!-- Invite -->
+                      <div class="invite freeze text-white">
+                        <div v-if="companion.name != ''">
+                          <!-- Deny -->
+                          <div v-if="inviteStatus(companion.id) === -1">
+                            <center>
+                              <p class="m-4">{{companion.name}} Denied</p>
+                            </center>
+                          </div>
+                          <!-- No invite -->
+                          <div v-if="inviteStatus(companion.id) === 0 && user.man === 1">
+                            <center>
+                              <button 
+                                class="btn btn-primary m-4" 
+                                @click="sendInvite(companion.id,2)"
+                              >
+                                Invite {{companion.name}} to Chat
+                              </button>
+                            </center>
+                          </div>
+                          <!-- Invited -->
+                          <div v-if="inviteStatus(companion.id) === 2 && user.man === 1">
+                            <center>
+                              <p>{{companion.name}} Invited</p>
+                              <p>Waiting Answer</p>
+                            </center>
+                          </div>
+                          <!-- Input -->
+                          <div v-if="inviteStatus(companion.id) === 3">
+                            <center>
+                              <button 
+                                class="btn btn-primary m-4" 
+                                @click="sendInvite(companion.id,1)"
+                              >
+                                Accept
+                              </button>
+                              <button 
+                                class="btn btn-primary m-4"
+                                @click="sendInvite(companion.id,-1)"
+                              >
+                                Deny
+                              </button>
+                            </center>
+                          </div>                                
+                        </div>  
+                      </div>
+                    </div>                          
+                    <!-- Chat send message -->
+                    <div class="input-group">
+                      <!-- Attach -->
+                      <div class="input-group-append">
+                        <span class="input-group-text attach_btn">
+                          <fa-icon icon="paperclip" />
+                        </span>
+                      </div>
+                      <!-- Send message -->
+                      <!-- Text body -->
+                      <textarea 
+                        v-on:keyup.enter="sendMessage()" 
+                        name="text" 
+                        class="form-control type_msg" 
+                        placeholder="Type your message..."
+                      ></textarea>
+                      <div @click="emojiPickerShow = !emojiPickerShow" class="input-group-append">
+                        <div class="input-group-text emoji_picker">
+                          <fa-icon icon="smile"/>
+                        </div>
+                      </div>
+                      <!-- Send button -->
+                      <div class="input-group-append" @click="sendMessage()">
+                        <span class="input-group-text send_btn">
+                          Send <fa-icon icon="arrow-right" class="pl-1"/>
+                        </span>
+                      </div>
+                    </div>                      
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 col-xl-3 chat">
+            <div class="card mb-sm-3 mb-md-0 contacts_card">
+              <!-- Recent chats -->
+              <recent-chat
+                :p-recent-rooms="recentRooms"
+                :p-room="room"
+                :p-online-users="onlineUsers"
+                :p-payed-chat="payedChat"
+                @select-room="selectRoom"
+              />
+              <picker 
+                v-show="emojiPickerShow"
+                native
+                @select="addEmoji" 
+                title="Pick your emoji…" 
+                emoji="point_up" 
+                :style="{ position: 'absolute', bottom: '20px', right: '20px' }" 
+              ></picker>
+              <div class="card-footer"></div>
+            </div>
+          </div>
+      </div>
+  </div>
 </template>
 
 <script>
 
-import VueChatScroll from 'vue-chat-scroll';
+    import VueChatScroll from 'vue-chat-scroll';
     // Font Awsome   
     import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
     // Vue.component('fa-icon', FontAwesomeIcon); 
@@ -225,6 +267,8 @@ import VueChatScroll from 'vue-chat-scroll';
     library.add(faArrowRight);
     import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
     library.add(faPaperclip);
+    import { faLink } from '@fortawesome/free-solid-svg-icons';
+    library.add(faLink);
     import { faSmile } from '@fortawesome/free-solid-svg-icons';
     library.add(faSmile);
 
@@ -243,8 +287,8 @@ import VueChatScroll from 'vue-chat-scroll';
         data(){
             return {
                 loading: {
-                    screen: true,
-                    room: false,
+                  screen: true,
+                  room: false,
                 },
                 user: {},
                 room: false,
@@ -259,28 +303,46 @@ import VueChatScroll from 'vue-chat-scroll';
                 emojiPickerShow:false,
                 //Timer
                 timer: {
-                        d3: d3.interval((elapsed) => {/**/},99999),
-                        time:'0:00',
-                        total:'0:00'
-                    },
+                  d3: d3.interval((elapsed) => {/**/},99999),
+                  time:'0:00',
+                  total:'0:00'
+                },
                 payed:false,
                 startBalance:0,
+                //private
+                payedChat:[],
+                history:false,
+                inviteOut:[],
+                inviteIn:[],
                 //files
                 assets:assets,   
                 //websockets
                 pusher : _pusher,
                 echo : new _echo({
-                          broadcaster: 'pusher',
-                          key: process.env.MIX_PUSHER_APP_KEY,
-                          cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-                          // encrypted: true,
-                          wsHost: window.location.hostname,
-                          wsPort: 6001,
-                          disableStats: true,
-                      }), 
+                  broadcaster: 'pusher',
+                  key: process.env.MIX_PUSHER_APP_KEY,
+                  cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+                  // encrypted: true,
+                  wsHost: window.location.hostname,
+                  wsPort: 6001,
+                  disableStats: true,
+                }), 
             }
         },
         computed:{
+          companion:function(){
+            if(this.room.companion != undefined){
+              return this.room.companion;
+            }
+            return {id:false,name:""};
+          },
+          companionAgree:function(){
+            if(this.companion.agree != undefined && this.companion.agree == true){
+              return true;
+            }
+
+            return false;
+          },
           session:function(){
               if(this.chatPrivateConnection != undefined && 
                 this.chatPrivateConnection.pusher != undefined && 
@@ -291,29 +353,95 @@ import VueChatScroll from 'vue-chat-scroll';
                 return false;
               }
           },
+          privateConnection:function(){
+            let r = {
+              subscribed: false,
+              pending:false,
+              cancelled:false,
+            }
+
+            if(this.chatPrivateConnection.subscription == undefined){
+              return r;
+            }
+
+            if(this.chatPrivateConnection.subscription.subscribed != undefined){
+              r.subscribed = this.chatPrivateConnection.subscription.subscribed;
+            }
+            if(this.chatPrivateConnection.subscription.subscriptionPending != undefined){
+              r.pending = this.chatPrivateConnection.subscription.subscriptionPending;
+            }
+            if(this.chatPrivateConnection.subscription.subscriptionCancelled != undefined){
+              r.cancelled = this.chatPrivateConnection.subscription.subscriptionCancelled;
+            }
+
+            return r;
+          },
+          onlineConnection:function(){
+            let r = {
+              subscribed: false,
+              pending:false,
+              cancelled:false,
+            }
+
+            if(this.chatOnlineConnection.subscription == undefined){
+              return r;
+            }
+
+            if(this.chatOnlineConnection.subscription.subscribed != undefined){
+              r.subscribed = this.chatOnlineConnection.subscription.subscribed;
+            }
+            if(this.chatOnlineConnection.subscription.subscriptionPending != undefined){
+              r.pending = this.chatOnlineConnection.subscription.subscriptionPending;
+            }
+            if(this.chatOnlineConnection.subscription.subscriptionCancelled != undefined){
+              r.cancelled = this.chatOnlineConnection.subscription.subscriptionCancelled;
+            }
+
+            return r;
+          },
+          payedChatCaptions(){
+            let payedChat = this.payedChat.find(x => x.room == this.room.id);
+            let r = {
+              currentTimer  :'0:00',
+              totalPrice    :'0:00'
+            }
+            if(payedChat != undefined) {
+              r.currentTimer = payedChat.captionTime;
+              r.totalPrice = payedChat.totalPrice;
+            }
+              
+            return r;
+          },
+          roomFreeze(){
+            let payedChat = this.payedChat.find(x => x.room == this.room.id);
+            if(payedChat != undefined) {
+              return payedChat.freeze;
+            }
+
+            return true;
+          }
         },        
         watch: {
             chatOnlineConnection: {
-                handler: function (val, oldVal) {this.setChatOnline();},
-                deep: true
+              handler: function (val, oldVal) {this.setChatOnline();},
+              deep: true
             }, 
             room:{
-                handler: function (val, oldVal) {this.roomHandler(val, oldVal);},
-                deep: true               
+              handler: function (val, oldVal) {this.roomHandler(val, oldVal);},
+              deep: true               
             },
             freeze:function(val) {
-
-                if(!val || !this.room || !this.user.man) {
-                    $('.freeze').hide();
-                    return;
-                }
-                $('.freeze').show();                
-                //Freeze size
-                let headHeight = $('.msg_head').outerHeight();
-                let bodyHeight = $('.chat').outerHeight();
-                let newHeight = bodyHeight - headHeight;
-                $('.freeze').outerHeight(newHeight+'px');
-                $('.freeze').css('margin-top',headHeight);
+              if(!val || !this.room || !this.user.man) {
+                  $('.freeze').hide();
+                  return;
+              }
+              $('.freeze').show();  
+              // //Freeze size chat+ footer
+              // let headHeight = $('.msg_head').outerHeight();
+              // let bodyHeight = $('.chat').outerHeight();
+              // let newHeight = bodyHeight - headHeight;
+              // $('.freeze').outerHeight(newHeight+'px');
+              // $('.freeze').css('margin-top',headHeight);
             }     
         },  
         notifications: {
@@ -338,482 +466,649 @@ import VueChatScroll from 'vue-chat-scroll';
             message: ""
           }
         },      
-        mounted() {  
-            //set user
-            this.user = this.prop_user;
+        mounted() {
+          //set user
+          this.user = this.prop_user;
 
-            // Recent Chats
-            this.setRecentRoom();
+          // Recent Chats
+          this.setRecentRoom();
 
-            //Join online broadcast
-            this.joinOnline();
+          //Join online broadcast
+          this.joinOnline();
 
-            //Get Balance / Membership
-            this.getUserMembership(this.user.id)
+          //Get Balance / Membership
+          this.getUserMembership(this.user.id);
+
+          //Resend invites
+          this.reSendInvites();
         },
         methods: {
+          //Emoji
+          addEmoji(emoji){
+              $('.type_msg').val($('.type_msg').val() + emoji.native); //@@@ between text
+              //@@@ close on blank click
+          },
+          //Online
+          async setChatOnline(){
+              //Get connection
+              let c = this.chatOnlineConnection;
+              //Refresh
+              let chatOnline = false;
+              
+              if( c.hasOwnProperty('subscription') && 
+                  c.subscription.hasOwnProperty('subscribed') &&
+                  c.subscription.subscribed)
+              {   //Success
+                  chatOnline = true;
+                  this.stopLoading();
+              }else{
+                  //Freeze chat
+                  this.startLoading();
+                  //Refresh users
+                  this.onlineUsers = [];
+              }  
 
-            //Emoji
-            addEmoji(emoji){
-                $('.type_msg').val($('.type_msg').val() + emoji.native); //@@@ between text
-            },
-            //@@@ close on blank click
+              //Exit if success
+              if(chatOnline) return true;
 
-            //Online
-            async setChatOnline(){
-                //Get connection
-                let c = this.chatOnlineConnection;
-                //Refresh
-                let chatOnline = false;
-                //Debug
-                // this.debug(c.hasOwnProperty('subscription') +' '+c.subscription.hasOwnProperty('subscribed')+' '+c.subscription.subscribed);
-                // console.log(c);
-                console.log('sub - '+c.subscription.subscribed +' pend - '+c.subscription.subscriptionPending);
-                
-                if( c.hasOwnProperty('subscription') && 
-                    c.subscription.hasOwnProperty('subscribed') &&
-                    c.subscription.subscribed)
-                {   //Success
-                    chatOnline = true;
-                    this.stopLoading();
-                }else{
-                    //Freeze chat
-                    this.startLoading();
-                    //Refresh users
-                    this.onlineUsers = [];
-                }  
+              //Show reconnect            
+              setTimeout(()=>{
+                  //Show reconnect
+                  let c = this.chatOnlineConnection;
+                  if(!c.hasOwnProperty('subscription'))               { this.reconnect = true; return; }    
+                  if(!c.subscription.hasOwnProperty('subscribed'))    { this.reconnect = true; return; }
+                  if(!c.subscription.subscribed)                      { this.reconnect = true; return; }
+              
+              },5000)
+          },
+          async joinOnline(){
+              //leave old chat
+              this.leaveOnline();
 
-                //Exit if success
-                if(chatOnline) return true;
-
-                //Show reconnect            
-                setTimeout(()=>{
-                    //Show reconnect
-                    let c = this.chatOnlineConnection;
-                    if(!c.hasOwnProperty('subscription'))               { this.reconnect = true; return; }    
-                    if(!c.subscription.hasOwnProperty('subscribed'))    { this.reconnect = true; return; }
-                    if(!c.subscription.subscribed)                      { this.reconnect = true; return; }
-                
-                },5000)
-            },
-            async joinOnline(){
-                //leave old chat
-                this.leaveOnline();
-
-                //Echo connect                
-                let c = await this.echo.join(`chat`)
-                    .here((users) => {
-                        this.setOnlineUsers(users);                                     
-                    })
-                    .joining((user) => {
-                        this.setOnlineUsers(user);
-                    })
-                    .leaving((user) => {
-                        this.setOnlineUsers(user,true);
-                    });
-
-                console.log(c);
-                //Save connection params
-                this.chatOnlineConnection = c;
-
-                return true;
-            },
-            ReconnectOnline(){
-                //@@@
-                window.location.reload()
-            },
-            async leaveOnline(){
-                this.onlineUsers =[];
-                await this.echo.leave('chat');
-                this.onlineChat = false;
-                return true;
-            },
-            async onlineReset(){
-                await this.leaveOnline();
-                await this.joinOnline();
-                return true;        
-            }, 
-            async setRecentRoom(){
-
-                //Get rooms
-                let rooms = await this.getRecentRoom();
-
-                //Set rooms
-                // console.log(rooms);
-                this.recentRooms = rooms;
-            },
-            async getRecentRoom(){
-               var r = await axios.get('/chat/recentRooms')
-                    .then((r) => {
-                        if(!r.data.error){
-                            return r.data.rooms;                           
-                        }else{
-                            this.showErrorMsg({message:r.data.text});
-                            return false;
-                        }
-                    })
-                    .catch((r) => {return false;});
-
-                return r;                
-            },
-            isOnline(id){
-                if (this.onlineUsers.some(e => e.id == id))
-                    return true;
-
-                return false;
-            },
-            photoPath(id){
-                //Get user
-                let _user = false;
-
-                do{
-                    //Check self
-                    _user = (this.user.id == id?this.user:false);
-                    if(_user){
-                        break;
-                    } 
-
-                    //Check in online
-                    _user = this.onlineUsers.find(x => x.id == id)
-                    if(_user){
-                        break;
-                    } 
-                    
-                    //Check in recent chats
-                    _user = this.recentRooms.find(x => x.companion.id == id);
-                    if(_user){
-                        break;
-                    }
-
-                }while(false);
-
-                
-                if(_user){
-                    let path = 'media/';
-                    _user.man ? path+='mans' : path+='girls';
-                    path+='/gallery/'+_user.id+'_0.jpg';
-                    return path;
-                }else{
-                    let error = 'error getting user '+id+' path'
-                    this.showErrorMsg({message:error})
-                    return false;
-                }
-            },
-            setOnlineUsers(users,del){
-
-                // @@@
-
-                // Check if array
-                if(Array.isArray(users)){
-                    // Add array
-                    users.forEach((user) => {
-                        // Check if array again
-                        if(Array.isArray(user)){
-                            user.forEach((u) => {
-                                if(typeof(u) === "object"){
-                                    if(del){
-                                        this.onlineUsers.splice(this.onlineUsers.indexOf(u), 1);
-                                    }else{
-                                      if(u.man != this.user.man)
-                                        this.onlineUsers.push(u);
-                                    }
-                                }
-                            })
-                        }else{
-                            if(typeof(user) === "object"){
-                                if(del){
-                                    this.onlineUsers.splice(this.onlineUsers.indexOf(user), 1);
-                                }else{
-                                  if(user.man != this.user.man)                   
-                                    this.onlineUsers.push(user);
-                                }
-                            }
-                        }
-                    });
-                }else{
-                    // Add single
-                    if(typeof(users) === "object"){
-                        if(del){
-                            this.onlineUsers.splice(this.onlineUsers.indexOf(users), 1);
-                        }else{
-                          if(user.man != this.user.man)                   
-                            this.onlineUsers.push(users);
-                        }
-                    }
-                }
-            },
-            selectUser(user){
-                this.loading.room = true;
-                this.user = user;
-                this.disconnectRoom();
-                this.loading.room = false;
-            },
-            async getUserMembership(userId){
-
-                //Set membership
-                this.user.membership = {};
-
-                if(this.user.man != 1) return false;
-
-                var r = await this.ax('get','/memberships/current',{user_id: userId});
-
-                if(r){
-                    this.user.membership = r;
-                }else{
-                    this.user.membership.name = 'none';
-                }
-
-                return true;
-            },
-            // Private Room
-            async roomHandler(val, oldVal){
-                //Exit room
-                if(!val) return;                
-
-                //Set room loading
-                this.loading.room = true;
-
-                //Set messages
-                await this.getMessages();
-
-                //Connect
-                if(!this.user.man || (val.connect)){
-                    //Connect room
-                    await this.connectRoom();
-                    //Check connect
-                    // @@@
-                    //Start timer
-                    if(this.user.man) this.startRoomTimer();
-
-                    this.loading.room = false;
-                    return;
-                }
-
-                //Freeze room                
-                this.stopPayedChat();
-                this.loading.room = false;
-                return;
-            },
-            async selectRoom(companionId){
-                this.loading.room = true;
-                this.disconnectRoom();
-                this.unFreezeRoom();
-
-                //Get Room
-                var room = await this.getRoom(companionId);
-                if(!room){
-                    let error = 'error getting room';
-                    this.showErrorMsg({message:error});
-                    this.loading.room = false;
-                    return false; //@@@ add some error
-                } 
-
-                //Set room
-                room.connect = false;
-                this.room = room;
-            },
-            async connectRoom(){
-
-              //Connect chanel
-              let c = await this.echo.join('privateChat.' + this.room.id) //@@@ private chat
-                  .listen('PrivateChat', ({message}) => {
-                      this.messages.push(message);
+              //Echo connect                
+              let c = await this.echo.join(`chat`)
+                  .listen('Chat', ({data}) => {
+                    this.eventHandler(data);
+                  })                
+                  .here((users) => {
+                      this.handleOnlineUsers(users);                                 
                   })
-
-              //Start History
-              let h = await this.ax('put','chat/history',{room:this.room.id,session:c.pusher.sessionID});
-
-              //disconnect
-              if(!h)
-                this.disconnectRoom();
+                  .joining((user) => {
+                      this.handleOnlineUsers(user);
+                  })
+                  .leaving((user) => {
+                      this.handleOnlineUsers(user,true);
+                  });
 
               //Save connection params
-              this.chatPrivateConnection = c;  
+              this.chatOnlineConnection = c;
 
-              return;                        
-            },
-            async disconnectRoom(){
-                //Exit if no room
-                if(!this.room) return;
-                //Disconncet room
-                let l = await this.echo.leave('privateChat.' + this.room.id);           
-                //Remove room
-                this.room.connect = false;
-                this.chatPrivateConnection = {};
+              return true;
+          },
+          ReconnectOnline(){
+              //@@@
+              window.location.reload()
+          },
+          async leaveOnline(){
+              this.onlineUsers =[];
+              await this.echo.leave('chat');
+              this.onlineChat = false;
+              return true;
+          },
+          async onlineReset(){
+              await this.leaveOnline();
+              await this.joinOnline();
+              return true;        
+          }, 
+          async setRecentRoom(){
+              //Get rooms
+              let rooms = await this.getRecentRoom();
+              //Set rooms
+              this.recentRooms = rooms;
+          },
+          async getRecentRoom(){
+              var r = await this.ax('get','/chat/recentRooms',{user_id:this.user.id});
 
-                return;
-            }, 
-            async getRoom(companionId){
-               var r = await axios.get('/room', {
-                        params: {
-                            'companionId':companionId,
-                            'userId':this.user.id
-                        }
-                    })
-                    .then((r) => {
-                        if(!r.data) return false;
+              return r;                
+          },
+          isOnline(id){
+              if (this.onlineUsers.some(e => e.id == id))
+                  return true;
 
-                        if(r.data.error == 1){
-                            this.showErrorMsg({message:r.data.text});
-                            return false;
-                        }
+              return false;
+          },
+          photoPath(id){
+              //Get user
+              let _user = false;
 
-                        return r.data;
-                    })
-                    .catch((r) => {return false;});
-                return r;
-            },  
-            //Payed chat
-            startPayedChat(){
+              do{
+                  //Check self
+                  _user = (this.user.id == id?this.user:false);
+                  if(_user){
+                      break;
+                  } 
 
-              if(this.user.man === 1){
-                if(parseFloat(this.user.membership.chat_price) > parseFloat(this.user.membership.balance)){                  
-                  this.showErrors("Low Balance!");
-                  return;
-                }
-              }
-
-              this.user.membership.balance -= this.user.membership.chat_price;
-              this.user.membership.balance = this.user.membership.balance.toFixed(2);
-              this.unFreezeRoom();
-              this.room.connect = true;
-            },
-            stopPayedChat(){
-
-              //Stop history
-              if(this.session){
-                this.ax('post','chat/stop',{'roomId':this.room.id,'session':this.session});
-              }
-
-              this.freezeRoom();
-              this.stopRoomTimer(); 
-              this.disconnectRoom();              
-              this.room.connect = false;
-            },
-            startRoomTimer(){
-                this.unFreezeRoom();
-                this.startBalance = this.user.membership.balance;
-                let pricePerSecond = this.user.membership.chat_price / 60;    
-                this.timer.total = parseFloat(this.user.membership.chat_price).toFixed(2);            
-                this.timer.d3 = d3.interval((elapsed) => {
-
-                    //Timer                    
-                    let seconds = parseInt(elapsed / 1000);
-                    let minutes = parseInt(seconds / 60); 
-                    let _seconds = seconds % 60;
-                    this.timer.time = minutes+":"+_seconds;
-
-                    if(seconds > 60){
-                      //Total                    
-                      this.timer.total = parseFloat((pricePerSecond * seconds)).toFixed(2);
-
-                      //pay
-                      if(seconds % 10 == 0 && seconds > 1){
-                        if(!this.payed){
-                          this.payChat();
-                          this.payed = true;
-                        }
-                      }else{
-                        this.payed = false;
-                      }
-
-                      //Balance
-                      this.user.membership.balance = (this.startBalance - this.timer.total).toFixed(2);
-                      if(this.user.membership.balance < 0){
-                        this.user.membership.balance = (0).toFixed(2);
-                        this.stopPayedChat();
-                        this.showErrors("Low Balance!");
-                      }
-                    }
-                    
-                }, 250);
-            },
-            stopRoomTimer(){
-                this.timer.d3.stop();
-                this.timer.time = "0:00";
-                this.timer.total = "0:00";
-            },
-            payChat(){              
-              if(this.payed) return false;
-
-              this.payed = true;
-
-              let r = this.ax('post','/chat/pay',{'roomId':this.room.id,'session': this.session});
-              
-            },
-            freezeRoom(){
-                if(this.user.man)
-                    this.freeze = true;
-                else
-                    this.freeze = false;
-            },
-            unFreezeRoom(){
-                //
-                this.freeze = false;
-            },
-            //Messages
-            async getMessages(){
-                var r = await axios.get('/chat/messages', {
-                        params: {
-                            'userId':this.user.id,
-                            'roomId':this.room.id,
-                        }
-                    })
-                    .then((r) => {
-                        if(!r.data) return false;
-
-                        if(r.data.error){
-                            this.showErrorMsg({message:r.data.text});
-                            return false;
-                        }
-
-                        if(!r.data.messages){
-                        }
-
-                        this.messages = r.data.messages;
-
-                    })
-                    .catch((r) => {return false;});             
-            },
-            async sendMessage(){
-
-              //Clear message
-              let message = $('.type_msg').val();
-              $('.type_msg').val("");
-              let session = this.chatPrivateConnection.pusher.sessionID;
-              
-              let data = {
-                      'userId':this.user.id,
-                      'roomId':this.room.id,
-                      'session': session,
-                      'body': message
+                  //Check in online
+                  _user = this.onlineUsers.find(x => x.id == id)
+                  if(_user){
+                      break;
+                  } 
+                  
+                  //Check in recent chats
+                  _user = this.recentRooms.find(x => x.companion.id == id);
+                  if(_user){
+                      break;
                   }
 
+              }while(false);
 
-              let r = await this.ax('put','/chat/messages',data);
+              
+              if(_user){
+                  let path = 'media/';
+                  _user.man ? path+='mans' : path+='girls';
+                  path+='/gallery/'+_user.id+'_0.jpg';
+                  return path;
+              }else{
+                  let error = 'error getting user '+id+' path'
+                  this.showErrorMsg({message:error})
+                  return false;
+              }
+          },
+          //Online
+          addOnlinetUser(user){
+            this.onlineUsers.push(user);
+          },
+          removeOnlineUser(user){
+            this.onlineUsers.splice(this.onlineUsers.indexOf(user), 1);
+          },
+          handleOnlineUsers(users,del = false){
+
+            //Form data
+
+              // set single user ass array
+              if(!Array.isArray(users)){
+                users = [users];
+              }
+
+              // get array from array
+              $.each(users, (i, v) => {
+                if(Array.isArray(v)){
+                  $.each(v, (j, k) => {
+                     users.push(k);
+                  });
+                  delete users[i];
+                }
+              });
+
+            //Hadnle data
+
+              $.each(users, (i, v) => {
+                if(typeof(v) === "object"){
+                  if(!del){
+                    //Add
+                    this.addOnlinetUser(v);
+                  }else{
+                    //del
+                    this.removeOnlineUser(v);                    
+                  }
+
+                }
+              });
+
+              return;
+
+              // Check if array
+              if(Array.isArray(users)){
+                  // Add array
+                  users.forEach((user) => {
+                      // Check if array again
+                      if(Array.isArray(user)){
+                          user.forEach((u) => {
+                              if(typeof(u) === "object"){
+                                  if(del){
+                                      this.onlineUsers.splice(this.onlineUsers.indexOf(u), 1);
+                                  }else{
+                                    if(u.man != this.user.man)
+                                      this.onlineUsers.push(u);
+                                  }
+                              }
+                          })
+                      }else{
+                          if(typeof(user) === "object"){
+                              if(del){
+                                  this.onlineUsers.splice(this.onlineUsers.indexOf(user), 1);
+                              }else{
+                                if(user.man != this.user.man)                   
+                                  this.onlineUsers.push(user);
+                              }
+                          }
+                      }
+                  });
+              }else{
+                // Add single
+                if(typeof(users) === "object"){
+                  console.log(users);
+                  if(del){
+                    this.onlineUsers.splice(this.onlineUsers.indexOf(users), 1);
+                  }else{
+                    if(users.man != this.user.man)                   
+                      this.onlineUsers.push(users);
+                  }
+                }
+              }
+          },
+          selectUser(user){
+              this.loading.room = true;
+              this.user = user;
+              this.disconnectRoom();
+              this.loading.room = false;
+          },
+          async getUserMembership(userId){
+
+              //Set membership
+              this.user.membership = {};
+
+              if(this.user.man != 1) return false;
+
+              var r = await this.ax('get','/memberships/current',{user_id: userId});
+
+              if(r){
+                  this.user.membership = r;
+              }else{
+                  this.user.membership.name = 'none';
+              }
+
+              return true;
+          },
+          // Private Room
+          inviteStatus(id){
+            //Invites
+            let out = this.inviteOut.find(x => x.id == id);
+            let $in =  this.inviteIn.find(x => x.id == id);
+
+            //Deny
+            if($in != undefined && $in.status == -1)return -1;
+
+            //No invite
+            if(!out && !$in)return 0;
+
+            //Accept
+            if(out && $in)return 1;
+
+            //Invited
+            if(out && !$in) return 2;
+
+            //Input
+            if(!out && $in) return 3;
+
+            return invite.status;
+          },
+          async selectRoom(companionId){
+
+            //check active chat
+            if(this.user.man === 1){
+              let i = this.payedChat.findIndex(x => x.room == this.room.id);
+              if(i > -1){
+                console.log('active chat');
+                //continue
+
+                //cancel
+                // return;
 
 
-            },
-            //Other
-            startLoading(){
-                this.loading.screen = true;
-            },
-            stopLoading(){
-                this.loading.screen = false;
+                //stop
+                // this.stopPayedChat(this.room.id);
+
+
+              }
             }
+
+            this.loading.room = true;
+            await this.disconnectRoom();
+
+            //Get Room
+            var room = await this.getRoom(companionId);
+            if(!room){
+                let error = 'error getting room';
+                this.showErrorMsg({message:error});
+                this.loading.room = false;
+                return false; //@@@ add some error
+            } 
+
+            //Set room
+            room.connect = true;
+            this.room = room;
+
+            //Set readed
+            this.readRoom();
+            //freeze room
+            this.freezeRoom();
+          },
+          async roomHandler(val, oldVal){
+              //Exit room
+              if(!val) return;                
+
+              //Set room loading
+              this.loading.room = true;
+
+              //Set messages
+              await this.getMessages();
+
+              //Connect
+              if(val.connect){
+                //Connect room
+                await this.connectRoom();
+                this.loading.room = false;
+                return;
+              }else{
+                //Disconnect room  
+                await this.disconnectRoom();             
+                this.loading.room = false;
+                return;
+              }
+          },            
+          async connectRoom(){
+
+            //Connect chanel
+            let c = await this.echo.join('privateChat.' + this.room.id) //@@@ private chat
+              .listen('PrivateChat', ({message}) => {
+                  this.messages.push(message);
+              })
+
+            //Save connection params
+            this.chatPrivateConnection = c;  
+
+            return;                        
+          },
+          async disconnectRoom(){
+              //Exit if no room
+              if(!this.room) return;
+              //Disconncet room
+              let l = await this.echo.leave('privateChat.' + this.room.id);           
+              //Remove room
+              this.room = false;
+              this.chatPrivateConnection = {};
+
+              return;
+          }, 
+          async getRoom(companionId){
+             var r = await axios.get('/room', {
+                      params: {
+                          'companionId':companionId,
+                          'userId':this.user.id
+                      }
+                  })
+                  .then((r) => {
+                      if(!r.data) return false;
+
+                      if(r.data.error == 1){
+                          this.showErrorMsg({message:r.data.text});
+                          return false;
+                      }
+
+                      return r.data;
+                  })
+                  .catch((r) => {return false;});
+              return r;
+          },
+          async readRoom(){
+            //Set front read
+            this.recentRooms[this.recentRooms.findIndex(x => x.id == this.room.id)].read = true;
+
+            //Set back read
+            this.ax('post','/chat/read',{'user_id':this.user.id,'room_id':this.room.id});
+          } ,
+          //Payed chat
+          async startPayedChat(roomId){
+
+            let l = this.showLoading('.send-message.card-footer');
+            //check exists
+            let i = this.payedChat.findIndex(x => x.room == roomId);
+            if(i > -1){this.hideLoading(l); return;}
+
+            let payedChat = {};
+            payedChat.room = roomId;
+
+            //Check balance
+            if(this.user.man === 1){
+              if(parseFloat(this.user.membership.chat_price) > parseFloat(this.user.balance)){         
+                this.showErrors("Low Balance!");
+                return;
+              }
+            }
+
+            // Start History
+            let h = await this.ax('put','chat/history',{room:roomId,session:this.session});
+            if(!h){this.hideLoading(l);return false;}
+            payedChat.history = h;
+
+            //Unfreeze Room
+            // this.unFreezeRoom();
+            payedChat.freeze = false;
+
+            //set pays
+            payedChat.startBalance = this.user.balance;
+            payedChat.pricePerSecond = this.user.membership.chat_price / 60;
+            payedChat.totalPrice = parseFloat(this.user.membership.chat_price).toFixed(2);
+            payedChat.totalPayed = parseFloat(0).toFixed(2);
+            payedChat.captionTime = '0:00';
+            payedChat.payed = false;
+
+            //edit balance
+            this.user.balance = (this.user.balance-this.user.membership.chat_price).toFixed(2);
+
+            //Add timer
+            payedChat.timer = this.startRoomTimer(roomId);
+
+            console.log(payedChat);
+
+            this.payedChat.push(payedChat);
+
+            this.hideLoading(l);
+          },
+          stopPayedChat(roomId){
+
+            let i = this.payedChat.findIndex(x => x.room == roomId);
+
+            //stop time
+            console.log(this.payedChat[i].timer);
+            this.payedChat[i].timer.stop();            
+            //Stop history
+            this.ax('post','chat/stop',{'history':this.payedChat[i].history});
+
+            //delete payed chat
+            // delete this.payedChat[i];
+            this.payedChat[i].room = -1;
+          },
+          startRoomTimer(roomId){
+
+            return d3.interval((elapsed) => 
+            {
+
+              let i = this.payedChat.findIndex(x => x.room == roomId);
+
+              // console.log(this.payedChat[i]);
+              // //Timer                    
+              let seconds = parseInt(elapsed / 1000);
+              let minutes = parseInt(seconds / 60); 
+              let _seconds = seconds % 60;
+              this.payedChat[i].captionTime = minutes+":"+_seconds;
+
+
+              if(seconds > 60){
+                //Total
+                this.payedChat[i].totalPrice = (
+                  parseFloat(this.payedChat[i].pricePerSecond * seconds)                   
+                  // parseFloat(this.user.membership.chat_price)
+                ).toFixed(2);
+                //Pay
+                if(seconds % 10 == 0 && seconds > 61){
+                  if(!this.payedChat[i].payed){
+                    this.payChat(this.payedChat[i].history);
+                    this.payedChat[i].payed = true;
+                  }
+                }else{
+                  this.payedChat[i].payed = false;
+                }
+
+                //Balance
+                let pay = parseFloat(this.payedChat[i].totalPrice) -
+                          parseFloat(this.payedChat[i].totalPayed);
+                            
+
+                          
+                pay = (pay).toFixed(2);
+
+                console.log(pay);
+
+                if(pay < 0) pay = 0;              
+
+                
+
+                this.user.balance = (this.user.balance - pay).toFixed(2);
+
+                this.payedChat[i].totalPayed = parseFloat(this.payedChat[i].totalPayed) + 
+                                               parseFloat(pay);
+
+                //Low balance
+                if(this.user.balance < 0){
+                  this.user.balance = (0).toFixed(2);
+                  this.stopPayedChat(roomId);
+                  this.showErrors("Low Balance!");
+                }
+              }
+                
+            }, 250);
+          },
+          stopRoomTimer(){
+              this.timer.d3.stop();
+              this.timer.time = "0:00";
+              this.timer.total = "0:00";
+          },
+          payChat(history){
+            console.log('pay');
+            let r = this.ax('post','/chat/pay',{'history':history});
+          },
+          async sendInvite(companion,status,silence= false){
+            
+            let companionId = companion;
+            let l;
+            if(!silence){
+              l = this.showLoading('.freeze.invite');
+            }
+
+            let r = await this.ax('post','/chat/invite',{'from':this.user.id,"to":companionId,'status':status});
+            if(!r){
+              if(!silence)this.hideLoading(l);
+              return;
+            }
+
+            if(!silence){this.inviteOut.push({'id':companionId,'status':status});}
+
+            if(!silence)this.hideLoading(l);
+            return;
+          },
+          reSendInvites() {
+            setTimeout(() => {
+              if(this.inviteOut.length > 0){
+                $.each(this.inviteOut, (index, v) => {
+                  if(this.inviteStatus(v.id) === 2){
+                    this.sendInvite(v.id,2,true);
+                  };
+                });
+
+              }
+              this.reSendInvites();
+            }, 15000);
+          },
+          freezeRoom(){
+              if(this.user.man)
+                  this.freeze = true;
+              else
+                  this.freeze = false;
+          },
+          unFreezeRoom(){
+              //
+              this.freeze = false;
+          },
+          //Messages
+          async getMessages(){
+              var r = await axios.get('/chat/messages', {
+                      params: {
+                          'userId':this.user.id,
+                          'roomId':this.room.id,
+                      }
+                  })
+                  .then((r) => {
+                      if(!r.data) return false;
+
+                      if(r.data.error){
+                          this.showErrorMsg({message:r.data.text});
+                          return false;
+                      }
+
+                      if(!r.data.messages){
+                      }
+
+                      this.messages = r.data.messages;
+
+                  })
+                  .catch((r) => {return false;});             
+          },
+          async sendMessage(){
+            //Clear message
+            let message = $('.type_msg').val();
+            $('.type_msg').val("");
+            let session = this.chatPrivateConnection.pusher.sessionID;
+            
+            let data = {
+                    'userId':this.user.id,
+                    'roomId':this.room.id,
+                    'history':this.history,
+                    'session': session,
+                    'body': message
+                }
+
+            let r = await this.ax('put','/chat/messages',data);
+          },
+          //Notifications
+          eventHandler(data){
+            // console.log(data);
+
+            switch (data.type) {
+              case 'message':
+                // check if current room
+                if(this.room.id == data.room) return;
+                //Check if user room
+                let i = this.recentRooms.findIndex(x => x.id == data.room);
+                if(i < 0) return;
+                //Set unread
+                this.recentRooms[i].read = false;
+                break;
+              case 'invite':
+                if(data.to == this.user.id){
+                  if(this.inviteStatus(data.from) === 1) {
+                    this.sendInvite(data.from,1)
+                  }
+
+                  this.inviteIn.push({"id":data.from,"status":data.status});
+                }
+                break;
+              default:
+                return;
+                break;
+            }
+          },
+          //Other
+          startLoading(){
+            this.loading.screen = true;
+          },
+          stopLoading(){
+            this.loading.screen = false;
+          }
         }
     }
 
-
-
-    //@@@
-
-    /*
-
-man получать сообщения только при конекте
-
-
-    */
 </script>
 
 <style>
@@ -852,9 +1147,13 @@ man получать сообщения только при конекте
     }
     .freeze {
         z-index: 200;
+        width: 100%;
+        position: absolute;
         background-color: #00082eeb !important;
         border: 1px solid black !important;
-        border-radius: 0px 0px 10px 10px !important;        
+        border-radius: 0px 0px 10px 10px !important;    
+        bottom: -1px;
+        left: 0px;    
     }    
     .chat{
         margin-top: auto;

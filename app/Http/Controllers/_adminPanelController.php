@@ -145,8 +145,8 @@ abstract class _adminPanelController extends Controller
         //Get Model
         $model = new $this->model; 
         
-        //Validate
-        $model->validate($request); 
+        // Validate
+        // $model->validate($request); 
 
         //Edit
         $post = $model->editRow($request->all());
@@ -207,20 +207,22 @@ abstract class _adminPanelController extends Controller
     public function _search(Request $request){
 
       //Get request data
-      $columns = $request->columns;
+      $columns = (isset($request->columns)) ? $request->columns : false;
       $search  = $request->search;
 
       //Convert to array
-      $columns = json_decode($columns);
-      foreach ($columns as $k => $v) {
-        $columns[$k] = (array)$v;
+      if($columns){
+        $columns = json_decode($columns);
+        foreach ($columns as $k => $v) {
+          $columns[$k] = (array)$v;
+        }        
       }
 
       //Get Model
       $model = new $this->model();
 
       //Settings
-      $model->setColumns($columns);
+      if($columns)  $model->setColumns($columns);     
       $model->setSearch($search);
 
       //Get Data

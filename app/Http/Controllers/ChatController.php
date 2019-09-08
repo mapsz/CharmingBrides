@@ -9,10 +9,12 @@ use App\Message;
 use Auth;
 use App\Events\ChatInvite;
 use App\Events\PrivateChat;
+use App\Events\ChatNotification;
 use App\Events\Chat;
 use App\ChatHardOnline;
 use App\ChatHistory;
 use Illuminate\Support\Facades\Log;
+use App\Rules\CurrentUserOrAdmin;
 
 class ChatController extends Controller
 {
@@ -27,6 +29,43 @@ class ChatController extends Controller
         return view('pages.chat')->with('user', json_encode(User::getWithInfo(Auth::id())));
     }
 
+    public function chatInvite(Request $request){
+
+      //Validation
+      if(!isset($request->from) || !isset($request->to) || !isset($request->status)){
+        return response()->json(['error' => '1']);
+      }            
+      $request->validate([
+        'from'=> new CurrentUserOrAdmin
+      ]);
+
+      //Invite
+      Chat::dispatch([
+        'type' => 'invite',
+        'from' => $request->from,
+        'to' => $request->to,
+        'status' => $request->status
+      ]);
+
+      return response()->json(['error' => '0']);
+
+    }
+
+    public function roomRead(Request $request){
+
+      if(!isset($request->room_id) || !isset($request->user_id)){
+        return response()->json(['error' => '1']);
+      }      
+
+      //Validation
+      $request->validate([
+        'user_id'=> new CurrentUserOrAdmin
+      ]);
+
+      ChatHistory::roomRead($request->room_id,$request->user_id);
+
+      return response()->json(['error' => '0']);
+    }
 
     public function startHistory(Request $request){
 
@@ -44,21 +83,21 @@ class ChatController extends Controller
     }
 
     public function stopChat(Request $request){
-      if(!isset($request->roomId) || !isset($request->session)){
+      if(!isset($request->history)){
         return response()->json(['error' => '1', 'text' => 'Data error!']);
       }
 
-      $id = ChatHistory::stopChat($request->roomId,$request->session);
+      $id = ChatHistory::stopChat(0,0,$request->history);
 
       return response()->json(['error' => '0']);
     }
 
     public function payChat(Request $request){
-      if(!isset($request->roomId) || !isset($request->session)){
+      if(!isset($request->history)){
         return response()->json(['error' => '0']);
       }
 
-      $id = ChatHistory::payChat($request->roomId,$request->session);
+      $id = ChatHistory::payChat(0,0,$request->history);
 
       return response()->json(['error' => '0']);
     }    
@@ -219,23 +258,42 @@ class ChatController extends Controller
       if(!$this->userBelongToRoom($userId, $roomId))
           return response()->json(['error' => '1', 'text' => 'User doesnt belong to this room']);
 
-      //Pay Chat
-      if(User::getWithInfo(Auth::user()->id)['man'] === 1){
-        if(!ChatHistory::payChat($roomId, $session)){
-          return response()->json(['error' => 1, 'text' => 'Somethink gone wrong']);
+      //Prepare message
+      $message = New Message;
+      $message->user_id = $userId;
+      $message->room_id = $roomId;
+      $message->body = $body;
+
+      //Man busines
+      $user = User::getWithInfo(Auth::user()->id);
+      if($user['man'] === 1){
+
+        if($user['balance'] == 0){
+          response()->json(['error' => '1', 'text' => 'Low balance!']);
+        }
+
+        if(!$request->history) return response()->json(['error' => '1', 'text' => 'Somethink gone wrong', 'code' => 1]);
+
+        //Pay chat
+        if(!ChatHistory::payChat($roomId, $session,$request->history)){
+          return response()->json(['error' => 1, 'text' => 'Somethink gone wrong', 'code' => 2]);
         }       
       }
 
 
       //Store message
-      $message = New Message;
-      $message->user_id = $userId;
-      $message->room_id = $roomId;
-      $message->body = $body;
-      $message->save();
+      if(!$message->save()){
+        return response()->json(['error' => 1, 'text' => 'Somethink gone wrong', 'code' => 3]);
+      }
 
       //Trigger event
-      PrivateChat::dispatch($roomId, $message, $session);
+      PrivateChat::dispatch($roomId, $message);
+      //Notification
+      Chat::dispatch([
+        'type' => 'message',
+        'from' => $userId,
+        'room' => $roomId
+      ]);
 
       //return
       return response()->json(['error' => 0]);
@@ -273,58 +331,45 @@ class ChatController extends Controller
         return true;
     }
 
-    public function getRecentRooms(){
+    public function getRecentRooms(Request $request){
 
-        //Current user id
-        $userId = Auth::user()->id;
+        //Validation
+        $request->validate([
+          'user_id'=> new CurrentUserOrAdmin
+        ]);
 
-        //Get rooms list
-        // $rooms = Room::with('user')->get();
+        $userId = $request->user_id;
 
-        $rooms = Room::whereHas('user', function ($query) use($userId) {
-                $query->where('id', '=', $userId);
-            })->with(['message' => function ($query) {
-                $query->orderBy('updated_at', 'DESC
-                    ');
-            }])->get();
+        //Get rooms
+        $user = User::
+          with(['room' => function($q)use($userId){
+            $q->has('message')
+            ->with(['user' => function($q3)use($userId){
+              $q3->where('id','<>',$userId)->with('girl')->with('man');
+            }])
+            ->with(['message' => function($q2){
+              $q2->orderBy('updated_at', 'DESC');
+            }]);
+          }])->find($userId);
 
+        $rooms = $user['room'];
 
-
-        //Set last activities
-        foreach ($rooms as $k => $room) {
-            if (isset($room->message[0])){
-                //Last message
-                $rooms[$k]['lastActivity'] = $room->message[0]->updated_at;
-            }else{
-                //Room update if no message
-                $rooms[$k]['lastActivity'] = $room->updated_at;
-            }            
+        //Formate rooms 
+        $fRoom = [];
+        foreach ($rooms as $k => $v) {
+          $fr['id'] = $v['id'];
+          $fr['lastActivity'] = $v['message'][0]['updated_at']->timestamp;
+          $fr['read'] = $v['message'][0]['updated_at'] < $v['pivot']['read'];
+          $fr['companion'] = User::getWithInfo($v['user'][0]['id'],$v['user'][0]);
+          array_push($fRoom, $fr);
         }
-        //Sort by actovities
-        $rooms = $rooms->sortBy('lastActivity')->reverse();
   
+        //Sort
+        usort($fRoom, function($a, $b) {
+          return $b['lastActivity'] <=> $a['lastActivity'];
+        });
 
-
-        //Form return array
-        $r = [];
-        $i = 0;
-        foreach ($rooms as $k => $room) {
-             $r[$i]['id'] = $room->id;
-             $r[$i]['lastActivity'] = $room['lastActivity']->timestamp;
-
-             // Add companion
-             foreach ($room->user as $l => $user) {
-                if($user['id'] != $userId){
-                    $r[$i]['companion'] = User::getWithInfo($user['id']);
-                    break;               
-                }
-            }
-
-            $i++;
-
-        }     
-
-        return response()->json(['error' => false, 'rooms' => $r]);
+        return response()->json(['error' => false, 'data' => $fRoom]);
     }
 
     public function getHardOnline(){

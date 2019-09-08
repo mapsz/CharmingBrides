@@ -28,7 +28,6 @@ class GirlController extends _adminPanelController
         return redirect('/');
       }
 
-
       //Remove $girl['girl']
       $g = $girl['girl'];
       $g['id'] = $girl['id'];

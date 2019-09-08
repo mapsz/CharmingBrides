@@ -33,6 +33,6 @@ class ChatNotification
      */
     public function broadcastOn()
     {
-        return new PresenceChannel('chatNotification.' . $this->from);
+        return new PresenceChannel('chat');
     }
 }

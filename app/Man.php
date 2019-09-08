@@ -19,6 +19,14 @@ class Man extends _adminPanel
     ],
     ['name' => 'name'],
     [
+      'name' => 'surname',
+      'caption' => 'surname',
+    ], 
+    // [
+    //   'name' => 'age',
+    //   'caption' => 'age',
+    // ],     
+    [
       'name' => 'user_id',
       'caption' => 'email',
       'relation' => 'user.email',
@@ -31,6 +39,11 @@ class Man extends _adminPanel
       'component' => 'men-membership',
     ]
   ];  
+//age, location, created_at, last online, favorites,
+//send admin email
+
+  // Извините, David занят в данный момент, пожалуйста, попробуйте начать чат с David позже, вы также можете начать новый чат с любым из мужчин, которые сейчас на сайте.
+
 
   protected $inputs    = [
       [ //Email
@@ -75,6 +88,17 @@ class Man extends _adminPanel
       parent::__construct($this->single, $this->multi, $this->page, $this->inputs);
   }
 
+  public function validate($request){
+    $val = $request->validate([
+        'email'          => 'required|unique:users',
+        'password'       => 'required',
+        'name'       => 'required',
+    ]);
+
+    return $val;
+  }
+
+
 
   public function setColumns($columns){
 
@@ -92,6 +116,7 @@ class Man extends _adminPanel
     }
 
   }
+
 
 
   protected $guarded = [];

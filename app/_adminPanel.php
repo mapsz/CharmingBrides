@@ -206,7 +206,7 @@ class _adminPanel extends Model
           foreach ($this->columns as $k => $v) {
             //@@@ не ищет по связям
             //remove belongs to one @@@
-            if(isset($v['relationBelongsToOne'])) continue;
+            if(isset($v['relationBelongsToOne']) || isset($v['relation'])) continue;
             //add search
             $getData->orWhere($v['name'], 'LIKE', '%'. $this->search .'%');
           }
@@ -715,8 +715,6 @@ class _adminPanel extends Model
       }
 
       return true;
-
-
     }
     private function sorInputs(){
       $inputs = ['simple' => [],'parent' => [],'files' => []];
@@ -737,8 +735,6 @@ class _adminPanel extends Model
 
       return $inputs;
     }
-
-
     public function deleteRow($id){
 
       //Get row
