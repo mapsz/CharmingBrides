@@ -1,8 +1,8 @@
 <template>
-    <div class="container-fluid">
-      <button class="btn btn-success float-right text-dark" type="button"  data-toggle="modal" data-target="#exampleModal">
-        <b>Girls Online ({{onlineGirls.length}})</b>
-      </button>
+  <div class="container-fluid">
+    <button class="btn btn-success float-right text-dark" type="button"  data-toggle="modal" data-target="#exampleModal">
+      <b>Girls Online ({{onlineGirls.length}})</b>
+    </button>
 
 
   <!-- Modal -->
