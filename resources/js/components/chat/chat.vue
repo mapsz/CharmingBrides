@@ -706,6 +706,7 @@
               this.user = user;
               this.disconnectRoom();
               this.loading.room = false;
+              this.setRecentRoom();
           },
           async getUserMembership(userId){
 
