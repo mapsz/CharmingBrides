@@ -87,6 +87,35 @@ class Girl extends _adminPanel
         'example' => 'Kiev',
         'required' => false,
       ],
+      [ //Photo
+          'name'            => 'photo',
+          'type'            => 'file',
+          'maxFileCount'    => 8,
+          'path'            => 'media\gallery',
+          'fileName'        => '`parentId`_`rand`',
+          'maxFileSize'     => '5mb',
+          'fileType'        => ['image/*',],  
+          'main'            => '`parentId`_0',
+      ],
+      [ //Passport
+          'name'            => 'passport',
+          'type'            => 'file',
+          'maxFileCount'    => 1,
+          'path'            => 'media\passport',
+          'fileName'        => '`parentId`_`rand`',
+          'maxFileSize'     => '10mb',
+          'fileType'        => ['image/*',],   
+      ],
+      [ //Video
+          'name'            => 'video',
+          'type'            => 'file',
+          'maxFileCount'    => 1,
+          'path'            => 'media\video',
+          'fileName'        => '`parentId`_`rand`',
+          'maxFileSize'     => '20mb',
+          'fileType'        => ['video/*',], 
+          'required'        => false,  
+      ],
       [ //weight
         'name' => 'weight',
         'type' => 'number',
@@ -281,34 +310,6 @@ class Girl extends _adminPanel
         'type' => 'text',
         'required' => false,
       ],
-      [ //Photo
-          'name'            => 'photo',
-          'type'            => 'file',
-          'maxFileCount'    => 8,
-          'path'            => 'media/gallery',
-          'fileName'        => '`parentId`_`i`',
-          'maxFileSize'     => '5mb',
-          'fileType'        => ['image/*',],   
-      ],
-      [ //Passport
-          'name'            => 'passport',
-          'type'            => 'file',
-          'maxFileCount'    => 1,
-          'path'            => 'media\passport',
-          'fileName'        => '`parentId`_`i`',
-          'maxFileSize'     => '10mb',
-          'fileType'        => ['image/*',],   
-      ],
-      [ //Video
-          'name'            => 'video',
-          'type'            => 'file',
-          'maxFileCount'    => 1,
-          'path'            => 'media\video',
-          'fileName'        => '`parentId`_`i`',
-          'maxFileSize'     => '20mb',
-          'fileType'        => ['video/*',], 
-          'required'        => false,  
-      ],
   ];
 
   public function __construct(){
@@ -319,6 +320,7 @@ class Girl extends _adminPanel
   public function validate($request){
     $val = $request->validate([
         'email'          => 'required|unique:users',
+        'name'           => 'required',
     ]);
 
     return $val;

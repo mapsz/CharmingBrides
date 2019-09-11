@@ -175,7 +175,7 @@ class _adminPanel extends Model
 
 
     //Data
-    private function setData(){      
+    private function setData(){
         //Set Colimns
         $columns = $this->setDataColumns($this->columns);
         $this->setColumns($columns);
@@ -204,9 +204,24 @@ class _adminPanel extends Model
         //Search
         if($this->search){
           foreach ($this->columns as $k => $v) {
-            //@@@ не ищет по связям
+            //Relation
+            if(isset($v['relation'])){
+              $db = array();
+              //get table
+              $db['table'] = substr($v['relation'], 0, strpos($v['relation'], '.'));
+              //get column
+              $db['column'] = substr($v['relation'], strpos($v['relation'], '.')+1);
+              //search
+              $db['search'] = $this->search;
+
+              $getData->orWhereHas($db['table'], function ($query)use($db) {
+                $query->where($db['column'], 'like', '%'. $db['search'] .'%');
+              });
+
+              continue;
+            }
             //remove belongs to one @@@
-            if(isset($v['relationBelongsToOne']) || isset($v['relation'])) continue;
+            if(isset($v['relationBelongsToOne'])) continue;
             //add search
             $getData->orWhere($v['name'], 'LIKE', '%'. $this->search .'%');
           }
@@ -224,6 +239,7 @@ class _adminPanel extends Model
         //Set data
         $this->dbData = $getData->get();
     }
+
     private function addDbRelations($columns, $getData, $listRelation = false){
 
         if($listRelation) $list = [];
@@ -526,7 +542,7 @@ class _adminPanel extends Model
       // jpeg to jpg
       if($ext == 'jpeg') $ext = 'jpg';
       //Move file
-      if(\File::move($chacheFilePath, $path . '/' . $name . '.' . $ext))
+      if(\File::move($chacheFilePath, $path . '\\' . $name . '.' . $ext))
         return true;
       else
         return false;
@@ -536,9 +552,70 @@ class _adminPanel extends Model
         if(isset($more['id']))        $name = str_replace('`id`',$more['id'],$name);
         if(isset($more['parentId']))  $name = str_replace('`parentId`',$more['parentId'],$name);
         if(isset($more['i']))         $name = str_replace('`i`',$more['i'],$name);
+      }      
+
+      //Random
+      $name = str_replace('`rand`',rand(10000,99999),$name);
+      
+      return $name;
+    }
+    public function  deleteFile($inputName, $fileName){
+
+      //Get path
+      foreach ($this->inputs as $k => $v) {
+        if($v['name'] == $inputName){
+          $path = public_path().'\\'.$v['path'].'\\'.$fileName;
+        }        
       }
 
-      return $name;
+      return file::delete($path);
+    }
+    public function mainFile($inputName, $fileName){
+
+      //Get path
+      foreach ($this->inputs as $k => $v) {
+        if($v['name'] == $inputName){
+          $path = public_path().'\\'.$v['path'].'\\';
+          $main = $v['main'];
+          $name = $v['fileName'];
+        }        
+      }
+
+
+
+      //@@@
+      //get id
+      $id = substr($fileName,0,strpos($fileName,'_'));
+      $mainFile = $path.self::generateFileName($main,['parentId' => $id]).'.jpg';
+      
+      //Rename old main
+      if(File::isFile($mainFile)){
+        $j = 0;
+        do{
+          $fileName2 = false;
+          if($j > 100) break;;
+          $fileName2 = $this->generateFileName($name,['parentId'  => $id,]);
+          $j++;
+        } while (File::isFile($path.'\\'.$fileName2.'.jpg'));
+
+        if(!$fileName2) return false;
+
+        File::move(
+          $mainFile,
+          $path . $fileName2. '.jpg' 
+        );
+      }
+
+
+      //rename new main
+        File::move(
+          $path.$fileName,
+          $mainFile
+        );
+
+        return true;
+
+
     }
 
     //CRUD
@@ -613,18 +690,31 @@ class _adminPanel extends Model
           $i = 0;
           if(is_array($request[$v['name']])){
             foreach ($request[$v['name']] as $fileCache) {
-              if(!$this->saveFileFromCache(
-                  $fileCache,
-                  public_path($v['path']),
-                  $this->generateFileName($v['fileName'],[
-                    'id'        => $inputPut->id, 
-                    'parentId'  => $parentPut->id,
-                    'i'         => $i,
-                  ])
-                ))
-              {
+              //Get filename
+              if($i == 0 && isset($v['main'])){
+                $fileNameTemplate = $v['main'];
+              }else{
+                $fileNameTemplate = $v['fileName'];
+              }
+              $j = 0;
+              do{
+                $fileName = false;
+                if($j > 100) break;
+                $fileName = $this->generateFileName($fileNameTemplate,[
+                  'id'        => $inputPut->id,
+                  'parentId'  => $parentPut->id,
+                  'i'         => $i,
+                ]);
+                $j++;
+              } while (File::isFile(public_path($v['path']).'\\'.$fileName.'.jpg'));
+
+
+              if(!$fileName) throw new Exception("Error Generating name", 4);
+
+              //Save file
+              if(!$this->saveFileFromCache($fileCache,public_path($v['path']), $fileName))
                 throw new Exception("Error Processing Request", 3);
-              }                
+
               $i++;
             }          
           }
@@ -649,7 +739,6 @@ class _adminPanel extends Model
 
       //Prepare post
       $post = new $this();
-      // dd($request);
       $post = $post::find($request['id']);
       foreach ($inputs['simple'] as $k => $v) {
         //Skip confirms
@@ -666,8 +755,9 @@ class _adminPanel extends Model
         }     
       } 
 
-      if(count($inputs['parent']) > 0){
-         //Prepare parent post
+      // Multiply parents
+      if(count($inputs['parent']) > 0) {
+         //Prepare parent post 
         foreach ($inputs['parent'] as $k => $v) {
           //Skip confirms
           if(isset($v['confirm']) && $v['confirm']) continue;
@@ -682,10 +772,7 @@ class _adminPanel extends Model
             }
           }     
         }         
-        
-        $post[$v['parent']]->save();       
       }
-
 
       //Edit
       try {
@@ -693,24 +780,59 @@ class _adminPanel extends Model
         DB::beginTransaction();
 
         //Edit parents
+        $parentId = false;
         foreach ($inputs['parent'] as $k => $v) {          
           if(!$post[$v['parent']]->save()){
             throw new Exception("Error Processing Request", 1);
+          }else{ // Multi parent !!@@@??
+            $parentId =  $post[$v['parent']]->id; 
+            break;
           }
         }
 
         //Edit simple
+        $inputId = false;
         if(!$post->save()){
           throw new Exception("Error Processing Request", 2);
+        }else{
+          $inputId =  $post->id; 
         }
 
-        //@@@ files
+        //Save files
+        foreach ($inputs['files'] as $k => $v) {
+          $i = 0;
+          if(isset($request[$v['name']]) && is_array($request[$v['name']])){
+            foreach ($request[$v['name']] as $fileCache) {
+              //Get filename
+              $j = 0;
+              do{
+                $fileName = false;
+                if($j > 100) break;;
+                $fileName = $this->generateFileName($v['fileName'],[
+                  'id'        => $inputId,
+                  'parentId'  => $parentId,
+                  'i'         => $i,
+                ]);
+                $j++;
+              } while (File::isFile(public_path($v['path']).'\\'.$fileName.'.jpg'));
+
+              if(!$fileName) throw new Exception("Error Generating name", 4);
+
+              //Save file
+              if(!$this->saveFileFromCache($fileCache,public_path($v['path']), $fileName))
+                throw new Exception("Error Processing Request", 3);
+
+              $i++;
+            }          
+          }
+        }    
        
         //Store to DB
         DB::commit();        
       } catch (Exception $e) {   
           DB::rollback();
-          // dd($e);
+          //@@ delete photos
+          dd($e);
           return false;
       }
 

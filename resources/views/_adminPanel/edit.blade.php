@@ -5,7 +5,7 @@
     :p-name="{{ $name }}"  
     :p-inputs="{{ $inputs }}" 
     :p-route ="{{ $route }}" 
-    :p-settings ="{{ $settings }}" 
+    :p-settings ="{{ $settings }}"
     :p-edit-data ="{{ $editData }}" 
   />
 @endsection

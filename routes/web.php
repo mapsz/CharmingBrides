@@ -67,8 +67,10 @@ Route::get('/girls/special/ladies','GirlController@getSpecialLadies')->name('get
 Route::post('/chat/admin/setOnline', 'ChatController@setHardOnline')->name('setHardOnline')->middleware(['auth','admin']);
 Route::delete('/chat/admin/deleteOnline', 'ChatController@deleteHardOnline')->name('deleteHardOnline')->middleware(['auth','admin']);
 
+
+//Auth
 Route::group(['middleware' => ['auth']],function(){
-  
+
   // Letter
   $model = 'letter';
   $namePrefix = "";                
@@ -90,7 +92,8 @@ Route::group(['middleware' => ['auth']],function(){
   //Girl 
   $model = 'girl';
   $namePrefix = "";
-  Route::get('search/'.$model, ucfirst($model).'Controller@_search')->name($namePrefix.'search'.ucfirst($model));  //Search        
+  Route::get('/search/'.$model, ucfirst($model).'Controller@_search')->name($namePrefix.'search'.ucfirst($model));  //Search        
+  Route::delete('/'.$model.'/file/delete', ucfirst($model).'Controller@_fileDelete');  //Delete file        
 
 });
 
@@ -116,7 +119,9 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/'.$model.'/search', ucfirst($model).'Controller@_search')->name($namePrefix.'search'.ucfirst($model));  //Search
   Route::get('/'.$model.'/recent/get', ucfirst($model).'Controller@_getRecent')->name($namePrefix.'recent'.ucfirst($model));  //Get Recent 
   Route::post('/'.$model.'/file/upload', ucfirst($model).'Controller@_fileUpload')
-        ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload    
+        ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload  
+  Route::delete('/'.$model.'/file/delete', ucfirst($model).'Controller@_fileDelete');  //Delete file          
+  Route::post('/'.$model.'/file/main', ucfirst($model).'Controller@_fileMain');  //Delete file          
  
   // Men
   $model = 'man';

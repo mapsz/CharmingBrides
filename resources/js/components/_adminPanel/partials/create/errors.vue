@@ -11,7 +11,16 @@
 </template>
 
 <script>
-    export default {        
-        props:['p-errors']
-    }
+  export default {        
+      props:['p-errors'],
+      computed:{
+      // errors:function(){
+      //     $.each(this.pErrors, (index, val) =>  {
+      //        // @@@
+      //     });
+      //   },
+      // },
+    },
+  }
+
 </script>

@@ -74,10 +74,10 @@ abstract class _adminPanelController extends Controller
       $model->getData();
 
       //Get Data
-      $inputs = $model->getInputs();  //Inputs
-      $names   = $model->getNames();  //Names
-      $route = $model->getRoute(); 
-      $settings = $model->getSettings(); 
+      $inputs     = $model->getInputs();  //Inputs
+      $names      = $model->getNames();  //Names
+      $route      = $model->getRoute(); 
+      $settings   = $model->getSettings(); 
       $editData   = $model->getEditData();
       //Encode
       $inputs     = json_encode($inputs);
@@ -276,6 +276,61 @@ abstract class _adminPanelController extends Controller
                   ->header('Content-Type', 'text/plain');
       }
     }
+
+    public function _fileDelete(Request $request){
+
+      //Data
+      if(!isset($request->inputName) || !isset($request->fileName)){
+        return response('no data', 500)
+                  ->header('Content-Type', 'text/plain');        
+      }
+
+      $inputName  = $request->inputName;
+      $fileName   = $request->fileName;
+
+      $model = new $this->model();
+
+      $delete = $model->deleteFile($inputName, $fileName);
+
+      //Response
+      if(!$delete)
+        //Error
+        return response('Could not delete file', 500)
+                  ->header('Content-Type', 'text/plain');
+      else{
+        //Success
+        return response()->json(['error' => '0']);
+      }
+
+    }
+
+
+    public function _fileMain(Request $request){
+
+      //Data
+      if(!isset($request->inputName) || !isset($request->fileName)){
+        return response('no data', 500)
+                  ->header('Content-Type', 'text/plain');        
+      }
+
+      $inputName  = $request->inputName;
+      $fileName   = $request->fileName;
+
+      $model = new $this->model();
+
+      $delete = $model->mainFile($inputName, $fileName);
+
+      //Response
+      if(!$delete)
+        //Error
+        return response('Could not main file', 500)
+                  ->header('Content-Type', 'text/plain');
+      else{
+        //Success
+        return response()->json(['error' => '0']);
+      }
+
+    }    
 
     public function test($test){
 

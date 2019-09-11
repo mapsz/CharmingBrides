@@ -1,256 +1,251 @@
 <template>
-  <div class="container-fluid h-100 py-2">
+  <div class="container-fluid h-100 py-2">  
+    <loading :loading="loading.screen"/>
 
-      <loading :loading="loading.screen"/>
+    <div v-if="reconnect && !onlineConnection.subscribed" class="reconnect">
+      <div class="reconnect-container">
+        <span>Connected:{{onlineConnection.subscribed}}</span><br>
+        <span>Pending:{{onlineConnection.pending}}</span><br>
+        <span>Canceled:{{onlineConnection.cancelled}}</span>
 
-      <div v-if="reconnect && !onlineConnection.subscribed" class="reconnect">
-        <div class="reconnect-container">
-          <span>Connected:{{onlineConnection.subscribed}}</span><br>
-          <span>Pending:{{onlineConnection.pending}}</span><br>
-          <span>Canceled:{{onlineConnection.cancelled}}</span>
-
-          <p class="text-danger"><b>Connecting...</b></p>
-          <center>
-            <button class="btn btn-primary" @click="ReconnectOnline()">Reconnect</button>
-          </center>
-        </div>
+        <p class="text-danger"><b>Connecting...</b></p>
+        <center>
+          <button class="btn btn-primary" @click="ReconnectOnline()">Reconnect</button>
+        </center>
       </div>
+    </div>
 
-      <admin-chat 
-          v-if="prop_user.man >= 3" 
-          :p-online-users="onlineUsers"
-          @onlineReset="onlineReset()"
-          @selectUser="selectUser"
-      />              
-      <div class="row justify-content-center h-100">
-          <!-- Online -->
-          <online-chat
-            :p-user="user"
-            :p-online-users="onlineUsers"
-            :p-companion="room.companion"
-            :p-connection="onlineConnection"
-            @selectRoom="selectRoom"
-          ></online-chat>
-          <!-- Chat -->
-          <div class="col-md-6 col-xl-6 chat">
-              <div class="center-block card">
-                  <div v-show="loading.room" class="loading">
-                    <span class="p-2" style="color:white">Loading...</span>
-                  </div>  
-                  <!-- Header -->
-                  <div class="card-header msg_head">
-                    <div v-if="room" class="d-flex bd-highlight">
-                      <!-- Avatar -->
-                      <div class="img_cont">
-                        <img 
-                          :src="assets+'/media/gallery/'+companion.id+'_0.jpg'"
-                          class="rounded-circle user_img"
-                        >
-                        <span v-bind:class="{'offline': !onlineUsers.some(e => e.id == companion.id)}" class="online_icon"></span>
-                      </div>
-                      <!-- Info -->
-                      <div class="user_info">
-                        <span>
-                          {{room.companion.name}} {{room.companion.surname}}
-                        </span>
-                        <p>{{room.id}} - room</p>
-                      </div>
-                      <!-- Connection info -->
-                      <div class="user_info">
-                        <fa-icon icon="link" 
-                          :class="{
-                            'text-success'      : privateConnection.subscribed,
-                            'text-warning'      : privateConnection.pending,
-                            'text-danger'       : privateConnection.canceled
-                          }"  
-                        />
-                      </div>                                  
-                      <!-- Balance -->
-                      <div v-if="user.man" class="user_info">
-                        <span>
-                            Balance: {{user.balance}}$
-                        </span>
-                        <p>1  minute - {{user.membership.chat_price}}$  {{user.membership.name}}</p>
-                      </div>
-                      <!-- Timer -->
-                      <div v-if="user.man" class="user_info">
-                        <span>
-                           {{payedChatCaptions.currentTimer}}
-                        </span>
-                        <p>Total: - {{payedChatCaptions.totalPrice}}$</p>
-                      </div>                                      
-                      <!-- Stop     -->
-                      <div v-if="user.man" class="user_info">
-                        <button class="btn btn-primary" @click="stopPayedChat(room.id)">Stop</button>
-                      </div>                                 
-                      <!-- @@@ Timer pause -->
-                    </div>
-                      <!-- More @@@ ?? -->
-                      <!-- <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
-                      <div class="action_menu">
-                          <ul>
-                              <li><i class="fas fa-user-circle"></i> View profile</li>
-                              <li><i class="fas fa-users"></i> Add to close friends</li>
-                              <li><i class="fas fa-plus"></i> Add to group</li>
-                              <li><i class="fas fa-ban"></i> Block</li>
-                          </ul>
-                      </div> -->
+    <admin-chat 
+        v-if="prop_user.man >= 3" 
+        :p-online-users="onlineUsers"
+        @onlineReset="onlineReset()"
+        @selectUser="selectUser"
+    />              
+    <div class="row justify-content-center h-100">
+      <!-- Online -->
+      <online-chat
+        :p-user="user"
+        :p-online-users="onlineUsers"
+        :p-companion="room.companion"
+        :p-connection="onlineConnection"
+        @selectRoom="selectRoom"
+      ></online-chat>
+      <!-- Chat -->
+      <div class="col-md-6 col-xl-6 chat">
+          <div class="center-block card">
+              <div v-show="loading.room" class="loading">
+                <span class="p-2" style="color:white">Loading...</span>
+              </div>  
+              <!-- Header -->
+              <div class="card-header msg_head">
+                <div v-if="room" class="d-flex bd-highlight">
+                  <!-- Avatar -->
+                  <div class="img_cont">
+                    <img 
+                      :src="assets+'/media/gallery/'+companion.id+'_0.jpg'"
+                      class="rounded-circle user_img"
+                    >
+                    <span v-bind:class="{'offline': !onlineUsers.some(e => e.id == companion.id)}" class="online_icon"></span>
                   </div>
+                  <!-- Info -->
+                  <div class="user_info">
+                    <span>
+                      {{room.companion.name}} {{room.companion.surname}}
+                    </span>
+                    <p>{{room.id}} - room</p>
+                  </div>
+                  <!-- Connection info -->
+                  <div class="user_info">
+                    <fa-icon icon="link" 
+                      :class="{
+                        'text-success'      : privateConnection.subscribed,
+                        'text-warning'      : privateConnection.pending,
+                        'text-danger'       : privateConnection.canceled
+                      }"  
+                    />
+                  </div>                                  
+                  <!-- Balance -->
+                  <div v-if="user.man" class="user_info">
+                    <span>
+                        Balance: {{user.balance}}$
+                    </span>
+                    <p>1  minute - {{user.membership.chat_price}}$  {{user.membership.name}}</p>
+                  </div>
+                  <!-- Timer -->
+                  <div v-if="user.man" class="user_info">
+                    <span>
+                       {{payedChatCaptions.currentTimer}}
+                    </span>
+                    <p>Total: - {{payedChatCaptions.totalPrice}}$</p>
+                  </div>                                      
+                  <!-- Stop     -->
+                  <div v-if="user.man" class="user_info">
+                    <button class="btn btn-primary" @click="stopPayedChat(room.id)">Stop</button>
+                  </div>                                 
+                  <!-- @@@ Timer pause -->
+                </div>
+                  <!-- More @@@ ?? -->
+                  <!-- <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
+                  <div class="action_menu">
+                      <ul>
+                          <li><i class="fas fa-user-circle"></i> View profile</li>
+                          <li><i class="fas fa-users"></i> Add to close friends</li>
+                          <li><i class="fas fa-plus"></i> Add to group</li>
+                          <li><i class="fas fa-ban"></i> Block</li>
+                      </ul>
+                  </div> -->
+              </div>
 
-                      
-                  <!-- Body -->
-                  <div class="card-body msg_card_body" v-chat-scroll>
-                    <div v-for="message in messages">
-                      <!-- Messages -->
-                      <div 
-                        v-bind:class="{
-                          'justify-content-start': message.user_id == user.id,
-                          'justify-content-end' : message.user_id != user.id 
-                        }"
-                        class="d-flex mb-4"
-                      >
-                      <img 
-                        v-if="message.user_id == user.id"
-                        :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
-                        class="rounded-circle user_img_msg"
-                      >
-                      <div 
-                        v-bind:class="{
-                          'man'  : 
-                            (message.user_id == user.id && user.man) ||
-                            (message.user_id == companion.id && room.companion.man),
-                          'msg_cotainer'      : message.user_id == user.id,
-                          'msg_cotainer_send' : message.user_id != user.id
-                        }"
-                      >
-                        {{message.body}}
-                        <!--<span 
-                              v-bind:class="{'msg_time'      : message.user_id == user.id,
-                                             'msg_time_send' : message.user_id != user.id}"
-                              >                                       
-                              {{message.created_at}}
-                          </span> -->
-                      </div>
-                      <img 
-                        v-if="message.user_id != user.id"
-                        :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
-                        class="rounded-circle user_img_msg"
-                      >
-                      </div>
-                    </div>
-                  </div>                        
-                  <!-- Footer -->
-                  <div class="send-message card-footer">
-                    <!-- Freeze -->
-                    <div>
-                      <div 
-                        v-if="inviteStatus(companion.id) === 1 && user.man === 1 && roomFreeze" 
-                        class="freeze"
-                      >
+                  
+              <!-- Body -->
+              <div class="card-body msg_card_body" v-chat-scroll>
+                <div v-for="message in messages">
+                  <!-- Messages -->
+                  <div 
+                    v-bind:class="{
+                      'justify-content-start': message.user_id == user.id,
+                      'justify-content-end' : message.user_id != user.id 
+                    }"
+                    class="d-flex mb-4"
+                  >
+                  <img 
+                    v-if="message.user_id == user.id"
+                    :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
+                    class="rounded-circle user_img_msg"
+                  >
+                  <div 
+                    v-bind:class="{
+                      'man'  : 
+                        (message.user_id == user.id && user.man) ||
+                        (message.user_id == companion.id && room.companion.man),
+                      'msg_cotainer'      : message.user_id == user.id,
+                      'msg_cotainer_send' : message.user_id != user.id
+                    }"
+                  >
+                    {{message.body}}
+                    <!--<span 
+                          v-bind:class="{'msg_time'      : message.user_id == user.id,
+                                         'msg_time_send' : message.user_id != user.id}"
+                          >                                       
+                          {{message.created_at}}
+                      </span> -->
+                  </div>
+                  <img 
+                    v-if="message.user_id != user.id"
+                    :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
+                    class="rounded-circle user_img_msg"
+                  >
+                  </div>
+                </div>
+              </div>                        
+              <!-- Footer -->
+              <div class="send-message card-footer">
+                <!-- Freeze -->
+                <div>
+                  <div 
+                    v-if="inviteStatus(companion.id) === 1 && user.man === 1 && roomFreeze" 
+                    class="freeze"
+                  >
+                    <center>
+                      <button class="btn btn-primary m-4" @click="startPayedChat(room.id)">Start Chat</button>
+                    </center>
+                  </div>
+                  <!-- Invite -->
+                  <div class="invite freeze text-white">
+                    <div v-if="companion.name != ''">
+                      <!-- Deny -->
+                      <div v-if="inviteStatus(companion.id) === -1">
                         <center>
-                          <button class="btn btn-primary m-4" @click="startPayedChat(room.id)">Start Chat</button>
+                          <p class="m-4">{{companion.name}} Denied</p>
                         </center>
                       </div>
-                      <!-- Invite -->
-                      <div class="invite freeze text-white">
-                        <div v-if="companion.name != ''">
-                          <!-- Deny -->
-                          <div v-if="inviteStatus(companion.id) === -1">
-                            <center>
-                              <p class="m-4">{{companion.name}} Denied</p>
-                            </center>
-                          </div>
-                          <!-- No invite -->
-                          <div v-if="inviteStatus(companion.id) === 0 && user.man === 1">
-                            <center>
-                              <button 
-                                class="btn btn-primary m-4" 
-                                @click="sendInvite(companion.id,2)"
-                              >
-                                Invite {{companion.name}} to Chat
-                              </button>
-                            </center>
-                          </div>
-                          <!-- Invited -->
-                          <div v-if="inviteStatus(companion.id) === 2 && user.man === 1">
-                            <center>
-                              <p>{{companion.name}} Invited</p>
-                              <p>Waiting Answer</p>
-                            </center>
-                          </div>
-                          <!-- Input -->
-                          <div v-if="inviteStatus(companion.id) === 3">
-                            <center>
-                              <button 
-                                class="btn btn-primary m-4" 
-                                @click="sendInvite(companion.id,1)"
-                              >
-                                Accept
-                              </button>
-                              <button 
-                                class="btn btn-primary m-4"
-                                @click="sendInvite(companion.id,-1)"
-                              >
-                                Deny
-                              </button>
-                            </center>
-                          </div>                                
-                        </div>  
+                      <!-- No invite -->
+                      <div v-if="inviteStatus(companion.id) === 0 && user.man === 1">
+                        <center>
+                          <button 
+                            class="btn btn-primary m-4" 
+                            @click="sendInvite(companion.id,2)"
+                          >
+                            Invite {{companion.name}} to Chat
+                          </button>
+                        </center>
                       </div>
-                    </div>                          
-                    <!-- Chat send message -->
-                    <div class="input-group">
-                      <!-- Attach -->
-                      <div class="input-group-append">
-                        <span class="input-group-text attach_btn">
-                          <fa-icon icon="paperclip" />
-                        </span>
+                      <!-- Invited -->
+                      <div v-if="inviteStatus(companion.id) === 2 && user.man === 1">
+                        <center>
+                          <p>{{companion.name}} Invited</p>
+                          <p>Waiting Answer</p>
+                        </center>
                       </div>
-                      <!-- Send message -->
-                      <!-- Text body -->
-                      <textarea 
-                        v-on:keyup.enter="sendMessage()" 
-                        name="text" 
-                        class="form-control type_msg" 
-                        placeholder="Type your message..."
-                      ></textarea>
-                      <div @click="emojiPickerShow = !emojiPickerShow" class="input-group-append">
-                        <div class="input-group-text emoji_picker">
-                          <fa-icon icon="smile"/>
-                        </div>
-                      </div>
-                      <!-- Send button -->
-                      <div class="input-group-append" @click="sendMessage()">
-                        <span class="input-group-text send_btn">
-                          Send <fa-icon icon="arrow-right" class="pl-1"/>
-                        </span>
-                      </div>
-                    </div>                      
+                      <!-- Input -->
+                      <div v-if="inviteStatus(companion.id) === 3">
+                        <center>
+                          <button 
+                            class="btn btn-primary m-4" 
+                            @click="sendInvite(companion.id,1)"
+                          >
+                            Accept
+                          </button>
+                          <button 
+                            class="btn btn-primary m-4"
+                            @click="sendInvite(companion.id,-1)"
+                          >
+                            Deny
+                          </button>
+                        </center>
+                      </div>                                
+                    </div>  
                   </div>
+                </div>                          
+                <!-- Chat send message -->
+                <div class="input-group">
+                  <!-- Attach -->
+                  <div class="input-group-append">
+                    <span class="input-group-text attach_btn">
+                      <fa-icon icon="paperclip" />
+                    </span>
+                  </div>
+                  <!-- Send message -->
+                  <!-- Text body -->
+                  <textarea 
+                    v-on:keyup.enter="sendMessage()" 
+                    name="text" 
+                    class="form-control type_msg" 
+                    placeholder="Type your message..."
+                  ></textarea>
+                  <div @click="emojiPickerShow = !emojiPickerShow" class="input-group-append">
+                    <div class="input-group-text emoji_picker">
+                      <fa-icon icon="smile"/>
+                    </div>
+                  </div>
+                  <!-- Send button -->
+                  <div class="input-group-append" @click="sendMessage()">
+                    <span class="input-group-text send_btn">
+                      Send <fa-icon icon="arrow-right" class="pl-1"/>
+                    </span>
+                  </div>
+                </div>                      
               </div>
           </div>
-          <div class="col-md-3 col-xl-3 chat">
-            <div class="card mb-sm-3 mb-md-0 contacts_card">
-              <!-- Recent chats -->
-              <recent-chat
-                :p-recent-rooms="recentRooms"
-                :p-room="room"
-                :p-online-users="onlineUsers"
-                :p-payed-chat="payedChat"
-                @select-room="selectRoom"
-              />
-              <picker 
-                v-show="emojiPickerShow"
-                native
-                @select="addEmoji" 
-                title="Pick your emoji…" 
-                emoji="point_up" 
-                :style="{ position: 'absolute', bottom: '20px', right: '20px' }" 
-              ></picker>
-              <div class="card-footer"></div>
-            </div>
-          </div>
-      </div>
+      </div> 
+      <!-- Recent chats -->
+      <recent-chat
+        :p-recent-rooms="recentRooms"
+        :p-room="room"
+        :p-online-users="onlineUsers"
+        :p-payed-chat="payedChat"
+        @select-room="selectRoom"
+      />
+      <!-- Picker -->
+      <picker 
+        v-show="emojiPickerShow"
+        native
+        @select="addEmoji" 
+        title="Pick your emoji…" 
+        emoji="point_up" 
+        :style="{ position: 'absolute', bottom: '20px', right: '20px' }" 
+      ></picker>      
+    </div>
   </div>
 </template>
 
@@ -410,6 +405,15 @@
               r.totalPrice = payedChat.totalPrice;
             }
               
+            return r;
+          },
+          currentHistory(){
+            let r = false;
+
+            let payedChat = this.payedChat.find(x => x.room == this.room.id);
+            if(payedChat != undefined) {
+              r = payedChat.history;
+            }
             return r;
           },
           roomFreeze(){
@@ -1064,7 +1068,7 @@
             let data = {
                     'userId':this.user.id,
                     'roomId':this.room.id,
-                    'history':this.history,
+                    'history':this.currentHistory,
                     'session': session,
                     'body': message
                 }

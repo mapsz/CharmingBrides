@@ -233,9 +233,40 @@
             >
               {{input.caption}}
             </label> 
-          </div>     
+          </div>
           <!-- input body -->
-          <div class="col-sm-10">                      
+          <div class="col-sm-10">               
+            <div :class="'row m-0 edit-files edit-files-'+this.pInput.name">
+              <div class="col-3" v-for="file in files">
+                <div class="row m-2">
+                  <div v-if="fileType == 'image'" class="file-image">
+                    <div class="row">
+                      <div class="col"> 
+                        <img   :src="'/'+assets + input.path + '/' + file" :alt="file">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <button 
+                          v-if="pInput.main != undefined && pInput.main && !isMain(file)" 
+                          type="button" 
+                          class="btn btn-success btn-sm" 
+                          @click="setMain(file)"
+                        >
+                          Main
+                        </button>
+                        <span v-if="isMain(file)" class="text-success">Main</span>
+                        <button type="button" class="btn btn-danger btn-sm" @click="deleteFile(file)">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="file-text">
+                    <span >{{'\\'+assets + input.path + '\\' + file}}</span>
+                    <button type="button" class="btn btn-danger btn-sm" @click="deleteFile(file)">X</button>
+                  </div>   
+                </div>
+              </div>
+            </div>                 
             <file-upload-component
               :p-route="pRoute"
               :p-name="input.name"
@@ -254,18 +285,39 @@
 <script>
     export default {
         props:['pInput',"pRequiredAll", "pRoute",'pValue'],
+        mixins: [ mMoreAxios, mNotifications, mLoading ],
         data(){
           return {            
             input: this.pInput,
             value: this.pValue,
             data:[],
+            files:[],
+            assets:assets
           }
-        },        
+        }, 
+        mounted() {
+            this.files = JSON.parse(JSON.stringify(this.pValue));
+        },               
         computed:{
           requiredAll:function(){
             if(this.pRequiredAll == undefined) return true;
             else return this.pRequiredAll;            
           },
+          fileType(){
+
+            let t = false;
+
+            if(typeof(this.pInput.fileType) != 'object'){
+              return t;
+            }       
+
+            $.each(this.pInput.fileType, (i, v) => {
+               if(v.includes('image')) t = 'image';
+            });
+
+            return t;
+
+          }
         },
         watch: {
           value: function ($new,$old) {
@@ -277,11 +329,51 @@
           updateFiles(data){
             this.value = data.files;
           },
+          async deleteFile(file){
+
+            let l = this.showLoading('.edit-files-'+this.pInput.name);
+            let r = await this.ax('delete', '/'+this.pRoute+'/file/delete', {inputName:this.input.name,fileName:file});
+
+            if(!r) {
+              this.hideLoading(l);
+              return;
+            }
+
+            //delete file
+            let i = this.value.findIndex(x=>x == file);
+            if(i > -1)
+              this.value.splice(i,1);
+
+            this.hideLoading(l);
+
+            return;
+          },
+          async setMain(file){// @@@@
+
+            let l = this.showLoading('.edit-files-'+this.pInput.name);
+            let r = await this.ax('post', '/'+this.pRoute+'/file/main', {inputName:this.input.name,fileName:file});
+
+            if(r){
+               window.location.reload(); //@@@
+               return;
+            }
+
+            this.hideLoading(l);
+
+            return;            
+          },
+          isMain(file){ // @@@@
+            return file.includes('_0.');
+          }
         }        
     }
 </script>
 
 <style scooped>
+
+  .edit-files img{
+    height: 100px;
+  }
   
   .required{
     color: tomato;
