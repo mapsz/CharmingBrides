@@ -542,7 +542,7 @@ class _adminPanel extends Model
       // jpeg to jpg
       if($ext == 'jpeg') $ext = 'jpg';
       //Move file
-      if(\File::move($chacheFilePath, $path . '\\' . $name . '.' . $ext))
+      if(\File::move($chacheFilePath, $path . '/' . $name . '.' . $ext))
         return true;
       else
         return false;
@@ -564,7 +564,7 @@ class _adminPanel extends Model
       //Get path
       foreach ($this->inputs as $k => $v) {
         if($v['name'] == $inputName){
-          $path = public_path().'\\'.$v['path'].'\\'.$fileName;
+          $path = public_path().'/'.$v['path'].'/'.$fileName;
         }        
       }
 
@@ -575,7 +575,7 @@ class _adminPanel extends Model
       //Get path
       foreach ($this->inputs as $k => $v) {
         if($v['name'] == $inputName){
-          $path = public_path().'\\'.$v['path'].'\\';
+          $path = public_path().'/'.$v['path'].'/';
           $main = $v['main'];
           $name = $v['fileName'];
         }        
@@ -596,7 +596,7 @@ class _adminPanel extends Model
           if($j > 100) break;;
           $fileName2 = $this->generateFileName($name,['parentId'  => $id,]);
           $j++;
-        } while (File::isFile($path.'\\'.$fileName2.'.jpg'));
+        } while (File::isFile($path.'/'.$fileName2.'.jpg'));
 
         if(!$fileName2) return false;
 
@@ -706,7 +706,7 @@ class _adminPanel extends Model
                   'i'         => $i,
                 ]);
                 $j++;
-              } while (File::isFile(public_path($v['path']).'\\'.$fileName.'.jpg'));
+              } while (File::isFile(public_path($v['path']).'/'.$fileName.'.jpg'));
 
 
               if(!$fileName) throw new Exception("Error Generating name", 4);
@@ -814,7 +814,7 @@ class _adminPanel extends Model
                   'i'         => $i,
                 ]);
                 $j++;
-              } while (File::isFile(public_path($v['path']).'\\'.$fileName.'.jpg'));
+              } while (File::isFile(public_path($v['path']).'/'.$fileName.'.jpg'));
 
               if(!$fileName) throw new Exception("Error Generating name", 4);
 

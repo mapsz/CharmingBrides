@@ -296,6 +296,7 @@
           }
         }, 
         mounted() {
+          if(this.pValue != undefined)
             this.files = JSON.parse(JSON.stringify(this.pValue));
         },               
         computed:{
