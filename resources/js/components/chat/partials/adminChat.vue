@@ -10,13 +10,6 @@
              />
           </div>          
         </div>
-      <!-- add Girl -->
-      <!-- <div class="row">
-        <div class="p-2">
-          <input type="text" v-model="setHardOnlineId">
-          <button class="btn btn-primary" @click="setHardOnline()">add Online</button>
-        </div>
-      </div> -->    
       <div class="chat-admin-girl-search">
         <h2>Search Girls</h2>
         <div class="col-12">
@@ -63,7 +56,11 @@
                   <span 
                     v-bind:class="{'text-success': user.id == hardOnlineUser.id}">
                       ({{hardOnlineUser.id}}) {{hardOnlineUser.name}}
-                  </span><br>
+                  </span><br>  
+                  <span v-if="hardOnlineUser.read" class="text-warning">
+                      new message
+                      <br>
+                  </span>            
                   <button class="btn btn-sm btn-danger" @click="deleteHardOnline(hardOnlineUser.id)">Set Offline</button>
                 </div>
               </center>
@@ -71,14 +68,6 @@
         	</div>
         </div>
       </div>  
-	    <!-- Current user -->
-  	<!-- 	<div 
-  		  v-show="user"
-        class="currentUser"
-      >					
-  			<h2>Current user</h2>
-  			({{user.id}}) {{user.name}}
-      </div> -->
     </div>
 </template>
 
@@ -94,9 +83,15 @@
             searchList:[],
           }
         },
-        mounted(){
+        async mounted(){
 
-        	this.getHardOnline();
+        	await this.getHardOnline();
+
+          $.each(this.hardOnline, (index, val) => {
+            this.getNewMessages(val.id);
+          });
+          
+
 
         },
         methods: {
@@ -180,6 +175,30 @@
             this.searchList = r.data;
 
             this.hideLoading(l);
+          },
+          async getNewMessages(id){
+              var r = await this.ax('get','/chat/recentRooms',{user_id:id});
+
+              if(!r) return false;
+
+              $.each(r, (index, val) => {
+                if(val.read != undefined){
+                  if(val.read == false){
+                    let k = this.hardOnline.findIndex(x => x.id == id);
+                    if(k >= 0){
+                      this.hardOnline[k].read = true;
+                    }
+                    let g = this.hardOnline;
+                    this.hardOnline = [];
+                    this.hardOnline = g;                    
+                    return;
+                  }
+                }
+              });
+
+
+
+              return;
           }
         }
     }
