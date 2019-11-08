@@ -21,6 +21,7 @@ class CreateMembershipsTable extends Migration
             $table->decimal('chat_price', 8, 2);
             $table->integer('period');
             $table->boolean('client_visible');
+            $table->timestamps();
         });
     }
 

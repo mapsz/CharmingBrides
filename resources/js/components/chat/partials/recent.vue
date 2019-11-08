@@ -1,6 +1,6 @@
 <template>
   <div class="col-md-3 col-xl-3 chat">
-    <div class="card mb-sm-3 mb-md-0 contacts_card">
+    <div class="card mb-sm-3 mb-md-0 contacts_card recent-chat-container">
       <div class="card-header">
         <div class="online_title">
           <span>Recent chats</span>
@@ -17,7 +17,7 @@
             <div class="d-flex bd-highlight">
               <div class="img_cont">
                  <img 
-                  :src = "assets+'/media/gallery/'+r.companion.id+'_0.jpg'"
+                  :src = "r.companion.photo[0]"
                   class="rounded-circle user_img">   
                 <span 
                   v-bind:class="{'offline': !pOnlineUsers.some(e => e.id == r.companion.id)}"

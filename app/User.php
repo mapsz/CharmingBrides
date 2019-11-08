@@ -34,13 +34,13 @@ class User extends Authenticatable
     ];
 
     public static function getWithInfo($id, $user = false){
-      
+  
       // Get user
       if(!$user)
-        $user = self::with('man')->with('girl')->with('agent')->get()->find($id); 
+        $user = self::where('id',$id)->with('man')->with('girl')->with('agent')->first();
 
       if(!$user) return false;
-      
+
       // Add data
       $r['id'] = $id; 
       $r['man'] = false; 
@@ -48,13 +48,12 @@ class User extends Authenticatable
       $r['name']    = "";
       $r['surname'] = "";
       $r['birth']   = "";        
-      
+
       // Check admin
       if($user->role >= 3){
           $r['man'] = $user->role; 
           return $r;
       }
-
       // Check girl
       if($user->girl){
           $r['man']         = false; 
@@ -63,9 +62,11 @@ class User extends Authenticatable
           $r['location']    = $user->girl['location'];
           $r['birth']       = $user->girl['birth']; 
           $r['age']         = Carbon::parse($r['birth'])->age;
+          //Get photos
+          $m = new Girl;
+          $r['photo'] = $m->getFiles($user->girl['id'],'photo',$id);
           return $r; 
       }
-
       // Check man
       elseif($user->man){
           $r['man']     = 1; 
@@ -74,15 +75,19 @@ class User extends Authenticatable
           $r['surname'] = $user->man['surname'];
           $r['birth']   = $user->man['birth']; 
           $r['balance'] = $user->man['balance']; 
+          $r['age']     = Carbon::parse($r['birth'])->age;          
+          //Get photos
+          $m = new Man;
+          $m->setSingleId($user->man['id']);
+          $r['photo'] = $m->getFiles($user->man['id'],'photo',$id);
+
           return $r; 
       }
-
       // Check agent
       elseif($user->agent){
           $r['man']     = 3; 
           return $r; 
       }
-
       return false;
     }
 

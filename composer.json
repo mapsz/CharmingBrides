@@ -13,6 +13,7 @@
         "intervention/image": "^2.4",
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0",
+        "paypal/rest-api-sdk-php": "*",
         "pusher/pusher-php-server": "~3.0",
         "sopamo/laravel-filepond": "^0.1.0"
     },

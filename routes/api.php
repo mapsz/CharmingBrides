@@ -16,3 +16,8 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+//Payment
+Route::any('/pay/paypal/create-payment/',    'PayController@paypalCreatePayment');
+Route::any('/pay/paypal/execute-payment',    'PayController@paypalExecutePayment');

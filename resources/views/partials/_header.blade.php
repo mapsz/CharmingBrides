@@ -31,9 +31,8 @@
 					Girls
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						<a class="dropdown-item" href="#">New Girls</a>
-						<a class="dropdown-item" href="#">Online Girls</a>
-						<a class="dropdown-item" href="#">Gallery</a>
+						<a class="dropdown-item" href="{{ route('allGirls') }}">New Girls</a>
+						<a class="dropdown-item" href="{{ route('allGirls') }}">All Girls<span class="sr-only">(current)</span></a>
 					</div>
 				</li>
 				<!-- services -->
@@ -84,17 +83,25 @@
 					<li class="nav-item">
 						<a class="nav-link" href="{{ route('chat') }}">Chat<span class="sr-only">(current)</span></a>
 					</li>				
-				@endif		
+				@endif            
+        <!-- matched -->
+        @if(Auth::check())
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('matched') }}">Matched<span class="sr-only">(current)</span></a>
+          </li>       
+        @endif    		
 			</ul>
 			@if(Auth::check())
-				<a class="nav-link" href="{{ route('profile') }}">  <i class="icon-user-plus"></i> Profile</a>
+        @if(Auth::User()->role <= 2)
+				  <a class="nav-link" href="{{ route('profile') }}">  <i class="icon-user-plus"></i> Profile</a>
+        @endif
 				<a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">  <i class="icon-user-plus"></i> Logout</a>
 				<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
 					@csrf
 				</form>
 
 			@else
-				<a class="nav-link" href="/login">     <i class="icon-login"></i> Login</a>
+				<a class="nav-link" href="/login">     <i class="icon-login"></i> Login </a>
 				<a class="nav-link" href="{{ route('registration') }}">  <i class="icon-user-plus"></i> Register</a>
 			@endif
 		</div>

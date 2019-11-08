@@ -1,5 +1,6 @@
 <template>
     <div>
+      
         <h1>Girl</h1>
         <table class="table table-striped">
             <thead  class="thead-dark">

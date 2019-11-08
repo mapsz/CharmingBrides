@@ -3,7 +3,7 @@
         mixins: [mDebug ],
         data(){
           return {
-            loading:{
+            l:{
               id:0,
               top:0,
               left:0,
@@ -17,6 +17,9 @@
         mounted() {
         },        
         methods:{
+          loading(element){
+            return this.showLoading(element);
+          },
           showLoading(element){
             //Element exists
             if(!$(element).length){
@@ -24,8 +27,8 @@
               return false;
             }
             
-            this.loading.width = $(element)[0].offsetWidth;
-            this.loading.height = $(element)[0].offsetHeight;
+            this.l.width = $(element)[0].offsetWidth;
+            this.l.height = $(element)[0].offsetHeight;
 
             //Set min height
             if(this.height < this.minHeight){
@@ -34,7 +37,7 @@
               //add upper loading @@@
             }
 
-            let id = (this.loading.id++) + 1;
+            let id = (this.l.id++) + 1;
             this.editHTML(id);
 
             $(element).prepend(this.loadingHTML);
@@ -55,8 +58,8 @@
             this.loadingHTML = ''+
             '<div id="loading'+id+'" '+     
               'style="position:absolute;'+
-              'width: '+this.loading.width+'px;'+
-              'height: '+this.loading.height+'px;'+
+              'width: '+this.l.width+'px;'+
+              'height: '+this.l.height+'px;'+
               'background-color: #000000a6;z-index: 100;">'+
             '</div>';
           }

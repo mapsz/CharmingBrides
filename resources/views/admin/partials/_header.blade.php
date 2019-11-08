@@ -11,18 +11,27 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ route('admin_man') }}">Men</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ route('admin_membership') }}">Memberships</a>
-      </li>
+      @if(Auth::User()->role == 4)
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('admin_membership') }}">Memberships</a>
+        </li>
+      @endif
       <li class="nav-item">
         <a class="nav-link" href="{{ route('adminChatHistoryIndex') }}">Chat Histories</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ route('admin_letter') }}">Letters</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ route('admin_agent') }}">Agents</a>
-      </li>
+      @if(Auth::User()->role == 4)
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('admin_sign') }}">Signs</a>
+        </li>
+      @endif
+      @if(Auth::User()->role == 4)
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('admin_agent') }}">Agents</a>
+        </li>
+      @endif
     </ul>
   </div>
 </nav>

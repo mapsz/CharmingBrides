@@ -2,26 +2,31 @@
   <div class="container-fluid h-100 py-2">  
     <loading :loading="loading.screen"/>
 
-    <div v-if="reconnect && !onlineConnection.subscribed" class="reconnect">
-      <div class="reconnect-container">
-        <span>Connected:{{onlineConnection.subscribed}}</span><br>
-        <span>Pending:{{onlineConnection.pending}}</span><br>
-        <span>Canceled:{{onlineConnection.cancelled}}</span>
-
-        <p class="text-danger"><b>Connecting...</b></p>
-        <center>
-          <button class="btn btn-primary" @click="ReconnectOnline()">Reconnect</button>
-        </center>
-      </div>
-    </div>
-
     <admin-chat 
         v-if="prop_user.man >= 3" 
         :p-online-users="onlineUsers"
+        :p-invite-in="inviteIn"
+        :p-hard-online="hardOnline"
         @onlineReset="onlineReset()"
         @selectUser="selectUser"
-    />              
-    <div class="row justify-content-center h-100">
+        @hard-online="setHardOnline"
+    />   
+
+    <div class="chat-container row justify-content-center h-100">
+
+      <!-- Reconnect -->
+      <div v-if="reconnect && !onlineConnection.subscribed" class="reconnect">
+        <div class="reconnect-container">
+          <span>Connected:{{onlineConnection.subscribed}}</span><br>
+          <span>Pending:{{onlineConnection.pending}}</span><br>
+          <span>Canceled:{{onlineConnection.cancelled}}</span>
+          <p class="text-danger"><b>Connecting...</b></p>
+          <center>
+            <button class="btn btn-primary" @click="ReconnectOnline()">Reconnect</button>
+          </center>
+        </div>
+      </div>
+
       <!-- Online -->
       <online-chat
         :p-user="user"
@@ -32,201 +37,200 @@
       ></online-chat>
       <!-- Chat -->
       <div class="col-md-6 col-xl-6 chat">
-          <div class="center-block card">
-              <div v-show="loading.room" class="loading">
-                <span class="p-2" style="color:white">Loading...</span>
-              </div>  
-              <!-- Header -->
-              <div class="card-header msg_head">
-                <div v-if="room" class="d-flex bd-highlight">
-                  <!-- Avatar -->
-                  <div class="img_cont">
-                    <img 
-                      :src="assets+'/media/gallery/'+companion.id+'_0.jpg'"
-                      class="rounded-circle user_img"
-                    >
-                    <span v-bind:class="{'offline': !onlineUsers.some(e => e.id == companion.id)}" class="online_icon"></span>
-                  </div>
-                  <!-- Info -->
-                  <div class="user_info">
-                    <span>
-                      {{room.companion.name}} {{room.companion.surname}}
-                    </span>
-                    <p>{{room.id}} - room</p>
-                  </div>
-                  <!-- Connection info -->
-                  <div class="user_info">
-                    <fa-icon icon="link" 
-                      :class="{
-                        'text-success'      : privateConnection.subscribed,
-                        'text-warning'      : privateConnection.pending,
-                        'text-danger'       : privateConnection.canceled
-                      }"  
-                    />
-                  </div>                                  
-                  <!-- Balance -->
-                  <div v-if="user.man" class="user_info">
-                    <span>
-                        Balance: {{user.balance}}$
-                    </span>
-                    <p>1  minute - {{user.membership.chat_price}}$  {{user.membership.name}}</p>
-                  </div>
-                  <!-- Timer -->
-                  <div v-if="user.man" class="user_info">
-                    <span>
-                       {{payedChatCaptions.currentTimer}}
-                    </span>
-                    <p>Total: - {{payedChatCaptions.totalPrice}}$</p>
-                  </div>                                      
-                  <!-- Stop     -->
-                  <div v-if="user.man" class="user_info">
-                    <button class="btn btn-primary" @click="stopPayedChat(room.id)">Stop</button>
-                  </div>                                 
-                  <!-- @@@ Timer pause -->
+        <div class="center-block card">
+            <div v-show="loading.room" class="loading">
+              <span class="p-2" style="color:white">Loading...</span>
+            </div>  
+            <!-- Header -->
+            <div class="card-header msg_head">
+              <div v-if="room" class="d-flex bd-highlight">
+                <!-- Avatar -->
+                <div class="img_cont">
+                  <img 
+                    :src="companion.photo[0]"
+                    class="rounded-circle user_img"
+                  >
+                  <span v-bind:class="{'offline': !onlineUsers.some(e => e.id == companion.id)}" class="online_icon"></span>
                 </div>
-                  <!-- More @@@ ?? -->
-                  <!-- <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
-                  <div class="action_menu">
-                      <ul>
-                          <li><i class="fas fa-user-circle"></i> View profile</li>
-                          <li><i class="fas fa-users"></i> Add to close friends</li>
-                          <li><i class="fas fa-plus"></i> Add to group</li>
-                          <li><i class="fas fa-ban"></i> Block</li>
-                      </ul>
-                  </div> -->
+                <!-- Info -->
+                <div class="user_info">
+                  <span>
+                    {{room.companion.name}} {{room.companion.surname}}
+                  </span>
+                  <p>{{room.id}} - room</p>
+                </div>
+                <!-- Connection info -->
+                <div class="user_info">
+                  <fa-icon icon="link" 
+                    :class="{
+                      'text-success'      : privateConnection.subscribed,
+                      'text-warning'      : privateConnection.pending,
+                      'text-danger'       : privateConnection.canceled
+                    }"  
+                  />
+                </div>                                  
+                <!-- Balance -->
+                <div v-if="user.man" class="user_info">
+                  <span>
+                      Balance: {{user.balance}}$
+                  </span>
+                  <p>1  minute - {{user.membership.chat_price}}$  {{user.membership.name}}</p>
+                </div>
+                <!-- Timer -->
+                <div v-if="user.man" class="user_info">
+                  <span>
+                     {{payedChatCaptions.currentTimer}}
+                  </span>
+                  <p>Total: - {{payedChatCaptions.totalPrice}}$</p>
+                </div>                                      
+                <!-- Stop     -->
+                <div v-if="user.man" class="user_info">
+                  <button class="btn btn-primary" @click="stopPayedChat(room.id)">Stop</button>
+                </div>                                 
+                <!-- @@@ Timer pause -->
               </div>
-
-                  
-              <!-- Body -->
-              <div class="card-body msg_card_body" v-chat-scroll>
-                <div v-for="message in messages">
-                  <!-- Messages -->
-                  <div 
-                    v-bind:class="{
-                      'justify-content-start': message.user_id == user.id,
-                      'justify-content-end' : message.user_id != user.id 
-                    }"
-                    class="d-flex mb-4"
-                  >
-                  <img 
-                    v-if="message.user_id == user.id"
-                    :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
-                    class="rounded-circle user_img_msg"
-                  >
-                  <div 
-                    v-bind:class="{
-                      'man'  : 
-                        (message.user_id == user.id && user.man) ||
-                        (message.user_id == companion.id && room.companion.man),
-                      'msg_cotainer'      : message.user_id == user.id,
-                      'msg_cotainer_send' : message.user_id != user.id
-                    }"
-                  >
-                    {{message.body}}
-                    <!--<span 
-                          v-bind:class="{'msg_time'      : message.user_id == user.id,
-                                         'msg_time_send' : message.user_id != user.id}"
-                          >                                       
-                          {{message.created_at}}
-                      </span> -->
-                  </div>
-                  <img 
-                    v-if="message.user_id != user.id"
-                    :src="assets+'/media/gallery/'+message.user_id+'_0.jpg'"
-                    class="rounded-circle user_img_msg"
-                  >
-                  </div>
+                <!-- More @@@ ?? -->
+                <!-- <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
+                <div class="action_menu">
+                    <ul>
+                        <li><i class="fas fa-user-circle"></i> View profile</li>
+                        <li><i class="fas fa-users"></i> Add to close friends</li>
+                        <li><i class="fas fa-plus"></i> Add to group</li>
+                        <li><i class="fas fa-ban"></i> Block</li>
+                    </ul>
+                </div> -->
+            </div>                
+            <!-- Body -->
+            <div v-if="room" class="card-body msg_card_body" v-chat-scroll>
+              <div v-for="message in messages">
+                <!-- Messages -->
+                <div 
+                  v-bind:class="{
+                    'justify-content-start': message.user_id == user.id,
+                    'justify-content-end' : message.user_id != user.id 
+                  }"
+                  class="d-flex mb-4"
+                >
+                <img 
+                  v-if="message.user_id == user.id"
+                  :src="user.photo[0]"
+                  class="rounded-circle user_img_msg"
+                >
+                <div 
+                  v-bind:class="{
+                    'man'  : 
+                      (message.user_id == user.id && user.man) ||
+                      (message.user_id == companion.id && room.companion.man),
+                    'msg_cotainer'      : message.user_id == user.id,
+                    'msg_cotainer_send' : message.user_id != user.id
+                  }"
+                >
+                  {{message.body}}
+                  <!--<span 
+                        v-bind:class="{'msg_time'      : message.user_id == user.id,
+                                       'msg_time_send' : message.user_id != user.id}"
+                        >                                       
+                        {{message.created_at}}
+                    </span> -->
                 </div>
-              </div>                        
-              <!-- Footer -->
-              <div class="send-message card-footer">
-                <!-- Freeze -->
-                <div>
-                  <div 
-                    v-if="inviteStatus(companion.id) === 1 && user.man === 1 && roomFreeze" 
-                    class="freeze"
-                  >
-                    <center>
-                      <button class="btn btn-primary m-4" @click="startPayedChat(room.id)">Start Chat</button>
-                    </center>
-                  </div>
-                  <!-- Invite -->
-                  <div class="invite freeze text-white">
-                    <div v-if="companion.name != ''">
-                      <!-- Deny -->
-                      <div v-if="inviteStatus(companion.id) === -1">
-                        <center>
-                          <p class="m-4">{{companion.name}} Denied</p>
-                        </center>
-                      </div>
-                      <!-- No invite -->
-                      <div v-if="inviteStatus(companion.id) === 0 && user.man === 1">
-                        <center>
-                          <button 
-                            class="btn btn-primary m-4" 
-                            @click="sendInvite(companion.id,2)"
-                          >
-                            Invite {{companion.name}} to Chat
-                          </button>
-                        </center>
-                      </div>
-                      <!-- Invited -->
-                      <div v-if="inviteStatus(companion.id) === 2 && user.man === 1">
-                        <center>
-                          <p>{{companion.name}} Invited</p>
-                          <p>Waiting Answer</p>
-                        </center>
-                      </div>
-                      <!-- Input -->
-                      <div v-if="inviteStatus(companion.id) === 3">
-                        <center>
-                          <button 
-                            class="btn btn-primary m-4" 
-                            @click="sendInvite(companion.id,1)"
-                          >
-                            Accept
-                          </button>
-                          <button 
-                            class="btn btn-primary m-4"
-                            @click="sendInvite(companion.id,-1)"
-                          >
-                            Deny
-                          </button>
-                        </center>
-                      </div>                                
-                    </div>  
-                  </div>
-                </div>                          
-                <!-- Chat send message -->
-                <div class="input-group">
-                  <!-- Attach -->
-                  <div class="input-group-append">
-                    <span class="input-group-text attach_btn">
-                      <fa-icon icon="paperclip" />
-                    </span>
-                  </div>
-                  <!-- Send message -->
-                  <!-- Text body -->
-                  <textarea 
-                    v-on:keyup.enter="sendMessage()" 
-                    name="text" 
-                    class="form-control type_msg" 
-                    placeholder="Type your message..."
-                  ></textarea>
-                  <div @click="emojiPickerShow = !emojiPickerShow" class="input-group-append">
-                    <div class="input-group-text emoji_picker">
-                      <fa-icon icon="smile"/>
+                <img 
+                  v-if="message.user_id != user.id"
+                  :src="companion.photo[0]"
+                  class="rounded-circle user_img_msg"
+                >
+                </div>
+              </div>
+            </div>                        
+            <!-- Footer -->
+            <div v-if="room" class="send-message card-footer">
+              <!-- Freeze -->
+              <div>
+                <div 
+                  v-if="inviteStatus(companion.id) === 1 && user.man === 1 && roomFreeze" 
+                  class="freeze text-white"
+                >
+                  <center>
+                    <p>{{companion.name}} ready to chat! </p>
+                    <button class="btn btn-primary m-4" @click="startPayedChat(room.id)">Start Chat</button>
+                  </center>
+                </div>
+                <!-- Invite -->
+                <div class="invite freeze text-white">
+                  <div v-if="companion.name != ''">
+                    <!-- Deny -->
+                    <div v-if="inviteStatus(companion.id) === -1">
+                      <center>
+                        <p class="m-4">{{companion.name}} Denied</p>
+                      </center>
                     </div>
+                    <!-- No invite -->
+                    <div v-if="inviteStatus(companion.id) === 0 && user.man === 1">
+                      <center>
+                        <button 
+                          class="btn btn-primary m-4" 
+                          @click="sendInvite(companion.id,2)"
+                        >
+                          Invite {{companion.name}} to Chat
+                        </button>
+                      </center>
+                    </div>
+                    <!-- Invited -->
+                    <div v-if="inviteStatus(companion.id) === 2 && user.man === 1">
+                      <center>
+                        <p>{{companion.name}} Invited</p>
+                        <p>Waiting Answer</p>
+                      </center>
+                    </div>
+                    <!-- Input -->
+                    <div v-if="inviteStatus(companion.id) === 3">
+                      <center>
+                        <button 
+                          class="btn btn-primary m-4" 
+                          @click="sendInvite(companion.id,1)"
+                        >
+                          Accept
+                        </button>
+                        <button 
+                          class="btn btn-primary m-4"
+                          @click="sendInvite(companion.id,-1)"
+                        >
+                          Deny
+                        </button>
+                      </center>
+                    </div>                                
+                  </div>  
+                </div>
+              </div>                          
+              <!-- Chat send message -->
+              <div class="input-group">
+                <!-- Attach -->
+                <div class="input-group-append">
+                  <span class="input-group-text attach_btn">
+                    <fa-icon icon="paperclip" />
+                  </span>
+                </div>
+                <!-- Send message -->
+                <!-- Text body -->
+                <textarea 
+                  v-on:keyup.enter="sendMessage()" 
+                  name="text" 
+                  class="form-control type_msg" 
+                  placeholder="Type your message..."
+                ></textarea>
+                <div @click="emojiPickerShow = !emojiPickerShow" class="input-group-append">
+                  <div class="input-group-text emoji_picker">
+                    <fa-icon icon="smile"/>
                   </div>
-                  <!-- Send button -->
-                  <div class="input-group-append" @click="sendMessage()">
-                    <span class="input-group-text send_btn">
-                      Send <fa-icon icon="arrow-right" class="pl-1"/>
-                    </span>
-                  </div>
-                </div>                      
-              </div>
-          </div>
+                </div>
+                <!-- Send button -->
+                <div class="input-group-append" @click="sendMessage()">
+                  <span class="input-group-text send_btn">
+                    Send <fa-icon icon="arrow-right" class="pl-1"/>
+                  </span>
+                </div>
+              </div>                      
+            </div>
+        </div>
       </div> 
       <!-- Recent chats -->
       <recent-chat
@@ -273,56 +277,60 @@
 
     export default {
         components: {
-            VueChatScroll, 
-            d3,
-            FontAwesomeIcon,
+          VueChatScroll, 
+          d3,
+          FontAwesomeIcon,
         },
         mixins: [ mMoreAxios, mNotifications, mLoading ],
         props:['prop_user'],
         data(){
-            return {
-                loading: {
-                  screen: true,
-                  room: false,
-                },
-                user: {},
-                room: false,
-                connected: false,
-                freeze:false,
-                messages:[],
-                onlineUsers: [],
-                recentRooms: [],
-                reconnect:false,
-                chatOnlineConnection:{},
-                chatPrivateConnection:{},
-                emojiPickerShow:false,
-                //Timer
-                timer: {
-                  d3: d3.interval((elapsed) => {/**/},99999),
-                  time:'0:00',
-                  total:'0:00'
-                },
-                payed:false,
-                startBalance:0,
-                //private
-                payedChat:[],
-                history:false,
-                inviteOut:[],
-                inviteIn:[],
-                //files
-                assets:assets,   
-                //websockets
-                pusher : _pusher,
-                echo : new _echo({
-                  broadcaster: 'pusher',
-                  key: process.env.MIX_PUSHER_APP_KEY,
-                  cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-                  // encrypted: true,
-                  wsHost: window.location.hostname,
-                  wsPort: 6001,
-                  disableStats: true,
-                }), 
-            }
+          return {
+            //loading
+            // loading: {
+            //   screen: false,
+            //   room: false,
+            // },
+            load:false,
+            user: {},
+            room: false,
+            connected: false,
+            freeze:false,
+            messages:[],
+            onlineUsers: [],
+            recentRooms: [],
+            reconnect:false,
+            chatOnlineConnection:{},
+            chatPrivateConnection:{},
+            emojiPickerShow:false,
+            //Timer
+            timer: {
+              d3: d3.interval((elapsed) => {/**/},99999),
+              time:'0:00',
+              total:'0:00'
+            },
+            payed:false,
+            startBalance:0,
+            //private
+            payedChat:[],
+            history:false,
+            inviteOut:[],
+            inviteIn:[],
+            //files
+            assets:assets,   
+            //websockets
+            pusher : _pusher,
+            echo : new _echo({
+              broadcaster: 'pusher',
+              key: process.env.MIX_PUSHER_APP_KEY,
+              cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+              // encrypted: true,
+              wsHost: window.location.hostname,
+              wsPort: 6001,
+              disableStats: true,
+            }),
+            //admin
+            hardOnline:[],
+          }
         },
         computed:{
           companion:function(){
@@ -426,27 +434,27 @@
           }
         },        
         watch: {
-            chatOnlineConnection: {
-              handler: function (val, oldVal) {this.setChatOnline();},
-              deep: true
-            }, 
-            room:{
-              handler: function (val, oldVal) {this.roomHandler(val, oldVal);},
-              deep: true               
-            },
-            freeze:function(val) {
-              if(!val || !this.room || !this.user.man) {
-                  $('.freeze').hide();
-                  return;
-              }
-              $('.freeze').show();  
-              // //Freeze size chat+ footer
-              // let headHeight = $('.msg_head').outerHeight();
-              // let bodyHeight = $('.chat').outerHeight();
-              // let newHeight = bodyHeight - headHeight;
-              // $('.freeze').outerHeight(newHeight+'px');
-              // $('.freeze').css('margin-top',headHeight);
-            }     
+          chatOnlineConnection: {
+            handler: function (val, oldVal) {this.setChatOnline();},
+            deep: true
+          }, 
+          room:{
+            handler: function (val, oldVal) {this.roomHandler(val, oldVal);},
+            deep: true               
+          },
+          freeze:function(val) {
+            if(!val || !this.room || !this.user.man) {
+                $('.freeze').hide();
+                return;
+            }
+            $('.freeze').show();  
+            // //Freeze size chat+ footer
+            // let headHeight = $('.msg_head').outerHeight();
+            // let bodyHeight = $('.chat').outerHeight();
+            // let newHeight = bodyHeight - headHeight;
+            // $('.freeze').outerHeight(newHeight+'px');
+            // $('.freeze').css('margin-top',headHeight);
+          }     
         },  
         notifications: {
           showSuccessMsg: {
@@ -487,43 +495,57 @@
           this.reSendInvites();
         },
         methods: {
+          //Admin
+          setHardOnline(hardOnline){
+            this.hardOnline = hardOnline;
+          },
+          trigerHardOnline(){
+            let ho = this.hardOnline[0];                     
+            this.hardOnline.splice(0,1);                                 
+            this.hardOnline.splice(0,0,ho);               
+          },
           //Emoji
           addEmoji(emoji){
-              $('.type_msg').val($('.type_msg').val() + emoji.native); //@@@ between text
-              //@@@ close on blank click
+            $('.type_msg').val($('.type_msg').val() + emoji.native); //@@@ between text
+            //@@@ close on blank click
           },
           //Online
           async setChatOnline(){
-              //Get connection
-              let c = this.chatOnlineConnection;
-              //Refresh
-              let chatOnline = false;
-              
-              if( c.hasOwnProperty('subscription') && 
-                  c.subscription.hasOwnProperty('subscribed') &&
-                  c.subscription.subscribed)
-              {   //Success
-                  chatOnline = true;
-                  this.stopLoading();
-              }else{
-                  //Freeze chat
-                  this.startLoading();
-                  //Refresh users
-                  this.onlineUsers = [];
-              }  
+            //Get connection
+            let c = this.chatOnlineConnection;
+            //Refresh
+            let chatOnline = false;
+            
+            if( c.hasOwnProperty('subscription') && 
+                c.subscription.hasOwnProperty('subscribed') &&
+                c.subscription.subscribed
+                )
+            {   //Success
+                chatOnline = true;
+                this.hideLoading(this.load); 
+                this.load = false;          
 
-              //Exit if success
-              if(chatOnline) return true;
+            }else{
+                //Freeze chat
+                if(!this.load){
+                  this.load = this.showLoading('.chat-container');
+                }                  
+                //Refresh users
+                this.onlineUsers = [];
+            }  
 
-              //Show reconnect            
-              setTimeout(()=>{
-                  //Show reconnect
-                  let c = this.chatOnlineConnection;
-                  if(!c.hasOwnProperty('subscription'))               { this.reconnect = true; return; }    
-                  if(!c.subscription.hasOwnProperty('subscribed'))    { this.reconnect = true; return; }
-                  if(!c.subscription.subscribed)                      { this.reconnect = true; return; }
-              
-              },5000)
+            //Exit if success
+            if(chatOnline) return true;
+
+            //Show reconnect            
+            setTimeout(()=>{
+                //Show reconnect
+                let c = this.chatOnlineConnection;
+                if(!c.hasOwnProperty('subscription'))               { this.reconnect = true; return; }    
+                if(!c.subscription.hasOwnProperty('subscribed'))    { this.reconnect = true; return; }
+                if(!c.subscription.subscribed)                      { this.reconnect = true; return; }
+            
+            },5000)
           },
           async joinOnline(){
               //leave old chat
@@ -565,10 +587,17 @@
               return true;        
           }, 
           async setRecentRoom(){
-              //Get rooms
-              let rooms = await this.getRecentRoom();
-              //Set rooms
-              this.recentRooms = rooms;
+
+            if(this.user.man > 2) return;
+
+            let l = this.loading('.recent-chat-container');
+
+            //Get rooms
+            let rooms = await this.getRecentRoom();
+            //Set rooms
+            this.recentRooms = rooms;
+
+            this.hideLoading(l);
           },
           async getRecentRoom(){
               var r = await this.ax('get','/chat/recentRooms',{user_id:this.user.id});
@@ -701,12 +730,16 @@
                 }
               }
           },
-          selectUser(user){
-              this.loading.room = true;
-              this.user = user;
-              this.disconnectRoom();
-              this.loading.room = false;
-              this.setRecentRoom();
+          async selectUser(user){
+            this.loading.room = true;
+            this.user = user;
+            await this.disconnectRoom();
+            this.loading.room = false;
+            await this.setRecentRoom();
+            //set read
+            let hardOnlineIndex = this.hardOnline.findIndex(x => x.id == this.user.id);
+            this.hardOnline[hardOnlineIndex].read = false; 
+            this.trigerHardOnline();
           },
           async getUserMembership(userId){
 
@@ -726,28 +759,6 @@
               return true;
           },
           // Private Room
-          inviteStatus(id){
-            //Invites
-            let out = this.inviteOut.find(x => x.id == id);
-            let $in =  this.inviteIn.find(x => x.id == id);
-
-            //Deny
-            if($in != undefined && $in.status == -1)return -1;
-
-            //No invite
-            if(!out && !$in)return 0;
-
-            //Accept
-            if(out && $in)return 1;
-
-            //Invited
-            if(out && !$in) return 2;
-
-            //Input
-            if(!out && $in) return 3;
-
-            return invite.status;
-          },
           async selectRoom(companionId){
 
             //check active chat
@@ -755,20 +766,10 @@
               let i = this.payedChat.findIndex(x => x.room == this.room.id);
               if(i > -1){
                 console.log('active chat');
-                //continue
-
-                //cancel
-                // return;
-
-
-                //stop
-                // this.stopPayedChat(this.room.id);
-
-
               }
             }
 
-            this.loading.room = true;
+            let l = this.loading('.chat-container');
             await this.disconnectRoom();
 
             //Get Room
@@ -776,14 +777,14 @@
             if(!room){
                 let error = 'error getting room';
                 this.showErrorMsg({message:error});
-                this.loading.room = false;
+                this.hideLoading(l);
                 return false; //@@@ add some error
             } 
 
             //Set room
             room.connect = true;
             this.room = room;
-
+            this.hideLoading(l);
             //Set readed
             this.readRoom();
             //freeze room
@@ -838,22 +839,22 @@
           }, 
           async getRoom(companionId){
              var r = await axios.get('/room', {
-                      params: {
-                          'companionId':companionId,
-                          'userId':this.user.id
-                      }
-                  })
-                  .then((r) => {
-                      if(!r.data) return false;
+                    params: {
+                        'companionId':companionId,
+                        'userId':this.user.id
+                    }
+                })
+                .then((r) => {
+                    if(!r.data) return false;
 
-                      if(r.data.error == 1){
-                          this.showErrorMsg({message:r.data.text});
-                          return false;
-                      }
+                    if(r.data.error == 1){
+                        this.showErrorMsg({message:r.data.text});
+                        return false;
+                    }
 
-                      return r.data;
-                  })
-                  .catch((r) => {return false;});
+                    return r.data;
+                })
+                .catch((r) => {return false;});
               return r;
           },
           async readRoom(){
@@ -862,7 +863,245 @@
 
             //Set back read
             this.ax('post','/chat/read',{'user_id':this.user.id,'room_id':this.room.id});
-          } ,
+          },
+          async setRoomNotification(id, idType = false){
+            //check type
+            if(idType == false) return false;
+
+            //Get room
+            let roomId = false;
+            //Get room from recent rooms
+            let roomIndex = false;
+            if(idType == 'companion'){
+              roomIndex = this.recentRooms.findIndex(x => x.companion.id == id);
+            }
+            if(idType == 'room'){
+              roomIndex = this.recentRooms.findIndex(x => x.id == id);
+            }
+
+            //Room found
+            let room = false;
+            if(roomIndex >= 0){
+              //Get room
+              room = this.recentRooms[roomIndex];                     
+              //Cancel if active room
+              if(room.id == this.room.id) return;
+              //Append room
+              room.read = false;
+              this.recentRooms.splice(roomIndex,1);
+              this.recentRooms.splice(0,0,room);
+              return true;
+            }
+
+            //Get room from backend
+            if(idType == 'companion'){
+              room = await this.getRoom(id);
+            }
+
+            //Room found
+            if(room){
+              room.read = false;
+              this.recentRooms.splice(0,0,room);
+              return true;
+            }
+
+            return false;
+          },
+          //Notifications
+          eventHandler(data){
+            console.log(data);
+
+            switch (data.type) {
+              case 'message':
+
+                //Update recent room
+                if(data.to == this.user.id){
+                  if(data.room == this.room.id) return;
+                  this.setRecentRoom();
+                  return;
+                }
+
+                if(this.prop_user.man > 2){
+                  //Check girl in hard online
+                  let hardOnlineIndex = this.hardOnline.findIndex(x => x.id == data.to);
+                  if(hardOnlineIndex == -1) return;
+
+                  //Add hard online notifications
+                  if(this.user.id == this.hardOnline[hardOnlineIndex].id) return;
+                  this.hardOnline[hardOnlineIndex].read = true; 
+                  let ho = this.hardOnline[hardOnlineIndex];                     
+                  this.hardOnline.splice(hardOnlineIndex,1);                                 
+                  this.hardOnline.splice(0,0,ho);                    
+                }
+
+                break;
+              case 'invite':
+                //Man
+                if(this.prop_user.man == 1){
+                  if(data.to == this.user.id){
+                    this.saveInvite(data);
+                    this.setRoomNotification(data.from,'companion');
+                  }
+                  return;
+                } 
+
+                //Girl
+                if(this.prop_user.man === false){
+                  if(data.to == this.user.id){
+                    this.saveInvite(data);
+                    this.setRoomNotification(data.from,'companion');
+                  }
+                  //Check inv out exists
+                  let invOut = this.inviteOut.filter(x => x.to == data.from && x.from == data.to);
+                  if(invOut.length > 0)
+                    this.sendInvite(invOut[0].to,invOut[0].status,true);                  
+                }              
+
+                //To admin
+                if(this.prop_user.man > 2){
+                  //Check girl in hard online
+                  let hardOnlineIndex = this.hardOnline.findIndex(x => x.id == data.to);
+                  if(hardOnlineIndex == -1) return;
+
+                  // filter same invite
+                  this.saveInvite(data);
+
+                  //Check inv out exists
+                  let invOut = this.inviteOut.filter(x => x.to == data.from && x.from == data.to);
+                  if(invOut.length > 0){
+                    this.sendInvite(invOut[0].to,invOut[0].status,true);
+                  }else{
+                    //Add notifications
+                    if(data.to == this.user.id){
+                      this.setRoomNotification(data.from,'companion');
+                    }
+                    //Add hard online notifications
+                    if(this.user.id == this.hardOnline[hardOnlineIndex].id) return;
+                    this.hardOnline[hardOnlineIndex].read = true; 
+                    let ho = this.hardOnline[hardOnlineIndex];                     
+                    this.hardOnline.splice(hardOnlineIndex,1);                                 
+                    this.hardOnline.splice(0,0,ho);     
+                  }
+
+                  
+
+                  
+                }
+
+                break;
+              default:
+                return;
+                break;
+            }
+          }, 
+          saveInvite(data){
+            let inv = this.inviteIn.filter(x => 
+                                            x.from    == data.from && 
+                                            x.to      == data.to && 
+                                            x.status  == data.status && 
+                                            x.type    == data.type 
+                                          )
+                                          .length;
+            if(inv < 1) this.inviteIn.push(data);                              
+          },        
+          //Invites
+          inviteStatus(cId){
+
+            let uId = this.user.id;
+
+            let $out = this.inviteOut.filter(x => x.from == uId && x.to == cId);
+            let $in  = this.inviteIn.filter(x => x.from == cId && x.to == uId);
+
+            //No invites
+            if( 
+                $out.length == 0 &&
+                $in.length == 0
+            ){
+              return 0;
+            }
+
+            //Deny   
+            if( 
+                $out.length > 0 &&
+                $in.length  > 0 &&
+                ($out[0].status == 2 || $out[0].status == 1) &&
+                $in[0].status == -1
+            ){
+              return -1;
+            }
+
+            //Accept
+            if( 
+                $out.length > 0 &&
+                $in.length  > 0 &&
+                ($out[0].status == 2 || $out[0].status == 1) &&
+                ($in[0].status == 2  || $in[0].status == 1)
+            ){
+              return 1;
+            }
+
+            //Invited
+            if( 
+                $out.length > 0 &&
+                $in.length == 0 &&
+                ($out[0].status == 2 || $out[0].status == 1)
+            ){
+              return 2;
+            }
+
+            //input
+            if(                 
+                $out.length == 0 &&
+                $in.length > 0 &&
+                ($in[0].status == 2 || $out[0].status == 1)
+            ){
+              return 3;
+            }  
+
+            return false;
+          },          
+          async sendInvite(companion,status,silence= false){    
+            let companionId = companion;
+            let l;
+            if(!silence){
+              l = this.showLoading('.freeze.invite');
+            }
+
+            let invData = {
+                            'from':this.user.id,
+                            'to':companionId,
+                            'status':status
+                          };
+
+            let r = await this.ax('post','/chat/invite',invData);
+            if(!r){
+              if(!silence)this.hideLoading(l);
+              return;
+            }
+
+            if(!silence){this.inviteOut.push({'from':this.user.id,'to':companionId,'status':status,'type':'invite'});}
+
+            if(!silence)this.hideLoading(l);
+            return;
+          },
+          reSendInvites() {
+            setTimeout(() => {
+
+              if(this.inviteOut.length > 0){
+                $.each(this.inviteOut, (index, v) => {
+                  //Status pending
+                  if(v.status === 2){
+                    //No answer
+                    if(this.inviteIn.filter(x => x.to == v.from && x.from == v.to).length == 0)
+                      this.sendInvite(v.to,2,true);
+                  };
+                });
+              }
+
+              this.reSendInvites();
+
+            }, 10000);
+          },          
           //Payed chat
           async startPayedChat(roomId){
 
@@ -878,6 +1117,7 @@
             if(this.user.man === 1){
               if(parseFloat(this.user.membership.chat_price) > parseFloat(this.user.balance)){         
                 this.showErrors("Low Balance!");
+                window.open('/memberships','_blank');
                 return;
               }
             }
@@ -994,38 +1234,6 @@
             console.log('pay');
             let r = this.ax('post','/chat/pay',{'history':history});
           },
-          async sendInvite(companion,status,silence= false){
-            
-            let companionId = companion;
-            let l;
-            if(!silence){
-              l = this.showLoading('.freeze.invite');
-            }
-
-            let r = await this.ax('post','/chat/invite',{'from':this.user.id,"to":companionId,'status':status});
-            if(!r){
-              if(!silence)this.hideLoading(l);
-              return;
-            }
-
-            if(!silence){this.inviteOut.push({'id':companionId,'status':status});}
-
-            if(!silence)this.hideLoading(l);
-            return;
-          },
-          reSendInvites() {
-            setTimeout(() => {
-              if(this.inviteOut.length > 0){
-                $.each(this.inviteOut, (index, v) => {
-                  if(this.inviteStatus(v.id) === 2){
-                    this.sendInvite(v.id,2,true);
-                  };
-                });
-
-              }
-              this.reSendInvites();
-            }, 15000);
-          },
           freezeRoom(){
               if(this.user.man)
                   this.freeze = true;
@@ -1076,40 +1284,13 @@
 
             let r = await this.ax('put','/chat/messages',data);
           },
-          //Notifications
-          eventHandler(data){
-            // console.log(data);
-
-            switch (data.type) {
-              case 'message':
-                // check if current room
-                if(this.room.id == data.room) return;
-                //Check if user room
-                let i = this.recentRooms.findIndex(x => x.id == data.room);
-                if(i < 0) return;
-                //Set unread
-                this.recentRooms[i].read = false;
-                break;
-              case 'invite':
-                if(data.to == this.user.id){
-                  if(this.inviteStatus(data.from) === 1) {
-                    this.sendInvite(data.from,1)
-                  }
-
-                  this.inviteIn.push({"id":data.from,"status":data.status});
-                }
-                break;
-              default:
-                return;
-                break;
-            }
-          },
           //Other
           startLoading(){
-            this.loading.screen = true;
+            // this.load = this.showLoading('chat-container');
           },
           stopLoading(){
-            this.loading.screen = false;
+            // this.loading.screen = false;
+            // this.hideLoading(load);
           }
         }
     }

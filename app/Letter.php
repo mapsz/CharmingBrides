@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Membership;
 use App\User;
 use App\Settings;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -24,30 +25,70 @@ class Letter extends _adminPanel
     protected $delete    = false; 
     protected $add       = false; 
 
+    protected $order       = ['row' => 'created_at','order' => 'DESC'];
+
+    // protected $columns  = [
+    //     [
+    //       'name' => 'girl',
+    //       'component' => 'admin-letter-user-component',
+    //       'attr' => ['man'=>'girl','route'=>'letters'],
+    //     ],
+    //     [
+    //       'name' => 'man',
+    //       'component' => 'admin-letter-user-component',
+    //       'attr' => ['man'=>'man','route'=>'letters'],
+    //     ],
+    //     [
+    //       'name' => 'letters',
+    //       'caption' => 'letters count',
+    //     ],
+    //     [
+    //       'name' => 'pay_count',
+    //       'caption' => 'pay count',
+    //     ],
+    //     [
+    //       'name' => 'pay_summ',
+    //       'caption' => 'pay summary',
+    //     ] 
+    // ];
+
     protected $columns  = [
         [
-          'name' => 'girl',
-          'component' => 'admin-letter-user-component',
-          'attr' => ['man'=>'girl','route'=>'letters'],
+          'name' => 'id',
         ],
         [
-          'name' => 'man',
-          'component' => 'admin-letter-user-component',
-          'attr' => ['man'=>'man','route'=>'letters'],
+          'name' => 'subject',
         ],
         [
-          'name' => 'letters',
-          'caption' => 'letters count',
+          'name' => 'user',
+          'caption' => 'From',
+          'component' => 'admin-letter-user',
+          'attr' => 'from',
         ],
         [
-          'name' => 'pay_count',
-          'caption' => 'pay count',
+          'name' => 'toUser',
+          'caption' => 'To',
+          'component' => 'admin-letter-user',
+          'attr' => 'to',
         ],
         [
-          'name' => 'pay_summ',
-          'caption' => 'pay summary',
-        ] 
-    ];
+          'name' => 'agent',
+          'component' => 'admin-letter-agent',
+        ],        
+        [
+          'name' => 'created_at',
+          'caption' => 'date',
+          'timeFormat'  => 'j F Y G:i' 
+        ],
+        [
+          'name' => 'read',
+          'caption' => 'read',
+        ],      
+        [
+          'name' => 'more',
+          'component' => 'admin-letters-link',
+        ]
+    ];    
     protected $inputs    = [
     ];
 
@@ -67,50 +108,62 @@ class Letter extends _adminPanel
 
     public static function getCompanions($userId){
 
-      //Get letters
-      $letters = self::getLetterswithUsers($userId);
-      
 
-      //Get companions
-      $companions = [];
-      foreach ($letters as $k => $letter){
-        array_push($companions, $letter['user']);            
-        array_push($companions, $letter['to_user']);
-      }
+      $t = time();
 
-      //Edit companions
-      $edit = [];
-      foreach ($companions as $key => $value) {
-        //Remove self
-        if($value['id'] == $userId) continue;
+        // $id = 58649;
+        $id = $userId;
 
-        //Remove dublicate
-        $dublicate = false;
-        foreach ($edit as $k => $v) {
-          if($value['id'] == $v['id']){
-            $dublicate = true;
-          }
+        // DB::enableQueryLog();
+        $pages = 20;
+        $page  = (isset($_GET['companion_page'])) ? $_GET['companion_page'] : 1;
+        $offset = ($pages * $page) - $pages;
+        //Get ids
+        //@@@ binds
+        $ids= DB::select( DB::raw( 
+        "
+          SELECT `user` ,MAX(`date`) as `date`, sum(`read`) as `read`,sum(`id`) as `id`
+          FROM(
+            SELECT `to_user_id` as `user`, MAX(`created_at`) as `date`,0 as `read`,0 as `id` FROM `letters`
+            WHERE `user_id` = $id
+            GROUP BY `user`
+            UNION DISTINCT
+            SELECT `user_id` as `user`, MAX(`created_at`) as `date`,count(`read`) as `read`,count(`id`) as `id` FROM `letters`
+            WHERE `to_user_id` = $id
+            GROUP BY `user`
+          ) AS tmp
+          GROUP BY `user`
+          ORDER BY `date` DESC
+          LIMIT " . $pages . ' OFFSET ' . $offset
+        ) );
+        //Filter ids
+        $userIds = [];
+        foreach ($ids as $v) {
+          array_push($userIds, $v->user);
         }
-        if($dublicate) continue;
+        //Get users
+        $users = User::whereIn('id',$userIds)->with('girl')->with('man')->get();
+        //Get info
+        $companions = [];
+        foreach ($users as $k => $v) {
+          array_push($companions, User::getWithInfo($v->id,$v));
+        }      
 
-        //Formate companion
-        $add = [];
-        if($value['girl'] != null){ 
-          $add['name'] = $value['girl']['name'];
-          $add['man'] = false;
-        }elseif($value['man'] != null){          
-          $add['name'] = $value['man']['name'];
-          $add['man'] = true;
+        //add date/sort
+        $out = [];
+        foreach ($ids as $id) {
+          $read = 1;
+          if($id->read < $id->id) $read = 0;
+          foreach ($companions as $k => $c) {
+            if($c['id'] == $id->user){
+              $companions[$k]['date'] = $id->date;
+              $companions[$k]['read'] = $read;
+              array_push($out,$companions[$k]);
+            }
+          }  
         }
-        $add['user_id'] = $value['id'];
-        $add['id'] = $value['id'];
-        $add['email'] = $value['email'];
 
-        array_push($edit, $add);   
-      }
-      $companions = $edit;
-
-      return $companions;
+        return $out;
     }
 
     public static function getLetters($userId, $companionId){
@@ -267,94 +320,95 @@ class Letter extends _adminPanel
       return self::with('user.man','user.girl','toUser.man', 'toUser.girl','letterPay')
                       ->where('user_id','=',$userId)
                       ->orWhere('to_user_id','=',$userId)
-                      ->get()
-                      ->toArray();     
+                      ->paginate(50);   
     }
 
-    protected function getDbData(){
-      if (Auth::user() &&  Auth::user()->role == 4) {
-         $data = User::has('letter')      
-                      ->orHas('inLetter')
-                      ->with(
-                        'man',
-                        'girl',
-                        'agent',
-                        'letter.user.man',
-                        'letter.user.girl',
-                        'letter.letterPay',
-                        'inLetter.user.man',
-                        'inLetter.user.girl',
-                        'inLetter.letterPay'
-                      )
-                      ->get()->toArray();
-      }else{
-          $data = User::
-                  with(
-                    'man',
-                    'girl',
-                    'girl.agent',
-                    'letter.user.man',
-                    'letter.user.girl',
-                    'letter.letterPay',
-                    'inLetter.user.man',
-                    'inLetter.user.girl',                    
-                    'inLetter.user.girl.agent',
-                    'inLetter.letterPay'
-                  )
-                  ->whereHas('letter.user.girl.agent', function($q){
-                      $q->where('id', '=', '1');
-                  })
-                  ->orWhereHas('inLetter.user.girl.agent', function($q){
-                      $q->where('id', '=', '1');
-                  })
-                  ->get()->toArray();       
-      }
- 
-        $correspondences = [];
-        $letters = [];
-        $lKeys = ['letter','in_letter'];
-        //Data
-        foreach ($data as $d) {          
-          foreach ($lKeys as $lKey) {            
-            foreach ($d[$lKey] as $letter) {
-              //Letters
-              //skip if letters exists
-              if(self::letterExists($letters, $letter)) continue;
-              //add letter
-              array_push($letters, $letter);
 
-              //Correspondences
-              //get corres
-              $correspondence = self::correspondenceGet($correspondences, $letter['user_id'],$letter['to_user_id']);
-              //create if doesnt exist
-              if(!$correspondence){
-                $correspondence = self::correspondenceCreate($letter);
-                array_push($correspondences, $correspondence);
-              }
 
-              //add letter
-              $correspondences = self::correspondenceAddLetter($correspondences, $letter);
+    // protected function getDbData(){
+    //   if (Auth::user() &&  Auth::user()->role == 4) {
+    //      $data = User::has('letter')      
+    //                   ->orHas('inLetter')
+    //                   ->with(
+    //                     'man',
+    //                     'girl',
+    //                     'agent',
+    //                     'letter.user.man',
+    //                     'letter.user.girl',
+    //                     'letter.letterPay',      
+    //                     'inLetter.user.man',
+    //                     'inLetter.user.girl',
+    //                     'inLetter.letterPay'
+    //                   )
+    //                   ->paginate(50)->toArray();
+    //   }else{
+    //       $data = User::
+    //               with(
+    //                 'man',
+    //                 'girl',
+    //                 'girl.agent',
+    //                 'letter.user.man',
+    //                 'letter.user.girl',
+    //                 'letter.letterPay',
+    //                 'inLetter.user.man',
+    //                 'inLetter.user.girl',                    
+    //                 'inLetter.user.girl.agent',
+    //                 'inLetter.letterPay'
+    //               )
+    //               ->whereHas('letter.user.girl.agent', function($q){
+    //                   $q->where('id', '=', '1');
+    //               })
+    //               ->orWhereHas('inLetter.user.girl.agent', function($q){
+    //                   $q->where('id', '=', '1');
+    //               })
+    //               ->paginate(50)->toArray();       
+    //   }
+
+    //     $correspondences = [];
+    //     $letters = [];
+    //     $lKeys = ['letter','in_letter'];
+    //     //Data
+    //     foreach ($data as $d) {          
+    //       foreach ($lKeys as $lKey) {            
+    //         foreach ($d[$lKey] as $letter) {
+    //           //Letters
+    //           //skip if letters exists
+    //           if(self::letterExists($letters, $letter)) continue;
+    //           //add letter
+    //           array_push($letters, $letter);
+
+    //           //Correspondences
+    //           //get corres
+    //           $correspondence = self::correspondenceGet($correspondences, $letter['user_id'],$letter['to_user_id']);
+    //           //create if doesnt exist
+    //           if(!$correspondence){
+    //             $correspondence = self::correspondenceCreate($letter);
+    //             array_push($correspondences, $correspondence);
+    //           }
+
+    //           //add letter
+    //           $correspondences = self::correspondenceAddLetter($correspondences, $letter);
               
-            }
-          }
-        }
+    //         }
+    //       }
+    //     }
 
-        //Add users
-        $correspondences = self::correspondenceAddUser($correspondences, $data);
+    //     //Add users
+    //     $correspondences = self::correspondenceAddUser($correspondences, $data);
 
-        //Unset trash
-        foreach ($correspondences as $k => $c) {
-          unset($correspondences[$k]['girl_id']);
-          unset($correspondences[$k]['man_id']);
+    //     //Unset trash
+    //     foreach ($correspondences as $k => $c) {
+    //       unset($correspondences[$k]['girl_id']);
+    //       unset($correspondences[$k]['man_id']);
 
 
-          if($c['girl'] == null || $c['man'] == null)
-            unset($correspondences[$k]);
-        }
+    //       if($c['girl'] == null || $c['man'] == null)
+    //         unset($correspondences[$k]);
+    //     }
 
-        // dd($correspondences);
-        $this->dbData = $correspondences;        
-    }
+    //     // dd($correspondences);
+    //     $this->dbData = $correspondences;        
+    // }
 
     private static function letterExists($letters, $letter){
       foreach ($letters as $value) {

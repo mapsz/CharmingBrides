@@ -69,6 +69,7 @@ class ChatHistory extends Model
 
       //Update last pay
       $history->last_pay = $currentTime;
+      $history->price += $paySumm;
       if(!$history->save()) return false;
 
       return $paySumm;
@@ -97,7 +98,11 @@ class ChatHistory extends Model
 
     protected static function findHistory($roomId, $session){
 
-      return ChatHistory::where('room_id',$roomId)->where('session',$session)->where('stop_at',null)->orderBy('created_at','desc')->first();
+      return ChatHistory::where('room_id',$roomId)
+                        ->where('session',$session)
+                        ->where('stop_at',null)
+                        ->orderBy('created_at','desc')
+                        ->first();
     }
 
     //
@@ -173,6 +178,7 @@ class ChatHistory extends Model
 
       $history->room_id = $room;
       $history->session = $session;
+      $history->price = $membership->chat_price;
       $history->last_pay = Carbon::now()->addMinutes(1);
 
       if(!$history->save())return false;

@@ -79,6 +79,7 @@ abstract class _adminPanelController extends Controller
       $route      = $model->getRoute(); 
       $settings   = $model->getSettings(); 
       $editData   = $model->getEditData();
+
       //Encode
       $inputs     = json_encode($inputs);
       $names      = json_encode($names);
@@ -95,9 +96,7 @@ abstract class _adminPanelController extends Controller
                   ->with('settings',$settings);
     }
 
-
     public function _get(Request $request){
-
       //Get request
       $id       = (isset($request->id))      ? $request->id       : false;
       $columns  = (isset($request->columns)) ? $request->columns  : false;
@@ -122,7 +121,6 @@ abstract class _adminPanelController extends Controller
     } 
 
     public function _put(Request $request){
-
         //Get Model
         $model = new $this->model; 
         
@@ -142,25 +140,28 @@ abstract class _adminPanelController extends Controller
 
     public function _post(Request $request){
 
-        //Get Model
-        $model = new $this->model; 
-        
-        // Validate
-        // $model->validate($request); 
+      //Check id
+      if(!$request->id) 
+        return response()->json(['error' => '2', 'text' => 'something gone wrong']);
 
-        //Edit
-        $post = $model->editRow($request->all());
-        
-        //Save
-        if($post){
-            return response()->json(['error' => '0']);
-        }else{
-            return response()->json(['error' => '1', 'text' => 'something gone wrong']);
-        }
+      //Get Model
+      $model = new $this->model; 
+      
+      // Validate
+      // $model->editValidate($request); 
+
+      //Edit
+      $post = $model->editRow($request->all());
+      
+      //Save
+      if($post){
+          return response()->json(['error' => '0']);
+      }else{
+          return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+      }
     }
 
     public function _destroy(Request $request){
-
         $model = new $this->model; 
 
         if($model->deleteRow($request->id)){
@@ -172,7 +173,6 @@ abstract class _adminPanelController extends Controller
     }
 
     public function _attach(Request $request){
-
         //Get model
         $model = $this->model::find($request->modelId);
 
@@ -217,7 +217,7 @@ abstract class _adminPanelController extends Controller
           $columns[$k] = (array)$v;
         }        
       }
-
+      
       //Get Model
       $model = new $this->model();
 
@@ -301,7 +301,6 @@ abstract class _adminPanelController extends Controller
         //Success
         return response()->json(['error' => '0']);
       }
-
     }
 
 
@@ -329,7 +328,6 @@ abstract class _adminPanelController extends Controller
         //Success
         return response()->json(['error' => '0']);
       }
-
     }    
 
     public function test($test){

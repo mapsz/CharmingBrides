@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Girl;
 use App\Room;
 use App\Message;
 use Auth;
@@ -41,10 +42,10 @@ class ChatController extends Controller
 
       //Invite
       Chat::dispatch([
-        'type' => 'invite',
-        'from' => $request->from,
-        'to' => $request->to,
-        'status' => $request->status
+        'type'    => 'invite',
+        'from'    => $request->from,
+        'to'      => $request->to,
+        'status'  => $request->status
       ]);
 
       return response()->json(['error' => '0']);
@@ -108,6 +109,7 @@ class ChatController extends Controller
         $userId = $this->getUser($request->userId);
         if(!$userId) return response()->json(['error' => '1', 'text' => 'No user id']);
 
+
         //Get companion
         $companionId = $request->companionId;
         if(!$companionId) return response()->json(['error' => '1', 'text' => 'No companion id']);
@@ -124,7 +126,7 @@ class ChatController extends Controller
 
         // Check user not companion
         if($userId == $companionId) return response()->json(['error' => '1', 'text' => 'Cant chat with self']);
-
+      
         // Check if different genders
         $currentUser = User::getWithInfo($userId);
         $companion   = User::getWithInfo($companionId);
@@ -198,43 +200,6 @@ class ChatController extends Controller
         else            return $userId;
     }
 
-    // public function intviteCompanion(Request $request){
-
-    //     // Get user id
-    //     $userId = $this->getUser($request->userId);
-    //     if(!$userId) return response()->json(['error' => '1', 'text' => 'No user id']);
-
-    //     //Get room
-    //     $roomId = $request->roomId;
-    //     if(!$roomId) return response()->json(['error' => '1', 'text' => 'No room id']);
-
-    //      //Check user is admin
-    //     if(Auth::user()->role > 2 && Auth::user()->id == $userId){
-    //         return response()->json(['error' => '1', 'text' => 'Admin cant invite']);
-    //     }
-
-    //     //Check user belong to room
-    //     if(!$this->userBelongToRoom($userId, $roomId))
-    //         return response()->json(['error' => '1', 'text' => 'User doesnt belong to this room']);      
-    //     //Get user info 
-    //     $user = User::getWithInfo($userId);
-
-    //     //Get room
-    //     $room = Room::find($roomId);
-
-    //     //Update invate
-    //     if($user['man'])  $room->man_confirm  = 1; // Man
-    //     else              $room->girl_confirm = 1; // Girl
-        
-    //     //Save invite
-    //     $room->save();
-
-    //     //Run event //@@@
-    //     // ChatInvite::dispatch($roomId);
-
-    //     return $room;
-    // }
-
     public function storeMessage(Request $request){
       // Get user id
       $userId = $this->getUser($request->userId);
@@ -280,10 +245,19 @@ class ChatController extends Controller
         }       
       }
 
-
       //Store message
       if(!$message->save()){
         return response()->json(['error' => 1, 'text' => 'Somethink gone wrong', 'code' => 3]);
+      }
+
+      //Get to user
+      $roomUsers = Room::where('id',$roomId)->with('user')->first()->user;
+
+      foreach ($roomUsers as $key => $v) {
+        if($v->id != $userId){
+          $toUserId = $v->id;
+          break;
+        } 
       }
 
       //Trigger event
@@ -292,6 +266,7 @@ class ChatController extends Controller
       Chat::dispatch([
         'type' => 'message',
         'from' => $userId,
+        'to' =>   $toUserId,
         'room' => $roomId
       ]);
 
@@ -378,14 +353,32 @@ class ChatController extends Controller
 
         $users = ChatHardOnline::where('admin_id', '=', $admin_id)->get();
 
+        if(count($users) == 0) return [];
+
         //Get info
-        $r = [];
+        //set where
+        $where = [];
         foreach ($users as $key => $user) {
-            $u = user::getWithInfo($user->user_id);
-            array_push($r, $u);
+          $u = ['column' => 'user_id','condition' => '=','value' => $user->user_id,'or' => true];
+          array_push($where, $u);
         }
 
-        return $r;
+        $model = new Girl();        
+        $columns = [
+          [
+            'name'    => 'photo',
+            'file'    => 'image',
+          ],
+          ['name' => 'id'],
+          ['name' => 'name'],
+          ['name' => 'birth'],
+        ];
+        $model->setColumns($columns);
+
+        $model->setWhere($where);
+        $data = $model->getData();
+
+        return $data['data'];
     } 
 
     public function setHardOnline(Request $request){
@@ -424,6 +417,64 @@ class ChatController extends Controller
         $online = ChatHardOnline::where([['user_id','=',$userId],['admin_id','=',$adminId]])->delete();
 
         return response()->json(['error' => false, 'text' => 'ok']);
+    }
+
+    public function searchGirl(Request $request){
+
+      $role = Auth::User()->role;
+
+      if($role < 3){
+        return false;
+      }
+      $search  = $request->search;
+
+      //Get Model
+      $model = new Girl;
+
+      $model->setInfoColumns();
+
+      if($role == 3){
+        $id = Auth::User()->agent->id;
+        $callback = function($q)use($id) {
+          $q->where('id','=',$id);
+        };
+        $model->setCustomQueries([
+          $model
+            ->whereHas('agent' , $callback)
+            ->with(['agent' => $callback])
+            ->where(function($q)use($search) {
+              $q->orwhere('id', 'like','%'.$search.'%')
+                ->orWhere('name', 'like','%'.$search.'%')
+                ->orWhere('location', 'like','%'.$search.'%')
+                ->orWhereHas('user', function ($query)use($search) {
+                  $query->where('id', 'like', '%'. $search .'%');
+                  $query->orWhere('email', 'like', '%'. $search .'%');
+                });
+            })
+        ]);
+      }else{
+        $model->setCustomQueries([
+          $model
+            ->where(function($q)use($search) {
+              $q->where('id', 'like','%'.$search.'%')
+                ->orWhere('name', 'like','%'.$search.'%')
+                ->orWhere('location', 'like','%'.$search.'%')
+                ->orWhereHas('user', function ($query)use($search) {
+                  $query->where('id', 'like', '%'. $search .'%');
+                  $query->orWhere('email', 'like', '%'. $search .'%');
+                });
+            })
+        ]);        
+      }
+
+
+
+    
+      //Get Data
+      $data   = $model->getData();       
+
+      return response()->json(['error' => '0', 'data' => $data]);
+
     }
 
 }

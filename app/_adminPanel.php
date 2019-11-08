@@ -20,16 +20,18 @@ class _adminPanel extends Model
     protected $page;
 
     //Settings
-    protected $edit      = true; 
-    protected $delete    = true; 
-    protected $add       = true; 
-    protected $link      = false;
-    protected $route     = [];
+    protected $edit             = true; 
+    protected $delete           = true; 
+    protected $add              = true; 
+    protected $link             = false;
+    protected $activateSearch   = false;
+    protected $route            = [];
 
     //Data
     protected $inputs    = [];
     protected $data      = [];
-    protected $dbData    = [];    
+    protected $dbData    = []; 
+    protected $customQueries = [];
         
     //Data settings
     protected $columns  = [];    
@@ -38,6 +40,7 @@ class _adminPanel extends Model
     protected $search   = false;
     protected $where    = false;
     protected $singleId = false;
+    protected $perPage  = 50;
 
     public function __construct($single, $multi, $page, $inputs) {
         $this->single   = $single;
@@ -45,7 +48,7 @@ class _adminPanel extends Model
         $this->page     = $page;
         $this->inputs   = $inputs;
         //Set inputs
-        $this->setInputs();
+        $this->setInputs($inputs);
     }
 
     //Validate
@@ -71,8 +74,20 @@ class _adminPanel extends Model
     public function setSearch($search){
       $this->search = $search;
     }
+    public function setWhere($where){
+      $this->where = $where;
+    } 
+    public function setPerPage($perPage){
+      $this->perPage = $perPage;
+    }           
     public function setSingleId($singleId){
       $this->singleId = $singleId;
+    }
+    public function setDbData($dbData){
+      $this->dbData = $dbData;
+    }
+    public function setCustomQueries($queries){
+      $this->customQueries = $queries;
     }
 
     //Getters
@@ -99,9 +114,9 @@ class _adminPanel extends Model
         //Return page
         return $this->page;             
     }
-    public function getData(){
+    public function getData($dbData = false){
         //Set data
-        $this->setData();
+        $this->setData($dbData);
         //Return data
         return $this->data;
     }
@@ -110,11 +125,21 @@ class _adminPanel extends Model
         return $this->inputs;     
     }
     public function getSettings(){
+
+        if(count($this->dbData) < 1){
+          $pages = 0;
+        }else{
+          $pages = $this->dbData->lastPage();
+        }
+        
+
         return [
           'add'       => $this->add,
           'edit'      => $this->edit,
           'delete'    => $this->delete,
           'link'      => $this->link,
+          'search'    => $this->activateSearch,
+          'pages'     => $pages,
           'subList'   => false,
         ];     
     }
@@ -139,62 +164,124 @@ class _adminPanel extends Model
 
       return $data;
     }
-    public function getFiles($id, $name){
+    public function getFiles($id, $inputName, $parentId = false){
 
       //Check parent
-      foreach ($this->inputs as $input) {
-        if(isset($input['parent'])){
-          $id = $this->dbData[0][$input['parent']]['id'];
-          break;
-        }
+      if(!$parentId){
+        foreach ($this->inputs as $input) {
+          if(isset($input['parent'])){
+            foreach ($this->dbData as $key => $v) {
+              if($v['id'] == $id) {
+                $parentId = $v[$input['parent']]['id'];
+                break;
+              }
+            }
+            break;
+          }
+        }        
       }
-
       //Get input
       $input = "";
       foreach ($this->inputs as $v) {
-        if($v['name'] == $name){
+        if($v['name'] == $inputName){
           $input = $v;
         }
       }
-
       //Get files
-      $files = File::files(public_path().'/'.$input['path']);
-
+      $files = scandir(public_path().'/'.$input['path']);
       // Filter files
       $filtredFiles = [];
       foreach ($files as $file) {
-        $name = $file->getFilename();
-        //@@@ nado by name
-        $fileId = substr($name,0,strpos($name, '_'));
-        if($id == $fileId)
+        if($file == '.' || $file == '..') continue;
+
+
+        $name = $file;
+
+        //Get files by name
+        $array = explode('.', $file);
+        $extension = end($array);
+
+        $preg_template = '/^' . $input['fileName'] . '\.'.$extension. '$/';
+
+        if(strpos($preg_template,'`parentId`') !== false){
+          $preg_template = str_replace ('`parentId`',$parentId,$preg_template);
+        }
+
+        if(strpos($preg_template,'`rand`') !== false){
+          $preg_template = str_replace ('`rand`','[0-9]+',$preg_template);
+        }
+
+        if(strpos($preg_template,'`id`') !== false){
+          $preg_template = str_replace ('`id`',$id,$preg_template);
+        }
+
+        // dd($preg_template,$name);
+        if(preg_match($preg_template,$name)){
           array_push($filtredFiles, $name);
+        }
+
       }
 
+      if(count($filtredFiles) == 0){
+        if(isset($input['default']))
+          $filtredFiles = [$input['default']];
+      }
+      // Get path
+      $path = '';
+      foreach ($this->inputs as $input) {
+        if($input['name'] == $inputName){
+          $path = $input['path'];
+          break;
+        }
+      }
+      //Set path
+      foreach ($filtredFiles as $k => $file) {
+        $filtredFiles[$k] = $path . '/' . $file;
+      }
       return $filtredFiles;
+    }
+    public function getColumns(){
+      return $this->columns;
     }
 
 
+
     //Data
-    private function setData(){
-        //Set Colimns
-        $columns = $this->setDataColumns($this->columns);
-        $this->setColumns($columns);
-        //Set up relations
-        $this->setUpDefaultRelations();
-        //Get from DB
-        $this->getDbData();        
-        //Form data
-        $this->data['data'] = $this->formDatafromDb($this->columns, $this->dbData);
-        //Remove relations        
-        $this->removeRelations();
-        //Set attributes
-        $this->setDataAttributes(); 
-        //Set data
-        $this->data['columns'] = $this->columns;
+    private function setData($dbData){
+      //Set Colimns
+      $columns = $this->setDataColumns($this->columns);
+      $this->setColumns($columns);
+      //Set up relations
+      $this->setUpDefaultRelations();
+      //Get from DB
+      if($dbData){
+        $this->dbData = $dbData;
+      }else{
+        $this->getDbData();  
+      }      
+      //Form data
+      $this->data['data'] = $this->formDatafromDb($this->columns, $this->dbData);
+      //Remove relations    
+      $this->removeRelations();        
+      //Set attributes
+      $this->setDataAttributes(); 
+      //Get files
+      $this->setFilesFromColumns();
+      //Set data columns
+      $this->data['columns'] = $this->columns;
     } 
     protected function getDbData(){
         //Set getData
         $getData = $this;
+
+
+        //Custom queries
+        if(is_array($this->customQueries)){
+          foreach ($this->customQueries as $key => $query) {
+            $getData = $query;
+          }
+        } 
+
         //Add relations
         $getData = $this->addDbRelations($this->columns, $getData);
         //Order
@@ -203,9 +290,18 @@ class _adminPanel extends Model
         if($this->count) $getData->take($this->count);
         //Search
         if($this->search){
+          $quey = [];
           foreach ($this->columns as $k => $v) {
+            //File
+            if(isset($v['file'])){
+              continue;
+            }
+            //Custom
+            if(isset($v['component'])){
+              continue;
+            }     
             //Relation
-            if(isset($v['relation'])){
+            if(isset($v['relation'])){              
               $db = array();
               //get table
               $db['table'] = substr($v['relation'], 0, strpos($v['relation'], '.'));
@@ -213,8 +309,7 @@ class _adminPanel extends Model
               $db['column'] = substr($v['relation'], strpos($v['relation'], '.')+1);
               //search
               $db['search'] = $this->search;
-
-              $getData->orWhereHas($db['table'], function ($query)use($db) {
+              $getData = $getData->orWhereHas($db['table'], function ($query)use($db) {
                 $query->where($db['column'], 'like', '%'. $db['search'] .'%');
               });
 
@@ -222,22 +317,65 @@ class _adminPanel extends Model
             }
             //remove belongs to one @@@
             if(isset($v['relationBelongsToOne'])) continue;
-            //add search
-            $getData->orWhere($v['name'], 'LIKE', '%'. $this->search .'%');
+
+            //add search      
+            $getData = $getData->orWhere($v['name'], 'LIKE', '%'. $this->search .'%');
           }
-        }
+        }       
         //SingleId
         if($this->singleId){
-          $getData->Where('id', '=', $this->singleId);
+          $getData = $getData->where('id', '=', $this->singleId);
         }
+        //Custom queries
+        if(is_array($this->customQueries)){
+          foreach ($this->customQueries as $key => $query) {
+            $getData = $query;
+          }
+        }         
         //Where
         if($this->where){
           foreach ($this->where as $w) {
-            $getData->Where($w['column'], $w['condition'], $w['value']);
+            if(isset($w['or']) && $w['or']){
+              $getData = $getData->orWhere($w['column'], $w['condition'], $w['value']);
+            }else{
+              $getData = $getData->where($w['column'], $w['condition'], $w['value']);
+            }
+            
           }
         }
+
         //Set data
-        $this->dbData = $getData->get();
+        $this->dbData = $getData->paginate($this->perPage);
+    }
+    private function setFilesFromColumns(){
+      
+      $files = [];
+      foreach ($this->columns as $k => $v) {
+        if(isset($v['file'])){
+          array_push($files, $v['name']);
+        }
+      }
+
+      foreach ($this->data['data'] as $k => $v) {
+        foreach ($files as $file) {
+          $this->data['data'][$k][$file] =  $this->getFiles($v['id'], $file);
+
+          //set path
+          // foreach ($this->data['data'][$k][$file] as $key => $value) {
+          //   $path = "";
+          //   foreach ($this->inputs as $input) {
+          //     if($input['name'] == $file){
+          //       $path = $input['path'];
+          //       break;
+          //     }
+
+          //   }
+
+          //   $this->data['data'][$k][$file][$key] = $path .'/'. $this->data['data'][$k][$file][$key];
+            
+          // }
+        }        
+      }
     }
 
     private function addDbRelations($columns, $getData, $listRelation = false){
@@ -246,7 +384,7 @@ class _adminPanel extends Model
 
         foreach ($columns as $v) {   
           //Relation one
-          if(isset($v['relation'])){ 
+          if(isset($v['relation'])){
             if(gettype ($v['relation']) == 'string'){
               //Get table
               $table =  substr($v['relation'], 0, strpos($v['relation'], '.'));
@@ -310,7 +448,6 @@ class _adminPanel extends Model
               if(isset($fColumn['list'])){
                 $fColumn['list'] = $this->setDataColumns($fColumn['list'], false);
               }
-
               //Set caption
               if(!isset($fColumn['caption'])){
                 $fColumn['caption'] = $fColumn['name'];
@@ -340,72 +477,72 @@ class _adminPanel extends Model
 
         $formatedData = [];
 
+        // dd($columns);
+
         foreach ($dbData as $dbValue) {
-            $d = [];
-            foreach ($columns as $k => $c) {
-                //Relation One
-                if (isset($c['relation'])) {
-                  if(gettype ($c['relation']) == 'string'){
-                    //Has one              
-                    $column = substr($c['relation'], 0, strpos($c['relation'], '.'));
-                    $name =  substr($c['relation'], strpos($c['relation'], '.') + 1);
+          $d = [];
+          foreach ($columns as $k => $c) {
+            //Relation One
+            if (isset($c['relation'])) {
+              if(gettype ($c['relation']) == 'string'){
+                //Has one              
+                $column = substr($c['relation'], 0, strpos($c['relation'], '.'));
+                $name =  substr($c['relation'], strpos($c['relation'], '.') + 1);
 
-                    $val = $dbValue[$column][$name];
-                  }
-                }
-                //Relation Belongs to one
-                elseif(isset($c['relationBelongsToOne'])){ 
+                $val = $dbValue[$column][$name];
+              }
+            }
+            //Relation Belongs to one
+            elseif(isset($c['relationBelongsToOne'])){ 
 
-                  $column = substr($c['relationBelongsToOne'], 0, strpos($c['relationBelongsToOne'], '.'));
-                  $name =  substr($c['relationBelongsToOne'], strpos($c['relationBelongsToOne'], '.') + 1);
+              $column = substr($c['relationBelongsToOne'], 0, strpos($c['relationBelongsToOne'], '.'));
+              $name =  substr($c['relationBelongsToOne'], strpos($c['relationBelongsToOne'], '.') + 1);
 
-                  if(isset($dbValue[$column][0])){
-                    $val = $dbValue[$column][0][$name];
+              if(isset($dbValue[$column][0])){
+                $val = $dbValue[$column][0][$name];
+              }else{
+                $val = "";
+              }
+
+            }             
+            //Relation Many
+            elseif(isset($c['relationMany'])){
+              if(isset($c['list'])){     
+                //Has many                 
+                $val = $this->formDatafromDb($c['list'],$dbValue[$c['relationMany']]);
+              }    
+
+            }
+            //No Relations
+            else{               
+              //Data/time
+              if(isset($c['timeFormat'])){
+                if(is_object($dbValue[$c['name']])){
+                  if(isset($dbValue[$c['name']]->timestamp)){  
+                    $val = $dbValue[$c['name']]->format($c['timeFormat']);
                   }else{
+                    $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
+                  }
+                }else{
+                  if($dbValue[$c['name']] == null)
                     $val = "";
-                  }
-
-                }             
-                //Relation Many
-                elseif(isset($c['relationMany'])){
-                  if(isset($c['list'])){     
-                    //Has many                 
-                    $val = $this->formDatafromDb($c['list'],$dbValue[$c['relationMany']]);
-                  }    
-
+                  else
+                    $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
                 }
-                //No Relations
-                else{               
-                  //Data/time
-                  if(isset($c['timeFormat'])){
-                    if(is_object($dbValue[$c['name']])){
-                      if(isset($dbValue[$c['name']]->timestamp)){  
-                        $val = $dbValue[$c['name']]->format($c['timeFormat']);
-                      }else{
-                        $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
-                      }
-                    }else{
-                      if($dbValue[$c['name']] == null)
-                        $val = "";
-                      else
-                        $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
-                    }
-                  }
-                  //Simple data
-                  else{                     
-                    $val = $dbValue[$c['name']];                       
-                  }
-                }
+              }
+              //Simple data
+              else{                     
+                $val = $dbValue[$c['name']];                       
+              }
+            }
 
-                $d[$c['name']] = $val;          
-            }            
+            $d[$c['name']] = $val;          
+          }            
 
-            if(isset($dbValue['id'])) $d['_id'] = $dbValue['id'];            
-            array_push($formatedData, $d);
+          if(isset($dbValue['id'])) $d['_id'] = $dbValue['id'];            
+          array_push($formatedData, $d);
 
         }
-
-        // dd($formatedData);
 
         return $formatedData;
     }
@@ -433,9 +570,9 @@ class _adminPanel extends Model
     }
 
     //Inputs
-    private function setInputs(){
+    public function setInputs($inputs){
       //Set defaults
-      $this->inputs = $this->setInputDefaults($this->inputs);
+      $this->inputs = $this->setInputDefaults($inputs);
       //Set attributes
       $this->setInputAttributes();
     }
@@ -559,7 +696,7 @@ class _adminPanel extends Model
       
       return $name;
     }
-    public function  deleteFile($inputName, $fileName){
+    public function deleteFile($inputName, $fileName){
 
       //Get path
       foreach ($this->inputs as $k => $v) {
@@ -614,8 +751,6 @@ class _adminPanel extends Model
         );
 
         return true;
-
-
     }
 
     //CRUD
@@ -651,6 +786,7 @@ class _adminPanel extends Model
           if(isset($v['hash']) && $v['hash'])$parentPut[$v['name']] = Hash::make($parentPut[$v['name']]);
         }
       }
+
       //Prepare inputs
       $inputPut = new $this();
       foreach ($inputs as $k => $v) {
@@ -660,9 +796,8 @@ class _adminPanel extends Model
         if(isset($request[$v['name']])){
           $inputPut[$v['name']] = $request[$v['name']];          
         }else{
-          if($v['required']) return false;
-        }
-        
+          if($v['required']){return false;} 
+        }        
         //Hash
         if(isset($v['hash']) && $v['hash'])$inputPut[$v['name']] = Hash::make($inputPut[$v['name']]);        
       } 
@@ -688,7 +823,7 @@ class _adminPanel extends Model
         //Save files
         foreach ($files as $k => $v) {
           $i = 0;
-          if(is_array($request[$v['name']])){
+          if(isset($request[$v['name']]) && is_array($request[$v['name']])){
             foreach ($request[$v['name']] as $fileCache) {
               //Get filename
               if($i == 0 && isset($v['main'])){
@@ -708,7 +843,6 @@ class _adminPanel extends Model
                 $j++;
               } while (File::isFile(public_path($v['path']).'/'.$fileName.'.jpg'));
 
-
               if(!$fileName) throw new Exception("Error Generating name", 4);
 
               //Save file
@@ -724,7 +858,7 @@ class _adminPanel extends Model
         DB::commit();        
       } catch (Exception $e) {   
           DB::rollback();
-          // dd($e);
+          dd($e);
           return false;
       }
 

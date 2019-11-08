@@ -7,6 +7,7 @@ use App\SpecialLady;
 use App\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GirlController extends _adminPanelController
 {
@@ -18,93 +19,259 @@ class GirlController extends _adminPanelController
     }
 
 
+    public function create(){
+        //Get Model
+        $model = new $this->model();
+        // $model->setInputs($inputs);  //Inputs
+
+        //Get Data
+        $inputs = $model->getInputs();  //Inputs
+        $route = $model->getRoute();        
+        $route['prefix'] = "";
+        //Encode
+        $inputs     = json_encode($inputs);
+        $route      = json_encode($route);
+
+        //View
+        return view('pages.registrationGirl')
+                    ->with('inputs', $inputs)
+                    ->with('route',$route);    
+    }
+
+
+    public function _index(){
+      if(Auth::User()->role == 3){
+
+        //Get Model
+        $model = new $this->model();
+
+        $model->setColumns([
+              ['name' => 'id'],
+              ['name' => 'name'],
+              [
+                'name' => 'user_id',
+                'caption' => 'email',
+                'relation' => 'user.email',
+              ],       
+              ['name' => 'birth'],
+              [
+                'name' => 'location',
+                'caption' => 'city',
+              ]
+            ]);  
+
+        $id = Auth::User()->agent->id;
+        $callback = function($q)use($id) {
+          $q->where('id','=',$id);
+        };
+        $model->setCustomQueries([
+          $model
+            ->whereHas('agent' , $callback)
+            ->with(['agent' => $callback])
+        ]);
+
+        //Get Data
+        $data   = $model->getData(); // Data
+        $inputs = $model->getInputs();  //Inputs
+        $names   = $model->getNames();  //Names
+        $page   = $model->getPage();    //Page
+        $route = $model->getRoute(); 
+        $settings = $model->getSettings(); 
+       
+        //Encode
+        $data   = json_encode($data);
+        $inputs = json_encode($inputs);
+        $names   = json_encode($names);
+        $route   = json_encode($route);
+        $settings   = json_encode($settings);
+
+        return view($page)
+          ->with('data', $data)
+          ->with('inputs', $inputs)
+          ->with('name', $names)
+          ->with('route',$route)
+          ->with('settings',$settings);
+
+      }else{
+        return parent::_index();
+      }
+    }
+
+
     public function index($id)
     {
+      //Auth
+      $auth = Auth::user();
 
-      $girl = User::where('id',$id)->with('girl')->First()->toArray();
+      //User man
+      if($auth != null){
+        $userMan = User::getWithInfo(Auth::user())['man'];   
+      }else{
+        $userMan = 0;
+      }
+
+      //Get Girl
+      $model = new $this->model();
+      $model->setWhere([['column' => 'user_id','condition' => '=','value' => $id]]);
+      //Set columns
+      $columns = [
+        [
+          'name'    => 'photo',
+          'file'    => 'image',
+        ],
+        [
+          'name' => 'id',
+          'relation' => 'user.id'
+        ],
+        ['name' => 'name'],
+        ['name' => 'birth'],
+      ];
+
+      if($auth != null){
+        array_push( $columns,['name' => 'height']);
+        array_push( $columns,['name' => 'weight']);
+        array_push( $columns,['name' => 'hair']);
+        array_push( $columns,['name' => 'eyes']);
+        array_push( $columns,['name' => 'religion']);
+        array_push( $columns,['name' => 'education']);
+        array_push( $columns,['name' => 'profession']);
+        array_push( $columns,['name' => 'maritial']);
+        array_push( $columns,['name' => 'children']);
+        array_push( $columns,['name' => 'smoking']);
+        array_push( $columns,['name' => 'alcohol']);
+        array_push( $columns,['name' => 'english']);
+        array_push( $columns,['name' => 'languages']);
+        array_push( $columns,['name' => 'id']);
+        array_push( $columns,['name' => 'location']);
+        array_push( $columns,['name' => 'info']);
+        if($userMan > 2){
+          array_push($columns,  [
+                                  'name' => 'user_id',
+                                  'caption' => 'email',
+                                  'relation' => 'user.email',
+                                ]);
+          array_push($columns,['name' => 'forAdminName']);
+          array_push($columns,['name' => 'forAdminSurname']);
+          array_push($columns,['name' => 'forAdminFathersName']);
+          array_push($columns,['name' => 'forAdminPhoneNumber']);
+          array_push($columns,['name' => 'firstLetter']);
+          array_push($columns,['name' => 'firstLetterSubject']); 
+        }
+      }
+      $model->setColumns($columns);
+      $data = $model->getData();
 
       //Girl not found
-      if(!$girl){
+      if(count($data['data']) == 0){
         return redirect('/');
       }
 
-      //Remove $girl['girl']
-      $g = $girl['girl'];
-      $g['id'] = $girl['id'];
-      $g['role'] = $girl['role'];
-      $g['genre_id'] = $girl['girl']['id'];
-      $girl = $g;
-      $girl['age'] = Carbon::parse($girl['birth'])->age;
+      //Edit data
+      $girl = $data['data'][0];
+      if(isset($girl['birth']))$girl['age'] = Carbon::parse($girl['birth'])->age;
+      if(isset($girl['email']))$girl['email'] = $girl['user_id'];unset($girl['user_id']);
+      if(isset($girl['info']))$girl['info'] = strip_tags($girl['info']);
+      if(isset($girl['firstLetter']))$girl['firstLetter'] = strip_tags($girl['firstLetter']);
+      if(isset($girl['firstLetterSubject'])){$girl['firstLetterSubject'] = strip_tags($girl['firstLetterSubject']);}
 
 
-      //Is user      
-      if(Auth::check()){
-        $user = User::getWithInfo(Auth::user());   
-        if ($user['man'] < 3) {
-          //User
-          //girl unconfirm
-          if($girl['role'] == 0) return redirect('/');
-            
-          //Unset non user data
-          unset($girl['email']);
-          unset($girl['email_verified_at']);
-          unset($girl['role']);
-          unset($girl['forAdminName']);
-          unset($girl['forAdminSurname']);
-          unset($girl['forAdminFathersName']);
-          unset($girl['forAdminPhoneNumber']);
-          unset($girl['firstLetter']);
-          unset($girl['firstLetterSubject']); 
-          //Remove $girl['girl']
-
-        }else{
-          //Admin
-
-          //@@@ только своих баб агенту
-
-        }
-      }else{
-        $user['man'] = 0;
-
-        //non auth info
-        $g = [];
-        $g['id']        = $girl['id'];   
-        $g['location']  = $girl['location'];
-        $g['name']      = $girl['name'];
-        $g['age']       = $girl['age'];
-
-        $girl = $g;
-      }
-
-
-      //More info decode
       foreach ($girl as $k => $v) {
         $girl[$k] = $this->model::getMoreInfo($k,$v);
-      }          
+      }         
 
-
-      // dd($girl);
-
-      return view('pages.girl')->with('girl',json_encode($girl))->with('auth',Auth::check())->with('userIsMan',$user['man']);
+      return view('pages.girl')
+                ->with('girl',json_encode($girl))
+                ->with('auth',$auth)
+                ->with('userIsMan',$userMan);
     }    
+
+    public function allGirls(){
+
+      $model = new $this->model();
+
+      $model->setPerPage(20);
+      $model->setInfoColumns();
+      $model->setOrder(['row'=>'id','order'=>'DESC']);
+
+
+      $data = $model->getData();
+      $data = $data['data'];
+      $settings = $model->getSettings();
+
+      foreach ($data as $k => $v) {
+        $data[$k]['age']     = Carbon::parse($v['birth'])->age;
+      }
+
+      $girls = json_encode($data);
+      $settings = json_encode($settings);
+
+      return view('pages.girls')->with('girls',$girls)->with('settings',$settings);
+    }
+
+    public function search(){
+
+      $model = new $this->model();
+
+      //Set up
+      $model->setPerPage(20);
+      $model->setInfoColumns();
+      $model->setOrder(['row'=>'id','order'=>'DESC']);
+
+      $where = [['column' => 'location','condition' => '=','value' => 'kiev','or'=>true]];
+      $model->setWhere($where);
+
+      //Get data
+      $data = $model->getData();   
+      if(!is_array($data)) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+        
+
+      $data = $data['data'];
+      $settings = $model->getSettings();   
+
+      $girls = json_encode($data);
+      $settings = json_encode($settings);
+      $data = ['girls' => $girls, 'settings' => $settings];
+      return response()->json(['error' => '0','data' => $data]);
+    }
+
+    public function locations(){
+      $q = DB::select( DB::raw(
+                   "SELECT location, COUNT(*)
+                    FROM girls
+                    GROUP BY location
+                    HAVING COUNT(*) > 1"
+                  ));
+
+      $locations = [];
+      foreach ($q as $key => $v) {
+        array_push($locations, $v->location);
+      }
+
+      return response()->json(['error' => '0','data' => $locations]);
+    }
 
     public function getSpecialLadies(){
 
-        $girls = SpecialLady::with('user')->with('user.girl')->get()->toArray();
+      $speacialLadies = SpecialLady::get();
 
-        $data = [];
-        $r = [];
-        foreach ($girls as $key => $value) {
-            $r['id']      = $value['user']['id'];
-            $r['name']    = $value['user']['girl']['name'];
-            $r['location']= $value['user']['girl']['location'];
-            $r['birth']   = $value['user']['girl']['birth']; 
-            $r['age']     = Carbon::parse($r['birth'])->age;
+      $model = new $this->model();
 
-            array_push($data, $r);
-        }
+      $where = [];
+      foreach ($speacialLadies as $lady) {
+        array_push($where, ['column' => 'user_id','condition' => '=','value' => $lady->user_id,'or' => true]);
+      }
 
-        return response()->json(['error' => '0', 'data' => $data]);
+      $model->setInfoColumns();
+
+      $model->setWhere($where);
+      $data = $model->getData();
+      $data = $data['data'];
+
+      foreach ($data as $k => $v) {
+        $data[$k]['age']     = Carbon::parse($v['birth'])->age;
+      }
+
+      return response()->json(['error' => '0', 'data' => $data]);
     }
 
     public function deleteSpecialLadies(request $request){
@@ -149,7 +316,6 @@ class GirlController extends _adminPanelController
       if(!$user->save()) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
 
       return response()->json(['error' => '0']);
-
     }
     
 }

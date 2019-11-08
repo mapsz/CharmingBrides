@@ -3,7 +3,8 @@
     <ul>
       <li v-for="currentLetter in pLetters">
         <!-- Letter -->
-        From:{{getName(currentLetter.user_id)}}  To:{{getName(currentLetter.to_user_id)}}<br>
+        From {{getName(currentLetter.user_id)}}<br>
+        {{formateDate(currentLetter.created_at)}}<br>
         <b>{{currentLetter.subject}}</b><br>
         <!-- Payed -->
         <div>
@@ -17,11 +18,11 @@
           <!-- Pay info -->
           <div v-if="pUser.man !== 1">
             <!-- payed -->
-            <span v-if="currentLetter.payed === true">
+            <span v-if="currentLetter.payed === true" style="color:limegreen">
               payed
             </span>
             <!-- not payed -->
-            <span v-if="currentLetter.payed === false">
+            <span v-if="currentLetter.payed === false" style="color:tomato">
               not payed
             </span>
           </div>
@@ -38,17 +39,20 @@
 
 <script>
     export default {        
-        props:['p-letters','p-user','p-companion'],
+        props:['p-letters','p-user-from','p-user','p-companion'],
         methods: {
           payLetter(letter){
             this.$emit('pay-letter',letter);
           },
           getName(id){
-            if(id == this.pUser.id){
-              return this.pUser.name;
+            if(id == this.pUserFrom.id){
+              return this.pUserFrom.name;
             }else{
               return this.pCompanion.name;
             }
+          },
+          formateDate(date){
+            return moment(date).format('lll');
           }
         }
     }

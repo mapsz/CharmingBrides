@@ -18,6 +18,7 @@
           <letter-list-component 
             :p-letters = "activeLetters"
             :p-user = "pUser"
+            :p-user-from = "userFrom"
             :p-companion = "activeCompanion"
             @pay-letter="payLetter"
           />
@@ -57,6 +58,8 @@
             send:false,
             //pay
             pay:false,
+            //query companion
+            queryCompanion:this.getCompanionFromQuery(),
           }
         },
         watch: {
@@ -88,9 +91,9 @@
           if(this.pUserFrom == undefined) this.userFrom = this.pUser;
           else                            this.userFrom = this.pUserFrom;
 
-          //User preload
+          //User preload       
           if(this.userFrom){
-            this.refreshCompanions();        
+            await this.refreshCompanions();
           }
 
           this.hideLoading(l);
@@ -110,6 +113,25 @@
 
             return true;
           },
+          getCompanionFromQuery(){
+            let queryString = this.getUrlVars();
+            if(queryString.companion !== undefined){
+              return queryString.companion;
+            } 
+
+            return false;
+          },
+          getUrlVars(){
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for(var i = 0; i < hashes.length; i++)
+            {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+          },          
           async setActiveCompanion(companion){
             //Companion not object
             if($.type(companion) != 'object'){
@@ -137,6 +159,7 @@
             return true;            
           },
           async refreshCompanions(){
+            let l = this.showLoading('.companions');
             this.companions = []; //@@@
             this.activeCompanion = false; //@@@            
             await this.getCompanions();
@@ -146,8 +169,16 @@
               this.with = false;
             }            
             if(this.companions[0] != undefined && this.activeCompanion == false){
-              this.setActiveCompanion(this.companions[0]);
-            }               
+              //set from query
+              if(this.queryCompanion){
+                await this.setActiveCompanion(this.queryCompanion);
+              }else{
+                await this.setActiveCompanion(this.companions[0]);
+              }
+              
+            }     
+            this.hideLoading(l);
+            return true;               
           },
           //Letters
           async getLetters(userId,companionId){
@@ -172,6 +203,9 @@
 
             //add letters
             this.letters.push(letters);
+
+            //read letters
+            this.readLetters(companionId);
 
             this.hideLoading(l);
             return letters;
@@ -236,12 +270,12 @@
             //
             this.send = true;
           },
-          refreshLetters(){            
+          refreshLetters(){
             this.letters = []; //@@@
             this.activeLetters = []; //@@@            
             this.setActiveLetters(this.activeCompanion.id);
           },
-          sendSuccess(){            
+          sendSuccess(){
             this.send = false;
             this.refreshLetters();
           },
@@ -255,7 +289,15 @@
                   vars[hash[0]] = hash[1];
               }
               return vars;
-          }          
+          },       
+          async readLetters(companionId){
+            let i = this.companions.findIndex(x => x.id == companionId);
+
+            let letters = await this.ax('post', 'letter/read',{'user_id':this.userFrom.id,'companion_id':companionId});
+
+            this.activeCompanion.read = true;
+            this.companions[i].read = true;
+          }
         }
     }
 </script>

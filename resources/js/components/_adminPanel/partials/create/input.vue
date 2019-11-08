@@ -98,7 +98,6 @@
         input.type === 'text' ||
         input.type === 'number' ||
         input.type === 'email' ||
-        input.type === 'date' ||
         input.type === 'url'  "
       >
         <div  class="form-group row">
@@ -146,15 +145,10 @@
           </div>
           <!-- input body -->
           <div class="col-sm-10">
-            <input     
-              v-model="value"                
-              :type="[[input.type]]" 
-              :name="[[input.name]]" 
-              :value="[[input.value]]" 
-              class="form-control" 
-              :id="[[input.name]]+'Input'" 
-              :placeholder="[[input.example]]"
-            >
+            <datepicker  
+              v-model="dateValue"
+              :monday-first="true"
+            ></datepicker>
           </div>
         </div>            
       </div>
@@ -242,7 +236,7 @@
                   <div v-if="fileType == 'image'" class="file-image">
                     <div class="row">
                       <div class="col"> 
-                        <img   :src="'/'+assets + input.path + '/' + file" :alt="file">
+                        <img   :src="'/'+ file" :alt="file">
                       </div>
                     </div>
                     <div class="row">
@@ -283,21 +277,34 @@
 </template>
 
 <script>
+    
+    import Datepicker from 'vuejs-datepicker';
+
     export default {
         props:['pInput',"pRequiredAll", "pRoute",'pValue'],
         mixins: [ mMoreAxios, mNotifications, mLoading ],
+        components: {
+          Datepicker
+        },        
         data(){
           return {            
             input: this.pInput,
             value: this.pValue,
             data:[],
             files:[],
-            assets:assets
+            assets:assets,
+            dateValue:"",
           }
         }, 
         mounted() {
           if(this.pValue != undefined)
             this.files = JSON.parse(JSON.stringify(this.pValue));
+
+          if(this.pValue && this.input.type === 'date'){
+            this.dateValue = this.pValue;
+          }
+
+          $('.vdp-datepicker input').addClass('form-control').css('background-color','white');
         },               
         computed:{
           requiredAll:function(){
@@ -321,6 +328,11 @@
           }
         },
         watch: {
+          dateValue: function($new,$old){
+            if(!$new) return;
+
+            this.value  = moment(this.dateValue).format('YYYY-MM-DD');
+          },
           value: function ($new,$old) {
               this.$emit('input',$new)
           },  

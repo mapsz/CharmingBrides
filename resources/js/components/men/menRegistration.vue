@@ -7,16 +7,18 @@
         :p-name="pName"  
         :p-inputs="pInputs" 
         :p-route="pRoute" 
-        @putSuccess="putSuccess" 
+        @createSuccess="createSuccess" 
       />
     </div>
 </template>
+
+
 
 <script>
     export default {
         props:['pInputs','pName','pRoute'],
         methods:{
-          putSuccess(a){
+          createSuccess(a){
             console.log('fff');
             window.location.replace("/profile");
           }

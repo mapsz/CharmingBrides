@@ -35,7 +35,12 @@ window.VueNotifications = require ('vue-notifications');
 window.miniToastr = require ('mini-toastr');
 
 import VueNotifications from 'vue-notifications'
+import less from 'less'
 import miniToastr from 'mini-toastr'// https://github.com/se-panfilov/mini-toastr
+window.queryString = require('query-string');
+import Paginate from 'vuejs-paginate'
+Vue.component('paginate', Paginate)
+
 
 miniToastr.init()
 
@@ -61,6 +66,14 @@ window.mDebug           = require ('./components/_adminPanel/lib/debug');
 window.mNotifications   = require ('./components/_adminPanel/lib/notifications');
 window.mLoading         = require ('./components/_adminPanel/lib/loading');
 
+//pages
+Vue.component('home', require('./components/pages/home.vue'));
+
+
+//partials
+Vue.component('service-blocks', require('./components/partials/serviceblocks.vue'));
+Vue.component('carusel', require('./components/partials/carusel.vue'));
+
 //Partials
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('loading', require('./components/partials/loading.vue'));
@@ -77,6 +90,8 @@ Vue.component('admin-online-girls', require('./components/chat/partials/adminOnl
 //Girls
 Vue.component('girls-special-ladies-component', require('./components/girls/specialLadies.vue'));
 Vue.component('girl-component', require('./components/girls/girl.vue'));
+Vue.component('girl-search', require('./components/girls/girlsearch.vue'));
+Vue.component('girls', require('./components/girls/girls.vue'));
 
 //Letter
 Vue.component('letter1-component', require('./components/letters/letter_list.vue'));
@@ -88,6 +103,10 @@ Vue.component('message-send-component', require('./components/letters/letter_sen
 Vue.component('letter-buy-component', require('./components/letters/letter_buy.vue'));
 //Letter admin
 Vue.component('long-letter-config-component', require('./components/admin/letters/long_letter_config.vue'));
+Vue.component('admin-letter-user-component', require('./components/admin/letters/user.vue'));
+Vue.component('admin-letters-link', require('./components/admin/letters/letters_link.vue'));
+Vue.component('admin-letter-user', require('./components/admin/letters/letters_user.vue'));
+Vue.component('admin-letter-agent', require('./components/admin/letters/letters_agent.vue'));
 
 // Admin panel
 Vue.component('men-component', require('./components/admin/men.vue'));
@@ -99,14 +118,18 @@ Vue.component('chat-history-component', require('./components/admin/chatHistory.
 Vue.component('girls-list-component', require('./components/admin/girls/list.vue'));
 Vue.component('admin-girls-special-ladies-component', require('./components/admin/girls/specialLadies.vue'));
 Vue.component('admin-girl-confirm-component', require('./components/admin/girls/confirm.vue'));
-//Letters
-Vue.component('admin-letter-user-component', require('./components/admin/letters/user.vue'));
-
 
 //men
 Vue.component('men-membership', require('./components/men/menMembership.vue'));
 Vue.component('men-registration', require('./components/men/menRegistration.vue'));
 Vue.component('man-component', require('./components/men/man.vue'));
+Vue.component('man-profile', require('./components/men/manProfile.vue'));
+Vue.component('man-profile-membership', require('./components/men/manProfileMembership.vue'));
+Vue.component('man-edit', require('./components/men/manEdit.vue'));
+
+//Membership
+Vue.component('memberships', require('./components/membership/membership.vue'));
+
 
 // _admin Panel
 Vue.component('admin-panel-main-component', require('./components/_adminPanel/mainComponent.vue'));
@@ -123,8 +146,15 @@ Vue.component('list-component', require('./components/_adminPanel/partials/listC
 Vue.component('attach-component', require('./components/_adminPanel/partials/attachComponent.vue'));
 Vue.component('file-upload-component', require('./components/_adminPanel/partials/fileUpload.vue'));
 
+//  Pay
+Vue.component('juge-paypal', require('./components/pay/paypal.vue'));
+Vue.component('order', require('./components/pay/order.vue'));
 
+//Signs
+Vue.component('matched', require('./components/signs/matched.vue'));
+Vue.component('likedyou', require('./components/signs/likedyou.vue'));
 
+Vue.component('pre-register', require('./components/registration/preregister.vue'));
 
 const app = new Vue({
     el: '#app'

@@ -55,6 +55,8 @@
                   if(r.data.error == 1){
                       console.log('error' + ' ' + r.data.error + ' - ' +r.data.text);
                       this.errors = [r.data.text];
+                      if(this.errors.findIndex(x => x == 'Not enought balance!') >= 0)
+                          window.open('/memberships','_blank');
                       return false;
                   }
                   //Success

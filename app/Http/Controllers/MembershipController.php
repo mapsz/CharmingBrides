@@ -19,21 +19,64 @@ class MembershipController extends _adminPanelController
         parent::__construct($this->model);
     }
 
+    public function index(){
+      return view('pages.membership');
+              // ->with('man',json_encode($man));
+    }
+
+    public function getMemberships(){
+      // $memberships = Membership::where('client_visible','=','1')->get()->toArray();
+
+      // return response()->json(['error' => 0, 'data' => $memberships]);
+
+      //Get Model
+      $model = new $this->model();
+
+      //Settings  
+      $where = [['column' => 'client_visible','condition' => '=','value' => '1']];
+      $model->setWhere($where);
+      $columns = $model->getColumns();
+      array_push($columns,[
+        'name'    => 'image',
+        'file'    => 'image',
+      ]);
+      $model->setColumns($columns);
+
+      //Get Data
+      $data   = $model->getData();       
+
+      return response()->json(['error' => '0', 'data' => $data]);
+
+    }
+
     public function getCurrent(Request $request){
 
-        //Validation
-        $request->validate([
-            'user_id'=> new CurrentUserOrAdmin
-        ]);
+      if(!isset($request->user_id)){
+        $auth = Auth::user();
+        if(!$auth) return response()->json(['error' => 2]);
+        $request->user_id = $auth->id;
+      }
 
-        //Get membership
-        $membership  = Membership::getCurrentMembership($request->user_id);
+      //Validation
+      $request->validate([
+          'user_id'=> new CurrentUserOrAdmin
+      ]);
 
-        //Encode
-        if($membership)
-          $membership = json_encode($membership->toArray());
+      //Get membership
+      $membership  = Membership::getCurrentMembership($request->user_id);
 
-        return response()->json(['error' => 0, 'data' => $membership]);
+      //Encode
+      if($membership){
+        //add photo
+        $model = new $this->model;
+        $files = $model->getFiles($membership->id,'image');
+        $membership->image=$files;        
+      }
+      else{
+        return response()->json(['error' => 1]);
+      }
+
+      return response()->json(['error' => 0, 'data' => json_encode($membership->toArray())]);
     }
 
     public function getHistory(Request $request){
@@ -89,32 +132,12 @@ class MembershipController extends _adminPanelController
 
     public function attachMembership(Request $request){
 
-      // Get user
-      $user = User::find($request->user_id);
-      // Get man
-      $man = DB::table('men')->where('user_id','=',$request->user_id)->get()[0];
-      $man = Man::find($man->id);
 
-      //Get membership price
-      $price = Membership::find($request->membership_id)->price;
-
-      try {
-        DB::beginTransaction();
-        //Attach membership
-        
-        $user->membership()->attach($request->membership_id);
-
-        //Add balance
-        $man->balance += $price;
-        $man->save();
-
-        DB::commit();     
-      } catch (Exception $e) {
-        DB::rollback();
+      if(Membership::attachMembership($request->user_id, $request->membership_id)){
+        return response()->json(['error' => 0]); 
+      }else{
         return response()->json(['error' => 1]);
       }
-
-      return response()->json(['error' => 0]); 
     }
 
 }

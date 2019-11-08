@@ -28,6 +28,7 @@
             <li v-for="currentLetter in currentLetters">
               <!-- Letter -->
               from:{{currentLetter.user_id}}  To:{{currentLetter.to_user_id}}<br>
+              {{currentLetter.created_at}}<br>
               <b>{{currentLetter.subject}}</b><br>
               <button 
                   v-if="currentLetter.payed == false"

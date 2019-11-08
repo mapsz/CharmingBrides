@@ -20,12 +20,12 @@
             <div v-for="girl in onlineGirls" class="col">
               <center>
                 <img 
-                  :src="'media\\gallery\\' + girl.id + '_0.jpg'" 
+                  :src="girl.photo[0]" 
                   alt="" 
                 ><br>              
                 ({{girl.id}}) {{girl.name}}<br>
-                <span v-if="girl.agent">{{girl.agent}}</span>
-                <span v-else style="color: gray;font-style: italic;">no agent</span>
+                <!-- <span v-if="girl.agent">{{girl.agent}}</span> -->
+                <!-- <span v-else style="color: gray;font-style: italic;">no agent</span> -->
               </center>
             </div>
           </div>

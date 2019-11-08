@@ -26,7 +26,7 @@ class CreateGirlsTable extends Migration
             $table->unsignedTinyInteger('eyes')->nullable();
             $table->unsignedTinyInteger('religion')->nullable();
             $table->unsignedTinyInteger('education')->nullable();
-            $table->string('proffesion', 55)->nullable();
+            $table->string('profession', 55)->nullable();
             $table->unsignedTinyInteger('maritial')->nullable();
             $table->tinyInteger('children')->nullable();
             $table->unsignedTinyInteger('smoking')->nullable();

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Auth;
 use Illuminate\Support\Facades\Config;
+use App\Rules\CurrentUserOrAdmin;
 
 class LetterController extends _adminPanelController
 {
@@ -23,7 +24,60 @@ class LetterController extends _adminPanelController
         parent::__construct($this->model);
     }
 
+    public function _index(){
+      //Get Model
+      $model = new $this->model();
+      if(Auth::User()->role == 3){  
 
+        $id =  Auth::User()->agent->id; 
+        $callback = function($q)use($id) {
+          $q->where('id','=',$id);
+        };        
+        $dbData = letter::with('user.man')
+                      ->with('user.girl')
+                      ->with(['user.girl.agent' => $callback])
+                      ->with('toUser.man')
+                      ->with(['toUser.girl.agent' => $callback])                      
+                      ->whereHas('user.girl.agent' , $callback)
+                      ->orWhereHas('toUser.girl.agent' , $callback)
+                      ->orderBy('created_at','DESC')
+                      ->paginate(50);
+      }else{
+        $dbData = letter::with('user.man')
+                      ->with('user.girl')
+                      ->with('user.girl.agent')
+                      ->with('toUser.man')
+                      ->with('toUser.girl.agent')
+                      ->orderBy('created_at','DESC')
+                      ->paginate(50);        
+      }
+
+
+
+
+      //Get Data
+      $data   = $model->getData($dbData); // Data
+      $inputs = $model->getInputs();  //Inputs
+      $names   = $model->getNames();  //Names
+      $page   = $model->getPage();    //Page
+      $route = $model->getRoute(); 
+      $settings = $model->getSettings(); 
+
+
+      //Encode
+      $data   = json_encode($data);
+      $inputs = json_encode($inputs);
+      $names   = json_encode($names);
+      $route   = json_encode($route);
+      $settings   = json_encode($settings);
+
+      return view($page)
+        ->with('data', $data)
+        ->with('inputs', $inputs)
+        ->with('name', $names)
+        ->with('route',$route)
+        ->with('settings',$settings);
+    }
 
     public function index(){
 
@@ -123,6 +177,22 @@ class LetterController extends _adminPanelController
       return response()->json(['error' => 0, 'data' => $this->model::getUserLetters($userId)]);
     }
 
+    public function read(Request $request){
+
+      //Validation
+      $request->validate([
+          'user_id'=> new CurrentUserOrAdmin
+      ]);
+
+      Letter::where('user_id',$request->companion_id)
+            ->where('to_user_id',$request->user_id)
+            ->whereNULL('read')
+            ->update(['read' => now()]);
+
+
+      return response()->json(['error' => '0']);
+    }
+
     public function payLetter(Request $request){
 
       $letter_id = $request->id;
@@ -188,7 +258,7 @@ class LetterController extends _adminPanelController
     }
 
     //Admin
-    public function getGirls(){
+    public function getAdminGirls(){
 
       //Validate
       $user = User::getWithInfo(Auth::User()->id);
@@ -196,6 +266,8 @@ class LetterController extends _adminPanelController
       //User
       if($user['man'] < 3) 
         return response()->json(['error' => 1, 'text' => 'bad user']);
+
+      $model = new Girl();
 
       // Agent
       if($user['man'] == 3) {
@@ -208,22 +280,41 @@ class LetterController extends _adminPanelController
 
       //Admin
       if($user['man'] == 4) {
-        $girls = User::has('girl')
-                      ->where('role',1)
-                      ->with('girl')
-                      ->get()->toArray();
+
+        //get
+        // $girls = User::with('girl')
+        //               ->whereHas('inLetter', function ($query) {
+        //                   $query->where('read','IS','NULL');
+        //                   $query->orderBy('created_at', 'desc');
+        //               })
+        //               ->take(5)
+        //               ->get();
+
+
+        // dd($girls->toArray());
+
+        
+        // $columns = [
+        //   [
+        //     'name'    => 'photo',
+        //     'file'    => 'image',
+        //   ],
+        //   ['name' => 'id'],
+        //   ['name' => 'name'],
+        //   ['name' => 'birth'],
+        // ];
+        // $model->setColumns($columns);
+        // $model->setPerPage(20);
+
+        // $where = [['column' => 'read','condition' => 'IS','value' => 'NULL']];
+        // $model->setWhere($where);
+
+        $data = $model->getData();
       }
 
-      //Set array
-      $girlsArray = [];
-      foreach ($girls as $k => $v) {
-        $girlsArray[$k]['id']     = $v['id'];
-        $girlsArray[$k]['man']    = false;
-        $girlsArray[$k]['name']   = $v['girl']['name'];
-      }
+      $girls = $data['data'];
 
-      return response()->json(['error' => '0', 'data' => $girlsArray]);
-
+      return response()->json(['error' => '0', 'data' => $girls]);
     }
 
     //Admin panel

@@ -15,18 +15,18 @@
         <div class="col-12">
           <div class="row">
             <input type="text" @keyup="searchGirl()" v-model="search">
-            <button class="btn btn-primary" @click="searchGirl()">Search</button>
+            <button class="btn btn-primary" @click="searchGirl(true)">Search</button>
           </div>       
           <div class="row chat-admin-girl-search-list p-1">
-            <div v-for="girl in searchList" class="col">
+            <div v-for="girl in searchList" class="col mb-2">
               <center>
                 <img 
                   v-bind:class="{'active-girl': girl.id == user.id}"
-                  :src="'media\\gallery\\' + girl.id + '_0.jpg'" 
+                  :src="girl.photo[0]" 
                   alt="" 
                 ><br>              
                 ({{girl.id}}) {{girl.name}}<br>
-                <span v-if="girl.agent">{{girl.agent}}</span>
+                <span v-if="girl.agent" class="girl-search-agent">{{girl.agent}}</span>
                 <span v-else style="color: gray;font-style: italic;">no agent</span>
                 <br>
                 <button class="btn btn-primary" @click="setHardOnline(girl.id)">Set Online</button>
@@ -50,7 +50,7 @@
                 >
                   <img 
                     v-bind:class="{'active-girl': user.id == hardOnlineUser.id}"
-                    :src="'media\\gallery\\' + hardOnlineUser.id + '_0.jpg'" 
+                    :src="hardOnlineUser.photo[0]" 
                     alt="" 
                   ><br>
                   <span 
@@ -58,7 +58,7 @@
                       ({{hardOnlineUser.id}}) {{hardOnlineUser.name}}
                   </span><br>  
                   <span v-if="hardOnlineUser.read" class="text-warning">
-                      new message
+                      New message!
                       <br>
                   </span>            
                   <button class="btn btn-sm btn-danger" @click="deleteHardOnline(hardOnlineUser.id)">Set Offline</button>
@@ -72,136 +72,144 @@
 </template>
 
 <script>
-    export default {
-      mixins: [ mMoreAxios, mNotifications, mLoading ],
-      props:['p-online-users'],
-    	data(){
-          return {
-            hardOnline:[],
-            user: false,
-            search:"",
-            searchList:[],
-          }
+  export default {
+    mixins: [ mMoreAxios, mNotifications, mLoading ],
+    props:['p-online-users','p-invite-in'],
+  	data(){
+      return {
+        hardOnline:[],
+        user: false,
+        search:"",
+        searchList:[],
+        inviteIn:this.pInviteIn,
+      }
+    },
+    watch: {
+      hardOnline: {
+        deep:true,
+        handler:function($old,$new){
+          this.$emit('hard-online',this.hardOnline);
+          console.log($old);
+          console.log($new);
         },
-        async mounted(){
+      }    
+    },       
+    async mounted(){
+    	await this.getHardOnline();
 
-        	await this.getHardOnline();
+      $.each(this.hardOnline, (index, val) => {
+        this.getNewMessages(val.id);
+      });
+    },
+    methods: {
+    	async getHardOnline(){
+        var r = await axios.get('/chat/getHardOnline' )
+          .then((r) => {
+              if(!r.data) return false;
 
-          $.each(this.hardOnline, (index, val) => {
-            this.getNewMessages(val.id);
-          });
-          
+              if(r.data.error){
+                  return false;
+              }
 
+              return r.data;
+          })
+          .catch((r) => {return false;});
 
-        },
-        methods: {
-        	async getHardOnline(){
-               var r = await axios.get('/chat/getHardOnline' )
-                    .then((r) => {
-                        if(!r.data) return false;
+        return this.hardOnline = r;
+    	},
+    	resetHardOnline(){
+    		//
+    		this.$emit('onlineReset');
+    	},
+    	async setHardOnline(setHardOnlineId){
+        var r = await axios.post('/chat/admin/setOnline',{id:setHardOnlineId})
+            .then((r) => {
+                if(!r.data) return false;
 
-                        if(r.data.error){
-                            return false;
-                        }
+                if(r.data.error){
+                    return false;
+                }
 
-                        return r.data;
-                    })
-                    .catch((r) => {return false;});
-
-                return this.hardOnline = r;
-        	},
-        	resetHardOnline(){
-        		//
-        		this.$emit('onlineReset');
-        	},
-        	async setHardOnline(setHardOnlineId){
-            var r = await axios.post('/chat/admin/setOnline',{id:setHardOnlineId})
-                .then((r) => {
-                    if(!r.data) return false;
-
-                    if(r.data.error){
-                        return false;
-                    }
-
-                    return r.data;
-                })
-                .catch((r) => {return false;});
+                return r.data;
+            })
+            .catch((r) => {return false;});
 
 
-            if(r){           		
+        if(r){           		
+          this.getHardOnline();
+          this.resetHardOnline();
+          return true;
+        }else{
+        	return false;
+        }
+    	},
+    	async deleteHardOnline(userId){
+
+         var r = await axios.delete('/chat/admin/deleteOnline',{data: {id:userId}})
+              .then((r) => {
+                  if(!r.data) return false;
+
+                  if(r.data.error){
+                      return false;
+                  }
+
+                  return r.data;
+              })
+              .catch((r) => {return false;});
+
+          if(r){
               this.getHardOnline();
               this.resetHardOnline();
+              this.user = false;
+              this.$emit('selectUser', this.user);
               return true;
-            }else{
-            	return false;
-            }
-        	},
-        	async deleteHardOnline(userId){
-
-             var r = await axios.delete('/chat/admin/deleteOnline',{data: {id:userId}})
-                  .then((r) => {
-                      if(!r.data) return false;
-
-                      if(r.data.error){
-                          return false;
-                      }
-
-                      return r.data;
-                  })
-                  .catch((r) => {return false;});
-
-              if(r){
-	                this.getHardOnline();
-	                this.resetHardOnline();
-                  this.user = false;
-	                return true;
-	            }else{
-	            	return false;
-	            }
-        	},
-        	selectUser(id){
-        		let user = this.hardOnline.find(x => x.id === id);
-        		this.user = user;
-        		this.$emit('selectUser', user);
-        	},
-          async searchGirl(){
-            if(this.search.length < 3) return false;
-
-            
-            let l = this.showLoading('.chat-admin-girl-search-list');
-
-            let r = await this.ax('get','search/girl',{search:this.search});
-
-            this.searchList = r.data;
-
-            this.hideLoading(l);
-          },
-          async getNewMessages(id){
-              var r = await this.ax('get','/chat/recentRooms',{user_id:id});
-
-              if(!r) return false;
-
-              $.each(r, (index, val) => {
-                if(val.read != undefined){
-                  if(val.read == false){
-                    let k = this.hardOnline.findIndex(x => x.id == id);
-                    if(k >= 0){
-                      this.hardOnline[k].read = true;
-                    }
-                    let g = this.hardOnline;
-                    this.hardOnline = [];
-                    this.hardOnline = g;                    
-                    return;
-                  }
-                }
-              });
-
-
-
-              return;
+          }else{
+          	return false;
           }
-        }
+    	},
+    	selectUser(id){
+    		let user = this.hardOnline.find(x => x.id === id);
+    		this.user = user;
+    		this.$emit('selectUser', user);
+    	},
+      async searchGirl(button = false){
+        if(!button)
+          if(this.search.length < 3) return false;
+        
+        let l = this.showLoading('.chat-admin-girl-search-list');
+
+        let r = await this.ax('get','/chat/search/girl',{'search':this.search});
+
+        this.searchList = r.data;
+
+        this.hideLoading(l);
+      },
+      async getNewMessages(id){
+          var r = await this.ax('get','/chat/recentRooms',{user_id:id});
+
+          if(!r) return false;
+
+          $.each(r, (index, val) => {
+            if(val.read != undefined){
+              if(val.read == false){
+                let k = this.hardOnline.findIndex(x => x.id == id);
+                if(k >= 0){
+                  this.hardOnline[k].read = true;
+                }
+                let g = this.hardOnline;
+                this.hardOnline = [];
+                this.hardOnline = g;                    
+                return;
+              }
+            }
+          });
+
+
+
+          return;
+      }
     }
+  }
 </script>
 
 
@@ -233,5 +241,7 @@
     padding-top: 10px;
     background-color: #ffbababa;
   }
-
+  .girl-search-agent {
+      color: #3f00ff;
+  }
 </style>

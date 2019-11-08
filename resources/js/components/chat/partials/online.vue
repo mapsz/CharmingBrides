@@ -3,7 +3,7 @@
     <div class="card mb-sm-3 mb-md-0 contacts_card">
       <div class="card-header">
         <div class="online_title">
-          <span>{{pUser.man ? 'Girls' : 'Mans' }} Online</span> 
+          <span>{{pUser.man != 1 ? 'Men' : 'Girls' }} Online</span> 
           <fa-icon icon="link" 
             :class="{
               'text-success'      : pConnection.subscribed,
@@ -24,13 +24,13 @@
             <div class="d-flex bd-highlight" >
               <div class="img_cont">
                 <img 
-                  :src = "assets+'/media/gallery/'+onlineUser.id+'_0.jpg'"
+                  :src = "onlineUser.photo[0]"
                   class="rounded-circle user_img"
                 >
                 <span class="online_icon"></span>
               </div>
               <div class="user_info">
-                <span>{{onlineUser.name}} {{onlineUser.surname}}</span>
+                <span>{{onlineUser.name}}</span>
                 <p>{{onlineUser.name}} is online</p>
               </div>
             </div>

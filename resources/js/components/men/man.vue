@@ -7,7 +7,7 @@
         </ul>
         
         <!-- <a :href="'/letters?with='+{{user.id}}"> -->
-        <a :href="'/letters?with='+user.id">
+        <a :href="'/letters?companion='+user.id">
           <button class="btn btn-primary">Send message</button>
         </a>
     </div>

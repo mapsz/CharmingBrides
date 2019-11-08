@@ -1,5 +1,9 @@
 <?php
 
+//add new girl with agent @@
+//girl status agent
+
+
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +20,12 @@ class Girl extends _adminPanel
 
   protected $columns  = [
     [
+      'name'        => 'confirm',
+      'caption'     => 'confirm',
+      'relation'    => 'user.role',
+      'component'   => 'admin-girl-confirm-component',          
+    ], 
+    [
       'name' => 'id',
       'relation' => 'user.id'
     ],
@@ -31,15 +41,9 @@ class Girl extends _adminPanel
       'relation' => 'user.email',
     ],
     [
-      'name'        => 'confirm',
-      'caption'     => 'confirm',
-      'relation'    => 'user.role',
-      'component'   => 'admin-girl-confirm-component',          
-    ],
-    [
       'name'        => 'created_at',
       'caption'     => 'created at',
-      'timeFormat'  => 'j F y G:i' 
+      'timeFormat'  => 'j F Y G:i' 
     ],
     [          
       'name' => 'agent',
@@ -76,7 +80,7 @@ class Girl extends _adminPanel
         'example' => 'Anastasiya'
       ],
       [ //Birth
-          'name' => 'Birth',
+          'name' => 'birth',
           'type' => 'date',
           'example' => '05/32/1980',
           'required' => false,
@@ -96,6 +100,7 @@ class Girl extends _adminPanel
           'maxFileSize'     => '5mb',
           'fileType'        => ['image/*',],  
           'main'            => '`parentId`_0',
+          'default'         => 'no_photo.png'
       ],
       [ //Passport
           'name'            => 'passport',
@@ -176,7 +181,7 @@ class Girl extends _adminPanel
         'attributes' => [
           ['id' => 1,'name' => 'Associate Degree'], 
           ['id' => 2,'name' => 'College'],
-          ['id' => 3,'name' => 'High Schoo'],
+          ['id' => 3,'name' => 'High School'],
           ['id' => 4,'name' => 'Student'],
           ['id' => 5,'name' => 'University'],
           ['id' => 0,'name' => 'Other'],
@@ -326,61 +331,32 @@ class Girl extends _adminPanel
     return $val;
   }
 
-  public function setColumns($columns){
 
-    $this->columns = $columns;
+  public function setInfoColumns(){
 
-    //Admin
-    if (Auth::user() &&  Auth::user()->role == 4) {
-      return;
-    } 
-
-    foreach ($this->columns as $k => $c) {
-      if($c['name'] == 'confirm'){
-        $this->columns[$k] = [
-          'name'        => 'confirm',
-          'caption'     => 'confirm',
-          'relation'    => 'user.role',
-          'attributes'  => [
-              ['id' => 0,'name' => 'uncofirm'],
-              ['id' => 1,'name' => 'confirm'],
-          ]
-        ];
-      }
-      if($c['name'] == 'agent'){
-        unset($this->columns[$k]);
-      }
-    }
-
+    $columns = [
+        [
+          'name' => 'id',
+          'relation' => 'user.id'
+        ],
+        ['name' => 'name'],
+        ['name' => 'birth'],
+        ['name' => 'location'],
+        [
+          'name'    => 'photo',
+          'file'    => 'image',
+        ],
+        [          
+          'name' => 'agent',
+          'caption' => 'agent',
+          'relationBelongsToOne' => 'agent.name',
+        ],          
+      ];
+    $this->setColumns($columns);
   }
 
-  public function getPage(){
 
-    //Admin
-    if (Auth::user() &&  Auth::user()->role == 4) {
-       $this->page = 'admin.pages.girls';
-    }
 
-    //Agent
-    if($this->page == "") $this->page = '_adminPanel.list';
-    //Return page
-    return $this->page;             
-  }
-
-  protected function getDbData(){
-    
-    //Admin
-    if (Auth::user() &&  Auth::user()->role == 4) {
-      parent::getDbData();
-      return;
-    }
-
-    //Agent
-    $this->dbData = Girl::whereHas('agent', function($q){
-        $q->where('id', '=', '1');
-    })->get();
-
-  }
 
   protected function getMoreInfo($row,$value){
 
@@ -394,6 +370,65 @@ class Girl extends _adminPanel
 
       return $value;
   }
+
+
+  // public function setColumns($columns){
+
+  //   $this->columns = $columns;
+
+  //   //Admin
+  //   if (Auth::user() &&  Auth::user()->role == 4) {
+  //     return;
+  //   } 
+
+  //   foreach ($this->columns as $k => $c) {
+  //     if($c['name'] == 'confirm'){
+  //       $this->columns[$k] = [
+  //         'name'        => 'confirm',
+  //         'caption'     => 'confirm',
+  //         'relation'    => 'user.role',
+  //         'attributes'  => [
+  //             ['id' => 0,'name' => 'uncofirm'],
+  //             ['id' => 1,'name' => 'confirm'],
+  //         ]
+  //       ];
+  //     }
+  //     if($c['name'] == 'agent'){
+  //       unset($this->columns[$k]);
+  //     }
+  //   }
+
+  // }
+
+  // public function getPage(){
+
+  //   //Admin
+  //   if (Auth::user() &&  Auth::user()->role == 4) {
+  //      $this->page = 'admin.pages.girls';
+  //   }
+
+  //   //Agent
+  //   if($this->page == "") $this->page = '_adminPanel.list';
+  //   //Return page
+  //   return $this->page;             
+  // }
+
+  // protected function getDbData(){
+    
+  //   //Admin
+  //   if (Auth::user() &&  Auth::user()->role == 4) {
+  //     parent::getDbData();
+  //     return;
+  //   }
+
+  //   //Agent
+  //   $this->dbData = Girl::whereHas('agent', function($q){
+  //       $q->where('id', '=', '1');
+  //   })->get();
+
+  // }
+
+
 
 	protected $guarded = [];
 

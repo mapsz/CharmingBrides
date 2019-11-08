@@ -54,7 +54,7 @@
     <div class="row my-3">
       <div class="col-3">
         <div class="girl-main-image">
-          <img class="w-100" :src="assets+'/media/gallery/'+girl.id+'_0.jpg'" alt="Juliya">
+          <img class="w-100" :src="'/'+mainPhoto" alt="Juliya">
         </div>
         <div v-if="pAuth" class="girl-more-info">
           <div class="girl-more-info-rows text-capitalize">
@@ -70,8 +70,8 @@
         </div>        
       </div>
       <div class="col-9" style="color: #bf005a;">
-        <h1 class="" style="color:#740f0f">{{girl.name}}, {{girl.age}}</h1>
-        <p>From {{girl.location}}</p>
+        <h1 class="" style="color:#740f0f">{{girl.name}}<span v-if="girl.age">, {{girl.age}}</span></h1>
+        <p v-if="girl.location">From {{girl.location}}</p>
 
         <div v-if="pAuth">
           <!-- loged in -->
@@ -80,14 +80,13 @@
             <div class="row">
               <gallery :images="images" :index="index" @close="index = null"></gallery>
               <div
-                class="girl-image col"
+                class="girl-image col-3 m-0"
                 v-for="(image, imageIndex) in images"
                 :key="imageIndex"
                 @click="index = imageIndex"
-                :style="{ backgroundImage: 'url(' + image + ')', height: '100px' }"
+                :style="{ backgroundImage: 'url(' + image + ')', height: '200px' }"
+                style="background-position: top;"
               ></div>
-
-              <!-- @@@ main photo -->
             </div>
 
             <!-- Man options -->
@@ -96,7 +95,7 @@
                 <fa-icon :icon="['far', 'envelope']" class="fa-5x d-block mx-auto" />
                 Send me a letter
               </div>
-              <div class="action-item col-4 p-3">
+              <div @click="sendLike();"class="action-item send-kiss col-4 p-3">
                 <fa-icon :icon="['far', 'kiss-wink-heart']" class="far fa-5x d-block mx-auto"/>
                 Send me a kiss
               </div>
@@ -125,6 +124,7 @@
         </div>
         <div v-else>
           <!-- not loged in -->
+          <!-- @@@ buttons -->
           <b>Please login or register to see all the photos and profile of this lady</b>
         </div>
       </div>
@@ -166,64 +166,99 @@
 
 
     export default {
-        components: {
-          'gallery': VueGallery
-        },      
-        props:['p-girl','p-auth','p-user-is-man'],
-        data(){
-            return {
-                assets:assets,
-                images: [],       
-                index: null,         
-                girl:false,
-                letter:false,
-            }
-        }, 
-        computed:{
-          moreInfo:function(){
-            let mi = {
-              'Birth'         : this.girl.birth,
-              'Height'        : this.girl.height,
-              'Weight'        : this.girl.weight,
-              'Hair'          : this.girl.hair,
-              'Eyes'          : this.girl.eyes,
-              'Religion'      : this.girl.religion,
-              'Education'     : this.girl.education,
-              'Profession'    : this.girl.profession,
-              'Maritial'      : this.girl.maritial,
-              'Children'      : this.girl.children,
-              'Smoking'       : this.girl.smoking,
-              'Alcohol'       : this.girl.alcohol,
-              'English'       : this.girl.english,
-              'Languages'     : this.girl.languages,
-              'Preffer Age'   : this.girl.prefferFrom +" - "+this.girl.prefferTo, //@@@
-            }
-
-            // console.log(this.girl);
-            $.each(mi, (index, val) => {
-               if(val == undefined || val == "" || val == null){
-                delete(mi[index]);
-               }
-            });
-
-            return mi;
-          },
-        },        
-        mounted() {
-          this.girl = JSON.parse(this.pGirl);
-
-          this.images = [
-                  assets+'/media/gallery/'+this.girl.id+'_1.jpg',
-                  assets+'/media/gallery/'+this.girl.id+'_2.jpg',
-                  assets+'/media/gallery/'+this.girl.id+'_3.jpg',
-                  assets+'/media/gallery/'+this.girl.id+'_4.jpg',
-                ];
-        },
-        methods:{
-          sendLetter(){
-            this.letter = true;
-          }
+      components: {
+        'gallery': VueGallery
+      },      
+      mixins: [ mMoreAxios, mNotifications, mLoading ],
+      props:['p-girl','p-auth','p-user-is-man'],
+      data(){
+        return {
+          assets:assets,     
+          index: null,         
+          girl:false,
+          letter:false,
+          mainPhoto:'',
         }
+      }, 
+      computed:{
+        moreInfo:function(){
+          let mi = {
+            'Birth'         : this.girl.birth,
+            'Height'        : this.girl.height,
+            'Weight'        : this.girl.weight,
+            'Hair'          : this.girl.hair,
+            'Eyes'          : this.girl.eyes,
+            'Religion'      : this.girl.religion,
+            'Education'     : this.girl.education,
+            'Profession'    : this.girl.profession,
+            'Maritial'      : this.girl.maritial,
+            'Children'      : this.girl.children,
+            'Smoking'       : this.girl.smoking,
+            'Alcohol'       : this.girl.alcohol,
+            'English'       : this.girl.english,
+            'Languages'     : this.girl.languages,
+            'Preffer Age'   : this.prefferAge,
+          }
+
+          $.each(mi, (index, val) => {
+             if(val == undefined || val == "" || val == null){
+              delete(mi[index]);
+             }
+          });
+
+          return mi;
+        },
+        prefferAge:function(){
+          let from, to;
+          if(!this.girl.prefferFrom && !this.girl.prefferTo)
+            return false;
+
+          //From
+          if(!this.girl.prefferFrom)
+            from = "18";
+          else{
+            from = this.girl.prefferFrom;
+          }
+
+          //To
+          if(!this.girl.prefferTo)
+            to = "99";
+          else{
+            to = this.girl.prefferTo;
+          }
+
+          return from +" - "+to;
+        },
+        images:function(){
+          let images = []; 
+          $.each(this.girl.photo, function(index, val) {
+             images.push(assets+'/'+val);
+          });
+          return images;
+        }
+      },        
+      mounted() {
+        this.girl = JSON.parse(this.pGirl);
+        this.mainPhoto = this.girl.photo[0];
+        this.girl.photo.shift();
+
+      },
+      methods:{
+        sendLetter(){
+          this.letter = true;
+        },
+        async sendLike(){
+          let l = this.loading('.send-kiss');
+
+          let likes = await this.ax('post', '/like',{toId:this.girl.id,like:1});
+
+          this.hideLoading(l);
+
+          this.showSuccess('Kiss Send!');
+
+          
+        }
+      }
         
     }
 

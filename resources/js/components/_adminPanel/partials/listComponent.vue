@@ -13,6 +13,18 @@
           @addAttached="addAttached"
         />
       </div>
+      <!-- Search -->
+      <div v-if="pSettings.search" class="input-group my-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">
+            <fa-icon icon="search"/>
+          </span>
+        </div>
+        <input type="text" class="form-control"@keyup="searchData()" v-model="search">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button">Search</button>
+        </div>        
+      </div>      
       <!-- List -->
       <div v-if="!attach" class="list">
         <table class="table table-striped">
@@ -98,6 +110,21 @@
             </tr>
           </tbody>
         </table>
+        <!-- Paginator -->
+        <div v-if="pSettings.pages > 1" class="row d-flex justify-content-center">
+          <paginate        
+            :page-count="pSettings.pages"
+            :container-class="'pagination'"
+            :page-class="'page-item'"
+            :page-link-class="'page-link'"
+            :prev-class="'page-item'"
+            :prev-link-class="'page-link'"
+            :next-class="'page-item'"
+            :next-link-class="'page-link'"
+            :click-handler="pageHandler"
+          >
+          </paginate>
+        </div>
       </div>
       <!-- List modal -->
       <div 
@@ -119,6 +146,8 @@
                 :p-settings="listData.settings"
                 :p-route="pRoute"
                 :p-name="listName"
+                :container-class="'pagination'"
+                :page-class="'page-item'"              
               />
             </div>
           </div>
@@ -187,37 +216,41 @@
     library.add(faArrowDown);   
     import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
     library.add(faArrowUp);   
+    import { faSearch } from '@fortawesome/free-solid-svg-icons';
+    library.add(faSearch);   
 
     export default {  
         mixins: [ mMoreAxios, mNotifications, mLoading ],
         props:['p-data', 'p-settings', 'p-route', 'p-name', 'p-recent'],
         data(){
           return {
-              //Data
-              data:[],
-              columns:[],
-              recent:{
-                edit:false,
-                add:false,
-                attach:[],
-              },
-              sort:{
-                name:false,
-                type:false,
-              },
-              //List
-              list:{
-                header: "",
-              },
-              listData:false,  
-              listName:this.pName,
-              //Actions
-              toDelete:false,           
-              toDetach:false,
-              //Attach
-              attach:false,
-              //Setting
-              route: "", 
+            //Data
+            data:[],
+            columns:[],
+            page:1,
+            recent:{
+              edit:false,
+              add:false,
+              attach:[],
+            },
+            sort:{
+              name:false,
+              type:false,
+            },
+            search:"",
+            //List
+            list:{
+              header: "",
+            },
+            listData:false,  
+            listName:this.pName,
+            //Actions
+            toDelete:false,           
+            toDetach:false,
+            //Attach
+            attach:false,
+            //Setting
+            route: "", 
           }
         },
         computed: {
@@ -279,7 +312,7 @@
 
           this.updateData();
           this.prepareSubList();
-          this.fRecentAdd();
+          this.queryStringHandle();
 
           //Recent atach
           if(this.pRecent != undefined){
@@ -315,29 +348,30 @@
             this.data = this.pData.data;
             this.columns = this.pData.columns;
           },
-          fRecentAdd(){
-            var vars = [], hash;
+          pageHandler(page){
+            this.page = page;
+            this.getData();
+          },
+          queryStringHandle(){
+            let qs = queryString.parse(location.search);
 
-            if (window.location.href.indexOf('?') < 0){
-              return false;
-            }
+            $.each(qs, (i, v) => {
+              switch (i) {
+                case 'page':
+                    this.page = v;
+                  break;
+                case 'recentAdd':
+                  //Инструкции, соответствующие value2
+                  break;
+                case 'recentEdit':
+                  //Инструкции, соответствующие значению valueN
+                  //statementsN
+                  break;
+              }
+            });
 
-            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-            for(var i = 0; i < hashes.length; i++)
-            {
-                hash = hashes[i].split('=');
-                vars.push(hash[0]);
-                vars[hash[0]] = hash[1];
-            }            
-
-            if(vars.add !== 'undefined'){
-              this.putSuccess(vars);
-            }else{
-              return false;
-            }
           },
           async putSuccess(edit){
-            console.log(edit);
             //Refresh edit
             this.edit = false;
             //Hide modal
@@ -379,18 +413,15 @@
                 if (a[column] < b[column]) {
                   return -1;
                 }
-                // a должно быть равным b
                 return 0;
               });                  
               this.sort.type = 'asc';              
             }
 
             this.sort.name = column;
-
           },
           async getData(){
-            this.data = [];
-            let r = await axios.get('/'+this.route+'/get')
+            let r = await axios.get('/'+this.route+'/get?page='+this.page)
                 .then((r) => {
                     if(!r.data) return false;
 
@@ -409,6 +440,18 @@
 
             return r;
           },     
+          async searchData(){
+
+            if(this.search.length < 3) return false;
+
+            console.log(this.search);
+
+            let r = await this.ax('get','/'+this.route+'/search?page='+this.page,{'search':this.search});
+
+            this.data = r.data;
+
+            console.log(r);
+          },
           //List            
           openList(id, key){
             this.list.header = key;
@@ -479,14 +522,14 @@
 
 <style scooped>
   
-.bg-orange {
-    background-color: orange;
-}
+  .bg-orange {
+      background-color: orange;
+  }
 
-.bg-attach{
-  background-color: #aefe2e;
-}
-.sortable{
-  cursor:pointer;
-}
+  .bg-attach{
+    background-color: #aefe2e;
+  }
+  .sortable{
+    cursor:pointer;
+  }
 </style>

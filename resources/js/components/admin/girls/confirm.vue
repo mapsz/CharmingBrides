@@ -1,13 +1,11 @@
 <template>
     <div :class='"container-fluid admin-girl-confirm-"+pRow.id'>
         <!-- Example -->
-        <span v-if="confirm" style="color:limegreen">
-          Confirmed
-          <button class="btn btn-sm btn-danger border" @click="doConfirm(0)"> </button>
+        <span v-if="confirm">
+          <button class="btn btn-sm btn-success border" @click="doConfirm(0)"> </button>
         </span>
-        <span v-else style="color:tomato">
-          Unconfirmed
-          <button class="btn btn-sm btn-success border" @click="doConfirm(1)"> </button>
+        <span v-else>
+          <button class="btn btn-sm btn-danger border" @click="doConfirm(1)" > </button>
         </span>
     </div>
 </template>
@@ -34,3 +32,13 @@
         }
     }
 </script>
+
+<style scoped>
+  
+  button{
+    width: 20px;
+    height: 20px;
+    border-radius: 10px; 
+  }
+
+</style>
