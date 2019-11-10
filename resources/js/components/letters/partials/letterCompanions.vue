@@ -18,7 +18,10 @@
           </div>
           <!-- Name -->
           <div class="info-wrapper" :class="companion.read ? 'col-8' : 'col-6'">
-            <span class="row"><b>{{companion.name}}</b></span>
+            <span class="row">
+              <b>{{companion.name}} </b> 
+              <div> ({{companion.id}})</div>
+            </span>
             <span class="row" style="font-size: 8pt;">{{formateDate(companion.date)}}</span>
           </div>
           <div v-if="!companion.read" class="col-2">

@@ -17,17 +17,18 @@
 use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 
 //    Info pages
-//  About
-//about us
-Route::get('/about', function () {return view('pages.home');});
-
-//  Help
-//faq
-Route::get('/faq', function () {return view('pages.home');});
-//how to start
-Route::get('/howtostart', function () {return view('pages.home');});
-//  Contacts
-Route::get('/contacts', function () {return view('pages.home');});
+//news
+Route::get('/news', function () {return view('pages.page')->with('page','news');});
+Route::get('/about', function () {return view('pages.page')->with('page','about');});
+Route::get('/anti/scam', function () {return view('pages.page')->with('page','antiscam');});
+Route::get('/branches', function () {return view('pages.page')->with('page','branches');});
+Route::get('/our/couples', function () {return view('pages.page')->with('page','our-couples');});
+Route::get('/romantic/tour', function () {return view('pages.page')->with('page','romantic-tour');});
+Route::get('/how/to/start', function () {return view('pages.page')->with('page','how-to-start');});
+Route::get('/holidays', function () {return view('pages.page')->with('page','holidays');});
+Route::get('/faq', function () {return view('pages.page')->with('page','faq');});
+Route::get('/contacts', function () {return view('pages.page')->with('page','contacts');});
+Route::get('/ukraine', function () {return view('pages.page')->with('page','ukraine');});
 
 //Main
 Route::get('/', function () {
@@ -58,7 +59,9 @@ Route::get('/register', 'Auth\RegisterController@index');
 Route::get('/profile', 'ManController@profile')->name('profile')->middleware('auth');
 Route::get('/profile/membership', 'ManController@profileMembership')->name('profileMembership')->middleware('auth');
 Route::get('/profile/edit', 'ManController@edit')->middleware('auth');
-
+Route::post('/profile/file/upload', 'ManController@_fileUpload');
+Route::delete('/profile/file/delete', 'ManController@_fileDelete');  //Delete file          
+Route::post('/profile/file/main', 'ManController@_fileMain');  //Delete file            
 
 //Signs
 Route::get('/matched', 'SignController@matched')->middleware('auth')->name('matched');
@@ -96,7 +99,8 @@ Route::get('/chat/search/girl', 'ChatController@searchGirl')->middleware(['auth'
 //show
 Route::get('/girl/{id}','GirlController@index')->name('showGirl');
 Route::get('/all/girls','GirlController@allGirls')->name('allGirls');
-Route::get('/locations/girl','GirlController@locations');
+Route::get('/new/girls','GirlController@newGirls')->name('newGirls');
+Route::get('/parametrs/girl','GirlController@getGirlsParametr');
 Route::get('/registration/girl', 'GirlController@create')->name('girlCreate');
 Route::get('/all/girl/search', 'GirlController@search');
 //get special Ladies
@@ -132,6 +136,7 @@ Route::group(['middleware' => ['auth']],function(){
 
   Route::get('/letter/get/companion', ucfirst($model).'Controller@getSingleCompanion')->name('getSingleCompanion');    
   Route::post('/letter/read', ucfirst($model).'Controller@read');
+
 
   //Girl 
   $model = 'girl';
@@ -188,7 +193,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   // Letter
   $model = 'letter';
   $namePrefix = "admin_";
-  Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);                               //Index
+  // Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);                               //Index
   Route::get('/'.$model.'/get/{id?}', ucfirst($model).'Controller@_get')->name($namePrefix.'get'.ucfirst($model));           //Get
   Route::get('/'.$model.'/create', ucfirst($model).'Controller@_create')->name($namePrefix.'create'.ucfirst($model));  //Create
   Route::put('/'.$model, ucfirst($model).'Controller@_put')->name($namePrefix.'put'.ucfirst($model));                  //Put
@@ -201,6 +206,9 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::post('/'.$model.'/file/upload', ucfirst($model).'Controller@_fileUpload')
         ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload   
 
+
+  Route::get('/letter', function () {return view('admin.pages.letters');})->name($namePrefix.$model);    
+  Route::get('/letter/history', ucfirst($model).'Controller@adminLetterHistory');
 
   //Letter
   Route::get('/letter/girls', 'letterController@getAdminGirls');

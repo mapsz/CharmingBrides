@@ -68,11 +68,23 @@ window.mLoading         = require ('./components/_adminPanel/lib/loading');
 
 //pages
 Vue.component('home', require('./components/pages/home.vue'));
-
+Vue.component('news', require('./components/pages/news.vue'));
+Vue.component('about', require('./components/pages/about.vue'));
+Vue.component('antiscam', require('./components/pages/anti_scam.vue'));
+Vue.component('branches', require('./components/pages/branches.vue'));
+Vue.component('our-couples', require('./components/pages/our_couples.vue'));
+Vue.component('romantic-tour', require('./components/pages/romantic_tour.vue'));
+Vue.component('contacts', require('./components/pages/contacts.vue'));
+Vue.component('faq', require('./components/pages/faq.vue'));
+Vue.component('holidays', require('./components/pages/holidays.vue'));
+Vue.component('how-to-start', require('./components/pages/how_to_start.vue'));
+Vue.component('ukraine', require('./components/pages/ukraine.vue'));
 
 //partials
 Vue.component('service-blocks', require('./components/partials/serviceblocks.vue'));
 Vue.component('carusel', require('./components/partials/carusel.vue'));
+Vue.component('card', require('./components/partials/card.vue'));
+Vue.component('header-component', require('./components/partials/header.vue'));
 
 //Partials
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
@@ -96,6 +108,7 @@ Vue.component('girls', require('./components/girls/girls.vue'));
 //Letter
 Vue.component('letter1-component', require('./components/letters/letter_list.vue'));
 Vue.component('letter-component', require('./components/letters/letters.vue'));
+Vue.component('letter-companion-info', require('./components/letters/partials/letter_companion_info.vue'));
 Vue.component('letter-admin-component', require('./components/letters/letterAdmin.vue'));
 Vue.component('letter-companions-component', require('./components/letters/partials/letterCompanions.vue'));
 Vue.component('letter-list-component', require('./components/letters/partials/letterList.vue'));
@@ -107,6 +120,8 @@ Vue.component('admin-letter-user-component', require('./components/admin/letters
 Vue.component('admin-letters-link', require('./components/admin/letters/letters_link.vue'));
 Vue.component('admin-letter-user', require('./components/admin/letters/letters_user.vue'));
 Vue.component('admin-letter-agent', require('./components/admin/letters/letters_agent.vue'));
+//letter history admin
+Vue.component('admin-letter-history', require('./components/admin/letters/admin_letter_history.vue'));
 
 // Admin panel
 Vue.component('men-component', require('./components/admin/men.vue'));
@@ -126,6 +141,8 @@ Vue.component('man-component', require('./components/men/man.vue'));
 Vue.component('man-profile', require('./components/men/manProfile.vue'));
 Vue.component('man-profile-membership', require('./components/men/manProfileMembership.vue'));
 Vue.component('man-edit', require('./components/men/manEdit.vue'));
+Vue.component('man-control', require('./components/men/partials/manControl.vue'));
+Vue.component('man-to-control', require('./components/men/partials/manToControl.vue'));
 
 //Membership
 Vue.component('memberships', require('./components/membership/membership.vue'));

@@ -10,31 +10,36 @@
           <!-- passport -->
           <div class="col-2">
             <div class="girl-passport">
-              <img class="w-100" :src="assets+'/media/passport/'+girl.id+'_0.jpg'" alt="Juliya">
+              <img class="w-100" :src="assets+'/media/passport/'+girl.id+'_0.jpg'" alt="Passport">
             </div>  
           </div>
           <!-- for admin info -->
           <div class="col-3">
             <!-- name -->
             <div class="row">
-              <div class="col-5">name</div>
+              <div class="col-5">name:</div>
               <div class="col-7" style="color: #bf005a;"> {{girl.forAdminName}}</div> 
             </div>
             <!-- surname-->
             <div class="row">
-              <div class="col-5">surname</div>
+              <div class="col-5">surname:</div>
               <div class="col-7" style="color: #bf005a;"> {{girl.forAdminSurname}}</div> 
             </div>
             <!-- fathername  -->
             <div class="row">
-              <div class="col-5">fathername</div>
+              <div class="col-5">fathername:</div>
               <div class="col-7" style="color: #bf005a;"> {{girl.forAdminFathersName}}</div> 
             </div>
             <!-- phone number  -->
             <div class="row">
-              <div class="col-5">number</div>
+              <div class="col-5">number:</div>
               <div class="col-7" style="color: #bf005a;"> {{girl.forAdminPhoneNumber}}</div> 
-            </div>            
+            </div>
+            <!-- email  -->
+            <div class="row">
+              <div class="col-5">email:</div>
+              <div class="col-7" style="color: #bf005a;"> {{girl.email}}</div> 
+            </div>               
           </div>
           <!-- letter -->
           <div class="col-7">
@@ -70,8 +75,9 @@
         </div>        
       </div>
       <div class="col-9" style="color: #bf005a;">
-        <h1 class="" style="color:#740f0f">{{girl.name}}<span v-if="girl.age">, {{girl.age}}</span></h1>
+        <h1 class="" style="color:#740f0f">{{girl.name}}<span> ({{girl.id}})</span></h1>
         <p v-if="girl.location">From {{girl.location}}</p>
+        <p v-if="girl.age">{{girl.age}} Years old</p>
 
         <div v-if="pAuth">
           <!-- loged in -->

@@ -51,6 +51,8 @@
         },
         mounted() {
           this.setPasswordInputComponents();
+          //Remove default file
+
         },
         methods: {
           //Data

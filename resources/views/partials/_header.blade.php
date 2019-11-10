@@ -1,5 +1,5 @@
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light">
+{{-- <nav class="navbar navbar-expand-lg navbar-light">
 	<!-- brand -->
 	<a class="navbar-brand" href="{{ route('home') }}">Charming Brides</a>
 	<!-- toggle button -->
@@ -31,7 +31,7 @@
 					Girls
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						<a class="dropdown-item" href="{{ route('allGirls') }}">New Girls</a>
+						<a class="dropdown-item" href="{{ route('newGirls') }}">New Girls</a>
 						<a class="dropdown-item" href="{{ route('allGirls') }}">All Girls<span class="sr-only">(current)</span></a>
 					</div>
 				</li>
@@ -77,25 +77,25 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ route('letter') }}">Letters<span class="sr-only">(current)</span></a>
           </li>       
-        @endif            
-				<!-- chat -->
-				@if(Auth::check())
-					<li class="nav-item">
-						<a class="nav-link" href="{{ route('chat') }}">Chat<span class="sr-only">(current)</span></a>
-					</li>				
-				@endif            
+        @endif         
         <!-- matched -->
         @if(Auth::check())
           <li class="nav-item">
             <a class="nav-link" href="{{ route('matched') }}">Matched<span class="sr-only">(current)</span></a>
           </li>       
-        @endif    		
+        @endif               
+        <!-- chat -->
+        @if(Auth::check())
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('chat') }}">ONLINE CHAT<span class="sr-only">(current)</span></a>
+          </li>       
+        @endif            		
 			</ul>
 			@if(Auth::check())
         @if(Auth::User()->role <= 2)
-				  <a class="nav-link" href="{{ route('profile') }}">  <i class="icon-user-plus"></i> Profile</a>
+				  <a class="nav-link" href="{{ route('profile') }}">  <i class="icon-user"></i> Profile</a>
         @endif
-				<a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">  <i class="icon-user-plus"></i> Logout</a>
+				<a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">  <i class="icon-user-logout"></i> Logout</a>
 				<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
 					@csrf
 				</form>
@@ -106,8 +106,7 @@
 			@endif
 		</div>
 	</div>
-</nav>
+</nav> --}}
 
 
-<!-- /Navbar -->
-
+<header-component :p-user="'{{Auth::User()}}'"> </header-component>

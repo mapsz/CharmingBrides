@@ -7,7 +7,7 @@
 
 <script>
     export default {        
-        mixins: [ ],
+        mixins: [ mMoreAxios, mNotifications, mLoading ],
         props:['p-row','p-attr'],
         data(){
           return {

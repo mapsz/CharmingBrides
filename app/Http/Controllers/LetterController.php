@@ -14,15 +14,62 @@ use Illuminate\Support\Facades\Input;
 use Auth;
 use Illuminate\Support\Facades\Config;
 use App\Rules\CurrentUserOrAdmin;
-
 class LetterController extends _adminPanelController
 {
 
-    protected $model     = 'App\Letter';
+  protected $model     = 'App\Letter';
 
-    public function __construct(){
-        parent::__construct($this->model);
+  public function __construct(){
+      parent::__construct($this->model);
+  }
+
+  public function adminLetterHistory(){
+
+    $agent = (Auth::user()->role < 4) ? User::where('id',Auth::user()->id)->with('agent')->first()->agent->id : false;
+
+
+    //Get letters
+    $letters = new Letter;
+    if($agent){
+      $letters = $letters->whereHas('toUser.girl.agent',function($q) use($agent) {
+        $q->where('id',$agent);
+      });
+    } 
+
+    $letters = $letters
+                  ->whereHas('user.man')                      
+                  ->whereHas('toUser.girl')                      
+                  ->orderBy('created_at','desc')
+                  ->with('user.man')
+                  ->with('toUser.girl')
+                  ->with('toUser.girl.agent')
+                  ->paginate(10);
+                  
+    //Get answers
+    $lettersWithAnswers = [];
+    $got = [];
+    foreach ($letters as $k => $v) {      
+      $answers = Letter::where('created_at', '>',$v->created_at)
+                    ->where('user_id', $v->to_user_id)
+                    ->where('to_user_id', $v->user_id)
+                    ->get();
+
+      $lwa = $v->toArray();           
+      $lwa['answers'] = [];
+
+      //add answer
+      foreach ($answers as  $a) {
+        if(array_search($a->id, $got)) continue;
+        array_push($got,$a->id);
+        array_push($lwa['answers'],$a);
+      }              
+
+      array_push($lettersWithAnswers,$lwa);
     }
+
+    return response()->json(['error' => '0', 'data' => ['letters' => $lettersWithAnswers, 'pages' => $letters->lastPage()]]);
+  }
+
 
     public function _index(){
       //Get Model

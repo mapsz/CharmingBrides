@@ -3,10 +3,11 @@
       <!-- Header -->
       <h1 class="py-3">Girls</h1>
       <!-- Search -->
-      <girl-search />
+      <girl-search @searchSuccess="updateData"/>
       <!-- Girl List -->
-      <div class="row px-lg-0">
+      <div class="girls-list row px-lg-0">
         <div 
+          v-if="girls.length > 0"
           v-for="girl in girls" 
           class="col-6 col-sm-3 my-2 p-1"
         >
@@ -25,6 +26,9 @@
               </div>
             </a>
           </div>
+        </div>
+        <div v-if="girls.length == 0" class="p-5">
+          No Girls found  
         </div>
       </div>
       <!-- Paginator -->
@@ -70,6 +74,10 @@
           pageHandler(page){
             location.replace(location.origin + location.pathname + '?page=' + page);
           },
+          updateData(data){
+            this.girls = JSON.parse(data.girls);
+            this.setting = JSON.parse(data.settings);
+          }
         }
     }
 </script>

@@ -19,10 +19,69 @@ class ManController extends _adminPanelController
     }
 
     public function index($id){
+      $model = new $this->model();
 
-      $man = User::where('id',$id)->with('man')->First()->toArray();
+      //Set columns
+      $columns = [
+        [
+          'name'    => 'photo',
+          'file'    => 'image',
+        ],
+        [
+          'name' => 'id',
+          'relation' => 'user.id'
+        ],
+        [
+          'name' => 'user_id',
+          'caption' => 'email',
+          'relation' => 'user.email',
+        ], 
+        ['name' => 'name'],
+        ['name' => 'surname'],
+        ['name' => 'birth'],
+        ['name' => 'country'],
+        ['name' => 'city'],
+        ['name' => 'height'],
+        ['name' => 'weight'],
+        ['name' => 'smoking'],
+        ['name' => 'alcohol'],
+        ['name' => 'education'],
+        ['name' => 'profession'],
+        ['name' => 'maritial'],
+        ['name' => 'children'],
+        ['name' => 'info'],
+        //Girl
+        ['name' => 'preffer_from'],
+        ['name' => 'preffer_to'],
+        ['name' => 'girl_hair'],
+        ['name' => 'girl_height_from'],
+        ['name' => 'girl_height_to'],
+        ['name' => 'girl_weight_from'],
+        ['name' => 'girl_weight_to'],
+        ['name' => 'girl_smoking'],
+        ['name' => 'girl_alcohol'],
+        ['name' => 'girl_education'],
+        ['name' => 'girl_proffesion'],
+        ['name' => 'girl_maritial'],
+        ['name' => 'girl_children'],
+        ['name' => 'girl_info'],        
+      ];
+      $model->setColumns($columns);
 
-      return view('pages.man')->with('man',json_encode($man));
+      //Set where
+      $where = [['column' => 'user_id','condition' => '=','value' => $id]];
+      $model->setWhere($where);    
+
+      //Get  
+      $data   = $model->getData();
+      $data   = $data['data'][0];
+
+      foreach ($data as $k => $v) {
+        $data[$k] = $this->model::getMoreInfo($k,$v);
+      }     
+
+      $data = json_encode($data);
+      return view('pages.profile')->with('data',$data)->with('id',$id);
     }
 
     public function profile(){

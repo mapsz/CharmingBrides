@@ -441,5 +441,10 @@ class Girl extends _adminPanel
   {
       return $this->belongsToMany('App\Agent');
   } 
+
+    public function maritial(){
+
+        return $this->belongsTo('App\Maritial', 'maritial');
+    }
        
 }

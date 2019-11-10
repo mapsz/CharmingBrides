@@ -354,8 +354,13 @@
 
             //delete file
             let i = this.value.findIndex(x=>x == file);
-            if(i > -1)
+            if(i > -1){              
               this.value.splice(i,1);
+            }            
+            i = this.files.findIndex(x=>x == file);
+            if(i > -1){              
+              this.files.splice(i,1);
+            }  
 
             this.hideLoading(l);
 

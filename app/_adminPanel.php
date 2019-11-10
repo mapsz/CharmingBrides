@@ -154,6 +154,16 @@ class _adminPanel extends Model
         }elseif($input['type'] == 'file'){
           //Set files
           $data[$input['name']] = $this->getFiles($this->dbData[0]['id'],$input['name']);
+
+          
+          //Remove default file
+          foreach ($data[$input['name']] as $k => $file) {
+            if(isset($input['default']) && $input['default'] != false){
+              $defaultFile = $input['path'] . '/'.$input['default'];
+              if($defaultFile == $file)
+                unset($data[$input['name']][$k]);
+            }
+          }
         }else{
           //Set simple
           $data[$input['name']] = $this->dbData[0][$input['name']];          
@@ -161,6 +171,8 @@ class _adminPanel extends Model
       }
 
       $data['_id'] = $this->dbData[0]['id'];
+
+
 
       return $data;
     }
@@ -701,7 +713,7 @@ class _adminPanel extends Model
       //Get path
       foreach ($this->inputs as $k => $v) {
         if($v['name'] == $inputName){
-          $path = public_path().'/'.$v['path'].'/'.$fileName;
+          $path = public_path().'/'.$fileName;
         }        
       }
 
@@ -835,9 +847,11 @@ class _adminPanel extends Model
               do{
                 $fileName = false;
                 if($j > 100) break;
+                $par = 0;
+                if(isset($parentPut->id)) $par = $parentPut->id;
                 $fileName = $this->generateFileName($fileNameTemplate,[
                   'id'        => $inputPut->id,
-                  'parentId'  => $parentPut->id,
+                  'parentId'  => $par,
                   'i'         => $i,
                 ]);
                 $j++;

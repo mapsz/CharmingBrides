@@ -1,11 +1,6 @@
 <template>
-    <div class="container my-4">
-      <div class="row">
-        <div class="col"><h1>Profile</h1></div>
-        <div class="col">
-          <a style="float: right; font-size: 16pt;" href="/profile/membership"><b>Membership</b></a>
-        </div>
-      </div>
+    <div class="container my-3">
+
       <div class="row my-3">
         <div class="col-6">
           <h4>Personal Details</h4>
@@ -27,7 +22,7 @@
         <div class="col-6">
           <h4>Photo</h4>
           <div v-for="photo in man.photo" class="col">            
-            <img :src="photo" style="height:75px">
+            <img :src="'/'+photo" style="height:75px">
           </div>
         </div>
       </div>
@@ -108,11 +103,6 @@
             <span class="col-12">{{man.girl_info}}</span>  
           </div>
         </div>
-      </div>
-      <div class="row">
-        <a href="/profile/edit">
-          <button class="btn btn-warning">Edit Profile</button>
-        </a>
       </div>
     </div>
 </template>

@@ -11,10 +11,24 @@
         </div>
         <!-- Letter list -->
         <div class="letter-list col-9">
-          <button v-if="activeCompanion" @click="sendLetter();" class="btn send-letter action-item">
-            <fa-icon :icon="['far', 'envelope']" class="fa" />
-            Send letter
-          </button>
+          <div class="row" style="border-bottom: 2px solid #bf005a73; padding-bottom:10px;">
+            <div class="col-3 media">
+              <div class="align-self-center">
+                <button 
+                  v-if="activeCompanion" 
+                  @click="sendLetter();" 
+                  class="btn send-letter action-item"
+                  style="background-color: #ffff006b;"
+                >
+                  <fa-icon :icon="['far', 'envelope']" class="fa" />
+                  Send letter
+                </button>
+              </div>
+            </div>
+            <div class="col-9">              
+              <letter-companion-info :p-companion="activeCompanion" />
+            </div>
+          </div>
           <letter-list-component 
             :p-letters = "activeLetters"
             :p-user = "pUser"

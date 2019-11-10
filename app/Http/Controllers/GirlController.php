@@ -105,7 +105,7 @@ class GirlController extends _adminPanelController
 
       //User man
       if($auth != null){
-        $userMan = User::getWithInfo(Auth::user())['man'];   
+        $userMan = User::getWithInfo($auth->id)['man'];   //@@@
       }else{
         $userMan = 0;
       }
@@ -208,7 +208,32 @@ class GirlController extends _adminPanelController
       return view('pages.girls')->with('girls',$girls)->with('settings',$settings);
     }
 
-    public function search(){
+    public function newGirls(){
+
+      $model = new $this->model();
+
+      $model->setPerPage(20);
+      $model->setInfoColumns();
+      $model->setOrder(['row'=>'id','order'=>'DESC']);
+      $where = [['column' => 'created_at','condition' => '>=','value' => Carbon::now()->subMonth()->toDateTimeString()]];
+      $model->setWhere($where);
+
+      $data = $model->getData();
+      $data = $data['data'];
+      $settings = $model->getSettings();
+
+      foreach ($data as $k => $v) {
+        $data[$k]['age']     = Carbon::parse($v['birth'])->age;
+      }
+
+      $girls = json_encode($data);
+      $settings = json_encode($settings);
+
+      return view('pages.girls')->with('girls',$girls)->with('settings',$settings);
+
+    }
+
+    public function search(request $request){
 
       $model = new $this->model();
 
@@ -217,7 +242,52 @@ class GirlController extends _adminPanelController
       $model->setInfoColumns();
       $model->setOrder(['row'=>'id','order'=>'DESC']);
 
-      $where = [['column' => 'location','condition' => '=','value' => 'kiev','or'=>true]];
+      if(!isset($request->search)) return response()->json(['error' => '1']);
+
+      // decode
+      $search = json_decode($request->search);
+
+      //where
+      $where = [];
+
+      //location
+      if(isset($search->location) && $search->location != '0'){
+        array_push($where, ['column' => 'location','condition' => '=','value' => $search->location]);
+      }
+
+      //maritial
+      if(isset($search->maritial) && $search->maritial != '0'){
+        array_push($where, ['column' => 'maritial','condition' => '=','value' => $search->maritial]);
+      }
+
+      //location
+      if(isset($search->children)){
+        array_push($where, ['column' => 'children','condition' => '<=','value' => $search->children]);
+      }
+
+      //age from
+      if(isset($search->ageFrom)){
+        $from = Carbon::now()->subYear($search->ageFrom)->format('Y-m-d');
+        array_push($where, ['column' => 'birth','condition' => '<','value' => $from]);
+      }
+      //age to
+      if(isset($search->ageTo)){
+        $to = Carbon::now()->subYear($search->ageTo)->format('Y-m-d');
+        array_push($where, ['column' => 'birth','condition' => '>','value' => $to]);
+      }
+
+      //age to
+      if(isset($search->search)){
+        $val = $search->search;
+        $callback = function($q)use($val) {
+          $q->where('name','LIKE','%'.$val.'%')
+            ->orWhere('id','=',$val);
+        };
+        $model->setCustomQueries([
+          $model->where($callback)
+        ]);
+      }
+
       $model->setWhere($where);
 
       //Get data
@@ -228,13 +298,20 @@ class GirlController extends _adminPanelController
       $data = $data['data'];
       $settings = $model->getSettings();   
 
+      foreach ($data as $k => $v) {
+        $data[$k]['age']     = Carbon::parse($v['birth'])->age;
+      }      
+
       $girls = json_encode($data);
       $settings = json_encode($settings);
       $data = ['girls' => $girls, 'settings' => $settings];
       return response()->json(['error' => '0','data' => $data]);
     }
 
-    public function locations(){
+    public function getGirlsParametr(){
+
+      $params = [];
+      //Locations
       $q = DB::select( DB::raw(
                    "SELECT location, COUNT(*)
                     FROM girls
@@ -242,12 +319,64 @@ class GirlController extends _adminPanelController
                     HAVING COUNT(*) > 1"
                   ));
 
-      $locations = [];
+      $param = [];
       foreach ($q as $key => $v) {
-        array_push($locations, $v->location);
+        array_push($param, $v->location);
       }
+      $params['locations'] = $param;
 
-      return response()->json(['error' => '0','data' => $locations]);
+      //Professions
+      $q = DB::select( DB::raw(
+                   "SELECT profession, COUNT(*)
+                    FROM girls
+                    GROUP BY profession
+                    HAVING COUNT(*) > 1"
+                  ));
+      $param = [];
+      foreach ($q as $key => $v) {
+        array_push($param, $v->profession);
+      }
+      $params['professions'] = $param;
+
+      //Maritial
+      $q = DB::select( DB::raw(
+                   "SELECT profession, COUNT(*)
+                    FROM girls
+                    GROUP BY profession
+                    HAVING COUNT(*) > 1"
+                  ));
+      $param = [];
+      foreach ($q as $key => $v) {
+        array_push($param, $v->profession);
+      }
+      $params['professions'] = $param;
+
+      //Professions
+      $q = DB::select( DB::raw(
+                   "SELECT profession, COUNT(*)
+                    FROM girls
+                    GROUP BY profession
+                    HAVING COUNT(*) > 1"
+                  ));
+      $param = [];
+      foreach ($q as $key => $v) {
+        array_push($param, $v->profession);
+      }
+      $params['professions'] = $param;
+
+      //Professions
+      $q = DB::select( DB::raw(
+                   "SELECT name, COUNT(*)
+                    FROM maritials
+                    GROUP BY name"
+                  ));
+      $param = [];
+      foreach ($q as $key => $v) {
+        array_push($param, $v->name);
+      }
+      $params['maritials'] = $param;
+
+      return response()->json(['error' => '0','data' => $params]);
     }
 
     public function getSpecialLadies(){

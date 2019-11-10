@@ -19,7 +19,7 @@
         <!-- likes list -->
         <div class="row">
           <div 
-            class="col-2 text-center m-2 p-0 border rounded"
+            class="col-2 text-center m-2 p-0"
             v-for="like in likes"
           >
             <a :href="'/girl/'+like.companion.id">
@@ -30,7 +30,7 @@
                 </span>    
               </div>    
             </a>   
-            <div class="row m-0 border-top like-buttons">
+            <div class="row m-0 border like-buttons">
               <div 
                 class="likedyou-dislike col-6 py-2 border-right"
                 @click="doLike(like.companion.id,-1)"
