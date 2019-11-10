@@ -14,6 +14,7 @@ use Exception;
  
 class _adminPanel extends Model
 {	
+  
     //Names
     protected $single;
     protected $multi;
