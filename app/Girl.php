@@ -15,7 +15,7 @@ class Girl extends _adminPanel
   protected $single         = 'girl';
   protected $multi          = 'girls';        
   protected $route          = [ 'prefix' => 'admin/' ];
-  protected $page           = "";
+  protected $page           = "admin.pages.girls";
   protected $link           = "/girl/";
 
   protected $columns  = [
