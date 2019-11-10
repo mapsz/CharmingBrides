@@ -2,7 +2,7 @@
   <div class="media border p-3 my-4" style="background-color: white;">
     <img 
       v-if="pImages.length > 0"
-      :src="'/public/img/'+pImages[0]" 
+      :src="'/img/'+pImages[0]" 
       class="align-self-center col-3 mr-3" 
     >
     <div class="media-body align-self-center">
@@ -38,7 +38,7 @@
           <div class="row">
             <div v-if="i != 0" v-for="(img, i) in pImages" class="col">
               <img             
-                :src="'/public/img/'+img" 
+                :src="'/img/'+img" 
                 class="col" 
                 style="height:160px;width:auto;display:block;margin:auto;"
               >
