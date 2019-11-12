@@ -23,15 +23,15 @@
       :p-body="[
       '...The strangest holiday of the Slavonic calendar. In fact, it is also connected with the conservatism of Slavonic people. After the 1917 Revolution, Russia and Ukraine switched to the western calendar. Before that time they have been 13 days behind the rest of the world. However, even though the official calendar was switched, many people did not want to change and others refused to celebrate New Year before Christmas. The celebrations are not of such an enormous scale as the ones of the New Year\'s Day and it is not a day off.',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
     <card 
       :p-title="'Jan 25 Tatiana\'s Day'" 
       :p-body="[
-      '',
+      '...or Students\' Day. The holiday originates to the 18th century. In 1775, on the day of Maiden Tatiana the Martyr Empress Elizabeth Petrovna signed the regulation about the foundation of Moscow University, which went down into history as the first Russian University. In the 18th and 19th centuries this day was celebrated as the Day of Foundation of Moscow University, but already in the second half of the 19th century it became a holiday of all the Universities and students. Today, Tatiana\'s Day is a kind and cheerful holiday, when students enjoy the freedom, youth and coming vacations. Those who have been students decades ago remember their old good days at universities.',
       ]"
-      :p-images="['...or Students\' Day. The holiday originates to the 18th century. In 1775, on the day of Maiden Tatiana the Martyr Empress Elizabeth Petrovna signed the regulation about the foundation of Moscow University, which went down into history as the first Russian University. In the 18th and 19th centuries this day was celebrated as the Day of Foundation of Moscow University, but already in the second half of the 19th century it became a holiday of all the Universities and students. Today, Tatiana\'s Day is a kind and cheerful holiday, when students enjoy the freedom, youth and coming vacations. Those who have been students decades ago remember their old good days at universities.']"
+      :p-images="[]"
     ></card>
 
     <card 
@@ -47,7 +47,7 @@
       :p-body="[
       '...Men\'s Day In Soviet times it was the holiday of all those who had ever served in the military. While the Soviet Union was rather a military state, about 90% of men were at some point connected to the Red Army, so later it became a holiday for men. It is not a public holiday in Ukraine, but most Russian women make some presents to their male relatives and friends and do their best to please their husbands and boyfriends.',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
     <card 
@@ -63,13 +63,13 @@
       :p-body="[
       '...or Humor Day People play tricks on their friends and if they have a sense of humor then everybody have fun. The best tricks are considered the ones made before midday.',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
     <card 
       :p-title="'Orthodox Easter'" 
       :p-body="[
-      '...The major holiday of the Orthodox religious calendar. It is usually about two weeks after Catholic Easter. For many people this holiday starts with church attendance on Saturday evening, where the festive church service is held and the father, or Orthodox priest blesses kulichi (traditional Easter cake) and pisanki (painted Easter eggs). The father greets the congregation repeating many times over: "Christ is risen!" and the congregation replies in chorus "Indeed He is risen!" During the day people visit relatives and closest friends and present them with Easter basket, filled with kulichi and pisanki, which are believed to posses a spiritual power. Everybody greets each other with "Christ is risen", then follows the answer "Indeed He is risen!" and exchange with triple kiss, the so-called Khrystosuvanni.',
+      '...The major holiday of the Orthodox religious calendar. It is usually about two weeks after Catholic Easter. For many people this holiday starts with church attendance on Saturday evening, where the festive church service is held and the father, or Orthodox priest blesses kulichi (traditional Easter cake) and pisanki (painted Easter eggs). The father greets the congregation repeating many times over: \'Christ is risen!\' and the congregation replies in chorus \'Indeed He is risen!\' During the day people visit relatives and closest friends and present them with Easter basket, filled with kulichi and pisanki, which are believed to posses a spiritual power. Everybody greets each other with \'Christ is risen\', then follows the answer \'Indeed He is risen!\' and exchange with triple kiss, the so-called Khrystosuvanni.',
       ]"
       :p-images="['holidays_easter.jpg']"
     ></card>
@@ -77,9 +77,9 @@
     <card 
       :p-title="'May 1 Labor Day'" 
       :p-body="[
-      '...or May Day. Under the Soviets, it was one of the greatest holidays of the year - with colorful demonstrations and celebration of the workers and kolkhozniks, or collective farmers. Today, practically nobody bothers with parades, transparency and that entire Soviet staff (surely except for some energetic old people, who try to revive those "good old days"). People just stay at home and rest. Nevertheless, this remnant of Communism is unlike to die in the near future.',
+      '...or May Day. Under the Soviets, it was one of the greatest holidays of the year - with colorful demonstrations and celebration of the workers and kolkhozniks, or collective farmers. Today, practically nobody bothers with parades, transparency and that entire Soviet staff (surely except for some energetic old people, who try to revive those \'good old days\'). People just stay at home and rest. Nevertheless, this remnant of Communism is unlike to die in the near future.',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
     <card 
@@ -95,7 +95,7 @@
       :p-body="[
       '...It comes fifty days after Easter and celebrates the Descent of the Holy Spirit who poured himself out on the apostles. On this day people decorate their houses and apartments with greenery, which is a reminder of the new life that comes through baptism. The wildflowers blessed on the festive church service are dried up and kept behind the icons, as they are believed to possess special spiritual powers. For example, if the mistress of the house puts dried flowers in the garret, they will protect the house from fire. On Holy Trinity Day young girls make garlands and throw them in the river or lakes to foresee the future. If the garland sinks, the girl who made wont get married in the following year, if not, she will. This tradition originates from the pagan holiday celebrating the beginning of summer, which was forbidden after the Christening of Kievan Rus.',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
     <card 
@@ -103,7 +103,7 @@
       :p-body="[
       '...It is quite obvious that this holiday commemorates the signing of the Ukrainian Constitution that took place in 1996. As this holiday is rather new there are no particular traditions of celebrating it. For example, in Kharkov on the Constitution Day on Maidan Nezalezhnosty Square concerts of popular Ukrainian singers are held. Besides, on this day you are sure to hear the hymn of Ukraine, broadcasted on radio or TV or sung by people in the street.',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
     <card 
@@ -111,7 +111,7 @@
       :p-body="[
       '...Each Ukrainian city has its City Day, the day when the city was founded. Kharkov Day is usually celebrated on the 23 of August. Originally it was the day when the city was released from Nazi occupation during the World War 2, but nowadays people celebrate it a City Day. During this day various performances of popular actors and musicians are held. Many people from suburbs and even other towns come to Kharkov to see performances, walk along nicely decorated streets and have a great time. The celebration is usually accomplished with fireworks at about 10 p.m.',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
     <card 
@@ -119,7 +119,7 @@
       :p-body="[
       '...In 1991 Ukraine became independent from the USSR and was proclaimed a Sovereign State. The Independence Day is usually celebrated with festivals and military parades. If you have a possibility, visit the performance of military orchestras that is quite interesting.',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
     <card 
@@ -135,17 +135,17 @@
       :p-body="[
       '...Once a great Soviet holiday, since 2002 it ceased to be public, but you still can see some communist pensioners marching with red flags and transparencies in Kharkov\'s streets.',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
     <card 
       :p-title="'NAME DAY'" 
       :p-body="[
-      'Every day of the year is some Russian single woman\'s name day ("imeniny" in Russian). It is a reason to celebrate, wish your Ukrainian lady a Happy Name Day, and buy a little present, like flowers and a box of chocolates.',
+      'Every day of the year is some Russian single womans name day (\'imeniny\' in Russian). It is a reason to celebrate, wish your Ukrainian lady a Happy Name Day, and buy a little present, like flowers and a box of chocolates.',
 
-      'Find out on which days your Russian girl\'s name falls and don\'t forget to congratulate her!',
+      'Find out on which days your Russian girls name falls and dont forget to congratulate her!',
       ]"
-      :p-images="['']"
+      :p-images="[]"
     ></card>
 
 

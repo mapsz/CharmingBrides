@@ -6,7 +6,7 @@
         <a href="/news">
           <div class="card">          
             <div class="card-body p-1 media">
-              <img class="float-left pr-2 align-self-center" src="/img/services/live_assistant.png" alt="Live Assistant">
+              <fa-icon icon="newspaper" class="pl-1" style="height:128px; width: 100px;"/>
               <div class="card-text align-self-center">
                 <h5 class="card-title">News</h5>            
                 <p class="card-text">Be aware of all the latest news of the agency!</p>
@@ -20,7 +20,7 @@
         <a href="/anti/scam">
           <div class="card">          
             <div class="card-body p-1 media">
-              <img class="float-left pr-2 align-self-center" src="/img/services/security.png" alt="Live Assistant">
+              <fa-icon icon="lock" class="pl-1" style="height:128px; width: 100px;"/>
               <div class="card-text align-self-center">
                 <h5 class="card-title">Highest Security</h5>            
                 <p class="card-text">Learn more about our Security and Anti-SCAM programs we support</p> 
@@ -33,15 +33,14 @@
       <div class="col-6 col-sm-3 p-1 py-2 servicesBlock">
         <div class="card">          
           <div class="card-body p-1 media">
-            <img class="float-left pr-2 align-self-center" src="/img/services/services.png" alt="Live Assistant">
+            <fa-icon icon="gift" class="pl-1" style="height:128px; width: 100px; color: #960046;"/>
             <div class="card-text align-self-center">
-              <h5 class="card-title">Our Services</h5>            
-                <ul>
-                  <li><a href="">All services</a></li>
-                  <li><a href="">Membership</a></li>
-                  <li><a href="">Gifts</a></li>
-                  <li><a href="">Flowers</a></li>
-                  <li><a href="">Information</a></li>
+              <h5 class="card-title" style="color: #960046;">Our Services</h5>            
+                <ul style="    padding-left: 40px;">
+                  <li><a href="/coming/soon">All services</a></li>
+                  <li><a href="/Memberships">Membership</a></li>
+                  <li><a href="/coming/soon">Gifts</a></li>
+                  <li><a href="/coming/soon">Flowers</a></li>
                 </ul>   
             </div>
           </div>
@@ -52,7 +51,7 @@
         <a :href="'romantic/tour'">
           <div class="card">          
             <div class="card-body p-1 media">
-              <!-- <img class="float-left pr-2 align-self-center" src="/img/services/romantic_tour.png" alt="Live Assistant"> -->
+              <fa-icon icon="heart" class="pl-1" style="height:128px; width: 100px;"/>
               <div class="card-text align-self-center">
                 <h5 class="card-title">Romantic Tour</h5>           
                 <p class="card-text">Learn more about Romantic Tour to Odessa</p>
@@ -72,14 +71,14 @@
     import { library } from '@fortawesome/fontawesome-svg-core';    
     Vue.config.productionTip = false;
     //icons
-    // import { newspaper } from '@fortawesome/free-solid-svg-icons';
-    // library.add(faArrowRight);
-    // import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-    // library.add(lock);
-    // import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-    // library.add(gift);
-    // import { faGratipay } from '@fortawesome/free-solid-svg-icons';
-    // library.add(faGratipay);
+    import { faNewspaper } from '@fortawesome/free-solid-svg-icons';
+    library.add(faNewspaper);
+    import { faLock } from '@fortawesome/free-solid-svg-icons';
+    library.add(faLock);
+    import { faGift } from '@fortawesome/free-solid-svg-icons';
+    library.add(faGift);
+    import { faHeart } from '@fortawesome/free-solid-svg-icons';
+    library.add(faHeart);
 
     export default {}
 </script>
