@@ -209,6 +209,10 @@
           let l = this.loading('.edit-balance');
           let r = await this.ax('post','admin/man/balance/edit',{user_id:this.pRow.id,add:add,balance:this.balance});
 
+          if(!r){
+            this.hideloading(l);
+            return
+          }
           location.reload();
         }
 
