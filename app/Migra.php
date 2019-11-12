@@ -191,7 +191,8 @@ man - ".(intval($mt)-intval($i)) ." letter - ".(intval($lt)-intval($j));
         
         $lo = DB::select( DB::raw("
               SELECT `mail_id`,`mail_read` FROM charmin_b2.mail2customers
-              WHERE mail_id = {$l->id}
+              WHERE mail_from = {$l->user_id}
+              AND mail_to = {$l->to_user_id}
             "));
 
         if(count($lo) < 1) continue;

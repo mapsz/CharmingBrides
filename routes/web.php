@@ -16,6 +16,9 @@
 // });
 use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 
+Route::group(['middleware' => 'under-construction'], function () {
+
+
 //    Info pages
 //news
 Route::get('/news', function () {return view('pages.page')->with('page','news');});
@@ -295,6 +298,9 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   $model = 'order';
   $namePrefix = "admin_";
   Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);
+
+
+});
 
 
 });

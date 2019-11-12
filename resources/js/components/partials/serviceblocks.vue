@@ -38,7 +38,7 @@
               <h5 class="card-title" style="color: #960046;">Our Services</h5>            
                 <ul style="    padding-left: 40px;">
                   <li><a href="/coming/soon">All services</a></li>
-                  <li><a href="/Memberships">Membership</a></li>
+                  <li><a href="/memberships">Membership</a></li>
                   <li><a href="/coming/soon">Gifts</a></li>
                   <li><a href="/coming/soon">Flowers</a></li>
                 </ul>   
