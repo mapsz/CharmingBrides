@@ -24,6 +24,17 @@
               </button>
             </div>
             <div class="modal-body">
+              <!-- Edit balance -->
+              <div class="edit-balance mb-4">
+                <div class="form-group mb-1">
+                  <label>Edit Balance</label>
+                  <small id="emailHelp" class="form-text text-muted">Current Balance: {{pRow.balance}}</small>
+                  <input type="text" class="form-control" v-model="balance">
+                </div>
+
+                <button type="submit" @click="editBalance(1)" class="btn btn-success">Add</button>
+                <button type="submit" @click="editBalance(0)" class="btn btn-danger">Remove</button>
+              </div>
               <!-- Attach Membership -->
               <div class="men-membership-attach">     
                 <div>
@@ -54,7 +65,10 @@
                 </div>
               </div>              
               <!-- Membership History -->
-              <div class="men-membership-history-list">   
+              <div 
+                v-if="membershipHistoryData && membershipHistoryData.length > 0"
+                class="men-membership-history-list"
+              >   
                 <h5>History</h5>             
                 <list-component 
                   :p-data="{columns:membershipHistoryColumns,data:membershipHistoryData}"
@@ -89,6 +103,7 @@
         toAddMembership:false,
         //wait element
         waitElementTime:0,
+        balance:'',
       }},
       mixins: [ mMoreAxios, mNotifications, mLoading, mDebug ],
       props:['p-row','p-attr'],
@@ -189,6 +204,12 @@
             time += 500;
             this.showUnloadedModal(modal, time);
           },500)        
+        },
+        async editBalance(add){
+          let l = this.loading('.edit-balance');
+          let r = await this.ax('post','admin/man/balance/edit',{user_id:this.pRow.id,add:add,balance:this.balance});
+
+          location.reload();
         }
 
       }

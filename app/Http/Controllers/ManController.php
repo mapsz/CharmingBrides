@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Man;
+use App\Order;
 
 class ManController extends _adminPanelController
 {
@@ -148,6 +149,52 @@ class ManController extends _adminPanelController
 
       $data = json_encode($data);
       return view('pages.profile')->with('data',$data);
+    }
+
+    public function editBalance(request $request){
+
+      if(!$request->user_id) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+      if(!isset($request->add)) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+      if(!isset($request->balance)) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+      
+      $balance = $request->balance;
+      if($request->add == 0){
+        $balance -= $balance * 2;
+      }
+
+      $man = Man::where('user_id',$request->user_id)->first();
+
+      $value = $man->balance + $balance;
+
+      try {
+
+        DB::beginTransaction();
+
+        //Store pay
+        Man::where('user_id',$man->id)
+          ->update(['balance' => $value]);
+
+        //save order
+        $order = new Order;
+        $order->user_id      = $request->user_id;
+        $order->name         = 'Admin Balance Edit';
+        $order->category     = 'admin';
+        $order->product_id   = 0;
+        $order->method       = 'admin';
+        $order->status_id    = 1;
+        $order->value        = $balance;
+        $order->save();
+
+        //Store to DB
+        DB::commit();
+
+       } catch (Exception $e) {
+        // Rollback from DB
+        DB::rollback();
+        return response()->json(['error' => '1', 'text' => 'Something gone wrong!!']);
+      }
+
+      return response()->json(['error' => '0']);
     }
 
     public function profileMembership(){

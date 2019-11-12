@@ -31,6 +31,9 @@
         <li class="nav-item">
           <a class="nav-link" href="{{ route('admin_agent') }}">Agents</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('admin_order') }}">Orders</a>
+        </li>        
       @endif
     </ul>
   </div>

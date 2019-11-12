@@ -106,6 +106,11 @@ class Letter extends _adminPanel
         return $val;
     }
 
+    public static function getLetterType($id){
+      
+      return (strlen(Letter::where('id',$id)->first()->body) < self::getLongLetterLength()) ? 'Short Letter' : 'Letter';
+    } 
+
     public static function getCompanions($userId){
 
 

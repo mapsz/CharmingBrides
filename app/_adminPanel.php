@@ -314,7 +314,7 @@ class _adminPanel extends Model
               continue;
             }     
             //Relation
-            if(isset($v['relation'])){              
+            if(isset($v['relation']) && $v['relation']){
               $db = array();
               //get table
               $db['table'] = substr($v['relation'], 0, strpos($v['relation'], '.'));
@@ -357,6 +357,9 @@ class _adminPanel extends Model
           }
         }
 
+              
+              
+              
         //Set data
         $this->dbData = $getData->paginate($this->perPage);
     }
@@ -490,8 +493,6 @@ class _adminPanel extends Model
 
         $formatedData = [];
 
-        // dd($columns);
-
         foreach ($dbData as $dbValue) {
           $d = [];
           foreach ($columns as $k => $c) {
@@ -501,7 +502,6 @@ class _adminPanel extends Model
                 //Has one              
                 $column = substr($c['relation'], 0, strpos($c['relation'], '.'));
                 $name =  substr($c['relation'], strpos($c['relation'], '.') + 1);
-
                 $val = $dbValue[$column][$name];
               }
             }

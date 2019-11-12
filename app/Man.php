@@ -12,7 +12,8 @@ class Man extends _adminPanel
   protected $route     = [ 'prefix' => 'admin/' ];
   protected $link      = "/man/";
   protected $activateSearch       = true; 
-
+  protected $order       = ['row' => 'id','order' => 'DESC'];  
+  
   protected $columns  = [
     [
       'name' => 'id',

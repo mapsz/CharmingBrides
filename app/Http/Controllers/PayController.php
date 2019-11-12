@@ -73,7 +73,7 @@ class PayController extends Controller
     $order->category = $request->cat;
     $order->product_id = $product->id;
     $order->method = $request->method;
-    $order->price = $product->price;
+    $order->value = $product->price;
 
     if(!$order->save())return false;
 
@@ -181,7 +181,7 @@ class PayController extends Controller
 
 
       //update data
-      $order->status = 1;
+      $order->status_id = 1;
       $order->transaction = $result->id;
 
       $order->save();                    

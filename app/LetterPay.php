@@ -8,7 +8,6 @@ class LetterPay extends Model
 {
     protected $guarded =[];
 
-
     //Relations
     public function Letter()
     {

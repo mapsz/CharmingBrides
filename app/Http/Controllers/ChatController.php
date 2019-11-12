@@ -16,6 +16,7 @@ use App\ChatHardOnline;
 use App\ChatHistory;
 use Illuminate\Support\Facades\Log;
 use App\Rules\CurrentUserOrAdmin;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {

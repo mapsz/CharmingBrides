@@ -286,5 +286,15 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 	Route::get('/chat/history', 'admin\ChatHistoryController@index')->name('adminChatHistoryIndex');	
 
 
+  //Men  
+  Route::post('admin/man/balance/edit', 'manController@editBalance')->name('adminChatHistoryIndex');  
+
+  //Orders
+
+    // Signs
+  $model = 'order';
+  $namePrefix = "admin_";
+  Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);
+
 
 });

@@ -720,7 +720,7 @@
               }else{
                 // Add single
                 if(typeof(users) === "object"){
-                  console.log(users);
+                  // console.log(users);
                   if(del){
                     this.onlineUsers.splice(this.onlineUsers.indexOf(users), 1);
                   }else{
@@ -765,7 +765,7 @@
             if(this.user.man === 1){
               let i = this.payedChat.findIndex(x => x.room == this.room.id);
               if(i > -1){
-                console.log('active chat');
+                // console.log('active chat');
               }
             }
 
@@ -909,7 +909,7 @@
           },
           //Notifications
           eventHandler(data){
-            console.log(data);
+            // console.log(data);
 
             switch (data.type) {
               case 'message':
@@ -1145,7 +1145,7 @@
             //Add timer
             payedChat.timer = this.startRoomTimer(roomId);
 
-            console.log(payedChat);
+            // console.log(payedChat);
 
             this.payedChat.push(payedChat);
 
@@ -1156,7 +1156,7 @@
             let i = this.payedChat.findIndex(x => x.room == roomId);
 
             //stop time
-            console.log(this.payedChat[i].timer);
+            // console.log(this.payedChat[i].timer);
             this.payedChat[i].timer.stop();            
             //Stop history
             this.ax('post','chat/stop',{'history':this.payedChat[i].history});
@@ -1189,7 +1189,7 @@
                 //Pay
                 if(seconds % 10 == 0 && seconds > 61){
                   if(!this.payedChat[i].payed){
-                    this.payChat(this.payedChat[i].history);
+                    this.payChat(this.payedChat[i]);
                     this.payedChat[i].payed = true;
                   }
                 }else{
@@ -1204,7 +1204,7 @@
                           
                 pay = (pay).toFixed(2);
 
-                console.log(pay);
+                // console.log(pay);
 
                 if(pay < 0) pay = 0;              
 
@@ -1230,9 +1230,11 @@
               this.timer.time = "0:00";
               this.timer.total = "0:00";
           },
-          payChat(history){
-            console.log('pay');
-            let r = this.ax('post','/chat/pay',{'history':history});
+          async payChat(chat){
+            console.log(chat);
+            let r = await this.ax('post','/chat/pay',{'history':chat.history});
+
+            if(!r) this.stopPayedChat(chat.room);
           },
           freezeRoom(){
               if(this.user.man)

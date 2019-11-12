@@ -22,8 +22,8 @@ class CreateOrdersTable extends Migration
             $table->char('product_id', 70);
             $table->char('method', 70);
             $table->char('transaction', 80)->nullable();
-            $table->unsignedTinyInteger('status')->nullable();
-            $table->decimal('price', 8, 2)->nullable();
+            $table->tinyInteger('status_id')->default(2);
+            $table->decimal('value', 8, 2)->nullable();
             $table->timestamps();
         });
     }

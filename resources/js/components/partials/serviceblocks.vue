@@ -8,8 +8,8 @@
             <div class="card-body p-1 media">
               <img class="float-left pr-2 align-self-center" src="/img/services/live_assistant.png" alt="Live Assistant">
               <div class="card-text align-self-center">
-                <h5 class="card-title">Live Assistant</h5>            
-                <p class="card-text">Our Live Assistant will help you to get best of our service</p>
+                <h5 class="card-title">News</h5>            
+                <p class="card-text">Be aware of all the latest news of the agency!</p>
               </div>
             </div>
           </div>  
@@ -23,7 +23,7 @@
               <img class="float-left pr-2 align-self-center" src="/img/services/security.png" alt="Live Assistant">
               <div class="card-text align-self-center">
                 <h5 class="card-title">Highest Security</h5>            
-                <p class="card-text">Learn more about our Security and Anti-SCAM programs we support</p>
+                <p class="card-text">Learn more about our Security and Anti-SCAM programs we support</p> 
               </div>
             </div>
           </div>
@@ -52,7 +52,7 @@
         <a :href="'romantic/tour'">
           <div class="card">          
             <div class="card-body p-1 media">
-              <img class="float-left pr-2 align-self-center" src="/img/services/romantic_tour.png" alt="Live Assistant">
+              <!-- <img class="float-left pr-2 align-self-center" src="/img/services/romantic_tour.png" alt="Live Assistant"> -->
               <div class="card-text align-self-center">
                 <h5 class="card-title">Romantic Tour</h5>           
                 <p class="card-text">Learn more about Romantic Tour to Odessa</p>
@@ -66,5 +66,20 @@
 </template>
 
 <script>
+
+    import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+    // Vue.component('fa-icon', FontAwesomeIcon); 
+    import { library } from '@fortawesome/fontawesome-svg-core';    
+    Vue.config.productionTip = false;
+    //icons
+    // import { newspaper } from '@fortawesome/free-solid-svg-icons';
+    // library.add(faArrowRight);
+    // import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+    // library.add(lock);
+    // import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+    // library.add(gift);
+    // import { faGratipay } from '@fortawesome/free-solid-svg-icons';
+    // library.add(faGratipay);
+
     export default {}
 </script>

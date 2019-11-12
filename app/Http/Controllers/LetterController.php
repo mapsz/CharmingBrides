@@ -8,6 +8,7 @@ use App\User;
 use App\Membership;
 use App\Agent;
 use App\Girl;
+use App\Order;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -279,25 +280,38 @@ class LetterController extends _adminPanelController
       //Store pay
       try {
 
-          DB::beginTransaction();
+        DB::beginTransaction();
 
-          //Store pay
-          $letterPayId = LetterPay::create([
-            'letter_id' => $letter_id,
-            'price'     => $price
-          ])->id;
-    
-          //Edit balance
-          $user->man->balance = $newBalance;
-          $user->man->save();
+        //Store pay
+        $letterPayId = LetterPay::create([
+          'letter_id' => $letter_id,
+          'price'     => $price
+        ])->id;
+  
+        //Edit balance
+        $user->man->balance = $newBalance;
+        $user->man->save();
 
-          //Store to DB
-          DB::commit();
+        $order = new Order;
+        $order->user_id      = $user->id;
+        $order->name         = Letter::getLetterType($letter_id);
+        $order->category     = 'letters';
+        $order->product_id   = $letter_id;
+        $order->method       = 'inner';
+        $order->transaction  = $membership->name;
+        $order->status_id    =  1;
+        $order->value        =  $price - ($price*2) ;
+
+        $order->save();
+
+
+        //Store to DB
+        DB::commit();
 
        } catch (Exception $e) {
-          // Rollback from DB
-          DB::rollback();
-          return response()->json(['error' => '1', 'text' => 'Something gone wrong!!']);
+        // Rollback from DB
+        DB::rollback();
+        return response()->json(['error' => '1', 'text' => 'Something gone wrong!!']);
       }
 
       //Return

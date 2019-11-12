@@ -8,12 +8,14 @@ use App\Room;
 use Storage;
 use App\User;
 use Auth;
+use Illuminate\Support\Facades\DB;
+
 // ChatHistory::chatDisconnect($this->channelName, $this); //###
 
 
 class ChatHistory extends Model
 {
-	protected $guarded = [ ];
+	protected $guarded = [];
 
     public static function roomRead($roomId,$userId){
       //Get room
@@ -62,15 +64,49 @@ class ChatHistory extends Model
       //pay summ
       $paySumm = round($diffTime * $costPerSec,2);
 
-      //Edit balance 
-      $user->man->balance -= $paySumm;
-      if($user->man->balance < 0) $user->man->balance = 0;
-      if(!$user->man->save()) return false;
+      //Store pay
+      try {
 
-      //Update last pay
-      $history->last_pay = $currentTime;
-      $history->price += $paySumm;
-      if(!$history->save()) return false;
+        DB::beginTransaction();
+
+        //Edit balance 
+        $user->man->balance -= $paySumm;
+        if($user->man->balance < 0) $user->man->balance = 0;
+        if(!$user->man->save()) return false;
+
+        //Update last pay
+        $history->last_pay = $currentTime;
+        $history->price += $paySumm;
+        if(!$history->save()) return false;
+
+        //Update order
+        Order::updateOrCreate(
+            [
+              'category'=>'chat',
+              'user_id'=>$user->id,
+              'product_id'=>$history->id,
+              'name' => 'chat'
+            ],
+            [
+              'category'=>'chat',
+              'user_id'=>$user->id,
+              'product_id'=>$history->id,
+              'name' => 'chat',              
+              'method' => 'inner',
+              'status_id' => 3,
+              'value'=>0-($history->price + $paySumm)
+            ]
+          );      
+
+        //Store to DB
+        DB::commit();
+
+       } catch (Exception $e) {
+        // Rollback from DB
+        DB::rollback();
+        return false;
+      }
+
 
       return $paySumm;
     }
@@ -86,12 +122,43 @@ class ChatHistory extends Model
 
       if(!$history) return false;        
 
-      //Pay chat
-      self::payChat($history->room_id, $session,$history);
+      //Store pay
+      try {
 
-      //Set stop
-      $history->stop_at = Carbon::now();
-      if(!$history->save()) return false;
+        DB::beginTransaction();
+
+        //Pay chat
+        self::payChat($history->room_id, $session,$history);
+
+        //Set stop
+        $history->stop_at = Carbon::now();
+        if(!$history->save()) return false;
+
+        //Update order
+        Order::updateOrCreate(
+            [
+              'category'=>'chat',
+              'product_id'=>$history->id,
+              'name' => 'chat'
+            ],
+            [
+              'category'=>'chat',
+              'product_id'=>$history->id,
+              'name' => 'chat',              
+              'method' => 'inner',
+              'status_id' => 1,
+              'value'=>0-$history->price,
+            ]
+          );      
+
+        //Store to DB
+        DB::commit();
+
+       } catch (Exception $e) {
+        // Rollback from DB
+        DB::rollback();
+        return false;
+      }
 
       return true;
     }
@@ -105,7 +172,6 @@ class ChatHistory extends Model
                         ->first();
     }
 
-    //
     public static function chatDisconnect($room, $connection){
 
     	//Check if private room
@@ -131,7 +197,6 @@ class ChatHistory extends Model
 
     	
         //@@@
-        echo '@@@@@@@';
 
       //Get room id
     	$roomId = intval(explode('.',$room)[1]);
@@ -169,20 +234,54 @@ class ChatHistory extends Model
       //Check balance
       if($membership->chat_price > $user->man->balance) return false;
 
-      //Update balance
-      $user->man->balance -= $membership->chat_price;
-      if(!$user->man->save())return false;
+      //Store pay
+      try {
 
-      //Create history
-      $history = new ChatHistory();
+        DB::beginTransaction();
 
-      $history->room_id = $room;
-      $history->session = $session;
-      $history->price = $membership->chat_price;
-      $history->last_pay = Carbon::now()->addMinutes(1);
+        //Update balance
+        $user->man->balance -= $membership->chat_price;
+        if(!$user->man->save())return false;
 
-      if(!$history->save())return false;
-  
+        //Create history
+        $history = new ChatHistory();
+
+        $history->room_id = $room;
+        $history->session = $session;
+        $history->price = $membership->chat_price;
+        $history->last_pay = Carbon::now()->addMinutes(1);
+        $history->save();
+
+        if(!$history->save())return false;
+
+        //Update order
+        Order::updateOrCreate(
+            [
+              'category'=>'chat',
+              'user_id'=>$user->id,
+              'product_id'=>$history->id,
+              'name' => 'chat'
+            ],
+            [
+              'category'=>'chat',
+              'user_id'=>$user->id,
+              'product_id'=>$history->id,
+              'name' => 'chat',              
+              'method' => 'inner',
+              'status_id' => 3,
+              'value'=>0-$membership->chat_price
+            ]
+          );      
+
+        //Store to DB
+        DB::commit();
+
+       } catch (Exception $e) {
+        // Rollback from DB
+        DB::rollback();
+        return false;
+      }
+
       return $history->id;
     }
 

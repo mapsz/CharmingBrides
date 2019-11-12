@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Man;
+use App\Order;
 use Illuminate\Support\Facades\Auth;
 use App\Membership;
 use App\Rules\CurrentUserOrAdmin;
@@ -132,12 +133,41 @@ class MembershipController extends _adminPanelController
 
     public function attachMembership(Request $request){
 
+      if(!$request->user_id || !$request->membership_id) 
+        return response()->json(['error' => '1', 'text' => 'Something gone wrong!!']);
 
-      if(Membership::attachMembership($request->user_id, $request->membership_id)){
-        return response()->json(['error' => 0]); 
-      }else{
-        return response()->json(['error' => 1]);
+      //Store pay
+      try {
+
+        DB::beginTransaction();
+
+
+        $membership = Membership::where('id',$request->membership_id)->first();
+        if(!$membership) return response()->json(['error' => '1', 'text' => 'Something gone wrong!!']);
+
+        Membership::attachMembership($request->user_id, $membership->id);
+  
+        //save order
+        $order = new Order;
+        $order->user_id      = $request->user_id;
+        $order->name         = $membership->name;
+        $order->category     = 'membership';
+        $order->product_id   = $membership->id;
+        $order->method       = 'admin';
+        $order->status_id    =  1;
+        $order->value        =  $membership->price;
+        $order->save();
+
+        //Store to DB
+        DB::commit();
+
+       } catch (Exception $e) {
+        // Rollback from DB
+        DB::rollback();
+        return response()->json(['error' => '1', 'text' => 'Something gone wrong!!']);
       }
+
+      return response()->json(['error' => 0]); 
     }
 
 }

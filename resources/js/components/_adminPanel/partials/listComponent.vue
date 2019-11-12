@@ -14,7 +14,7 @@
         />
       </div>
       <!-- Search -->
-      <div v-if="pSettings.search" class="input-group my-3">
+      <div v-if="pSettings && pSettings.search" class="input-group my-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1">
             <fa-icon icon="search"/>
@@ -111,7 +111,10 @@
           </tbody>
         </table>
         <!-- Paginator -->
-        <div v-if="pSettings.pages > 1" class="row d-flex justify-content-center">
+        <div 
+          v-if="pSettings && pSettings.pages && pSettings.pages > 1" 
+          class="row d-flex justify-content-center"
+        >
           <paginate        
             :page-count="pSettings.pages"
             :container-class="'pagination'"

@@ -22,23 +22,23 @@ class Migra extends Model
 
 //   "
 
-//     SELECT 
-//       o.orders_id, 
-//       o.gift_photo, 
-//       o.customers_name, 
-//       o.customers_id, 
-//       o.payment_method, 
-//       o.date_purchased, 
-//       o.last_modified, 
-//       o.currency, 
-//       o.currency_value, 
-//       s.orders_status_name, 
-//       ot.text AS order_total 
-//     FROM orders o left join orders_total ot 
-//     ON (o.orders_id = ot.orders_id), orders_status s, orders_products op
-//     WHERE o.orders_status = s.orders_status_id 
-//     AND ot.class = 'ot_total' 
-//     ORDER BY o.orders_id DESC
+    // SELECT 
+    //   o.orders_id, 
+    //   o.gift_photo, 
+    //   o.customers_name, 
+    //   o.customers_id, 
+    //   o.payment_method, 
+    //   o.date_purchased, 
+    //   o.last_modified, 
+    //   o.currency, 
+    //   o.currency_value, 
+    //   s.orders_status_name, 
+    //   ot.text AS order_total 
+    // FROM orders o left join orders_total ot 
+    // ON (o.orders_id = ot.orders_id), orders_status s, orders_products op
+    // WHERE o.orders_status = s.orders_status_id 
+    // AND ot.class = 'ot_total' 
+    // ORDER BY o.orders_id DESC
 
 
 //     SELECT 
@@ -170,6 +170,41 @@ class Migra extends Model
       ----------------------------
       ';
       dd('done!');
+  }
+
+  // letter pays 
+
+  public static function lpays(){
+
+
+
+    $ms = Man::get();
+    $mt = Man::count();
+
+    foreach ($ms as $i => $m) {
+      $ls = letter::where('to_user_id',$m->user_id)->get();
+      $lt = letter::where('to_user_id',$m->user_id)->count();
+
+      foreach ($ls as $j => $l) {
+        echo "
+man - ".(intval($mt)-intval($i)) ." letter - ".(intval($lt)-intval($j));
+        
+        $lo = DB::select( DB::raw("
+              SELECT `mail_id`,`mail_read` FROM charmin_b2.mail2customers
+              WHERE mail_id = {$l->id}
+            "));
+
+        if(count($lo) < 1) continue;
+
+        if($lo[0]->mail_read == 1){
+          LetterPay::create(['letter_id' => $l->id, 'price' => '0.02']); echo '  ! add {$l->id}';
+        } 
+      }
+
+      
+
+    }
+
   }
 
   public static function gp(){
