@@ -348,7 +348,7 @@ class Girl extends _adminPanel
     //
     parent::__construct($this->single, $this->multi, $this->page, $this->inputs);
 
-    if(Auth::User()->role == 4){
+    if(Auth::User() && Auth::User()->role == 4){
       array_push($this->activateSearch['search'],    
                   [
                     'name'=>'agents',
