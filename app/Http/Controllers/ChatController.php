@@ -433,43 +433,31 @@ class ChatController extends Controller
       $model = new Girl;
 
       $model->setInfoColumns();
+      //custom
+      $custom = $model;
+      if(isset($search->search)){
+        $val = $search->search;      
+        $custom = $custom->where(function($q)use($val) {
+          $q->where('name','LIKE','%'.$val.'%')
+            ->orWhere('id','LIKE','%'.$val.'%');
+        });
+      }
+
 
       if($role == 3){
         $id = Auth::User()->agent->id;
         $callback = function($q)use($id) {
           $q->where('id','=',$id);
         };
-        $model->setCustomQueries([
-          $model
-            ->whereHas('agent' , $callback)
-            ->with(['agent' => $callback])
-            ->where(function($q)use($search) {
-              $q->orwhere('id', 'like','%'.$search.'%')
-                ->orWhere('name', 'like','%'.$search.'%')
-                ->orWhere('location', 'like','%'.$search.'%')
-                ->orWhereHas('user', function ($query)use($search) {
-                  $query->where('id', 'like', '%'. $search .'%');
-                  $query->orWhere('email', 'like', '%'. $search .'%');
-                });
-            })
-        ]);
-      }else{
-        $model->setCustomQueries([
-          $model
-            ->where(function($q)use($search) {
-              $q->where('id', 'like','%'.$search.'%')
-                ->orWhere('name', 'like','%'.$search.'%')
-                ->orWhere('location', 'like','%'.$search.'%')
-                ->orWhereHas('user', function ($query)use($search) {
-                  $query->where('id', 'like', '%'. $search .'%');
-                  $query->orWhere('email', 'like', '%'. $search .'%');
-                });
-            })
-        ]);        
+
+        $callback = function($q)use($id) {
+          $q->where('id','=',$id);
+        };              
+        $custom = $custom->whereHas('agent' , $callback)->with(['agent' => $callback]);
+        $model->setCustomQueries($custom);
       }
 
-
-
+      $model->setCustomQueries($custom);
     
       //Get Data
       $data   = $model->getData();       

@@ -39,7 +39,8 @@
             </div>
             <select v-model="search.location" class="custom-select mr-sm-2">
               <option value="0" selected>Any</option>
-              <option v-for="i in params.locations" :value="i">{{i}}</option>
+              <option value="1" selected>Any</option>
+              <option v-for="i in params.location" :value="i">{{i}}</option>
             </select>
           </div>
         </div>
@@ -95,8 +96,8 @@
               children:99,              
             },
             params:{
-              maritials:[],
-              locations:[],
+              maritial:[],
+              location:[],
             }
 
           }

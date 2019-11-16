@@ -301,7 +301,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 
 
   //Men  
-  Route::post('/man/balance/edit', 'ManController@editBalance')->name('adminChatHistoryIndex');  
+  Route::post('/man/balance/edit', 'ManController@editBalance');
 
   //Orders
 

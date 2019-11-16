@@ -269,7 +269,7 @@ class GirlController extends _adminPanelController
         $val = $search->search;      
         $custom = $custom->where(function($q)use($val) {
           $q->where('name','LIKE','%'.$val.'%')
-            ->orWhere('id','LIKE','%'.$val.'%');
+            ->orWhere('user_id','LIKE','%'.$val.'%');
         });
       }
       //Remove unconfirm
@@ -344,19 +344,18 @@ class GirlController extends _adminPanelController
         array_push($where, ['column' => 'birth','condition' => '>','value' => $to]);
       }
 
-      //custom
-      $custom = $model;
+
+      $custom = $model;    
       if(isset($search->search)){
         $val = $search->search;      
         $custom = $custom->where(function($q)use($val) {
           $q->where('name','LIKE','%'.$val.'%')
-            ->orWhere('id','LIKE','%'.$val.'%');
+            ->orWhere('user_id','LIKE','%'.$val.'%');
         });
       }
-
        //Only agent girls
+      
       if(Auth::User()->role == 3){       
-        $custom = $model;        
         $id = Auth::User()->agent->id;
         $callback = function($q)use($id) {
           $q->where('id','=',$id);

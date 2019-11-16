@@ -197,7 +197,6 @@ class LetterController extends _adminPanelController
       if($companion['role'] == 0 && $user['man'] == false) return response()->json(['error' => 3]);
 
       return response()->json(['error' => 0, 'data' => $companion]);
-
     }
 
     public function getLetters(Request $request){

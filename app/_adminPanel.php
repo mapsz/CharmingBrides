@@ -187,17 +187,27 @@ class _adminPanel extends Model
       //Check parent
       if(!$parentId){
         foreach ($this->inputs as $input) {
-          if(isset($input['parent'])){
-            foreach ($this->dbData as $key => $v) {
-              if($v['id'] == $id) {
-                $parentId = $v[$input['parent']]['id'];
-                break;
-              }
+          if(isset($input['parent'])){   
+            $parentId = $this->with($input['parent'])->where('id',$id)->first();
+
+            if($parentId == null){
+              $parentId = $id;
+            }else{
+              $parentId = $parentId->toArray()[strtolower($input['parent'])]['id'];
             }
+            // 
+
+            // foreach ($this->dbData as $key => $v) {
+            //   if($v['id'] == $id) {
+            //     $parentId = $v[$input['parent']]['id'];
+            //     break;
+            //   }
+            // }
             break;
           }
         }        
       }
+
       //Get input
       $input = "";
       foreach ($this->inputs as $v) {
@@ -232,6 +242,8 @@ class _adminPanel extends Model
         if(strpos($preg_template,'`id`') !== false){
           $preg_template = str_replace ('`id`',$id,$preg_template);
         }
+
+        // dd($preg_template);
 
         // dd($preg_template,$name);
         if(preg_match($preg_template,$name)){
