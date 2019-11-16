@@ -79,6 +79,8 @@ Route::get('/man/{id}','ManController@index')->name('showMan');
 Route::get('/registration/man', 'ManController@create')->name('manCreate');
 Route::put('/man', 'ManController@put');
 Route::post('/profile', 'ManController@post');
+Route::get('/parametrs/men','ManController@getMenParametr');
+Route::get('/all/men/search','ManController@search');
 
 //chat
 Route::get('/chat', 'ChatController@index')->name('chat');
@@ -105,7 +107,7 @@ Route::get('/all/girls','GirlController@allGirls')->name('allGirls');
 Route::get('/new/girls','GirlController@newGirls')->name('newGirls');
 Route::get('/parametrs/girl','GirlController@getGirlsParametr');
 Route::get('/registration/girl', 'GirlController@create')->name('girlCreate');
-Route::get('/all/girl/search', 'GirlController@search');
+Route::get('/all/girl/search', 'GirlController@userSearch');
 //get special Ladies
 Route::get('/girls/special/ladies','GirlController@getSpecialLadies')->name('getSpecialLadies');
 Route::post('/girl/file/upload', 'GirlController@_fileUpload');
@@ -154,6 +156,14 @@ Route::group(['middleware' => ['auth']],function(){
 //Agent
 Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','agent']],function(){
 
+  //Mailer
+  Route::get('/mailer', 'MailerController@index')->name('admin_mailer');
+  Route::get('/mailer/recent/girls', 'MailerController@getRecentGirls');
+  Route::get('/mailer/recent/men', 'MailerController@getRecentMen');
+  Route::get('/mailer/men/count', 'MailerController@getMenCount');
+  Route::put('/mailer/send/letters', 'MailerController@putMailer');
+  Route::get('/get/mailers', 'MailerController@getMailers');
+
   //Home
   Route::get('/',         'GirlController@_index')->name('admin');
 
@@ -174,7 +184,8 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::post('/'.$model.'/file/upload', ucfirst($model).'Controller@_fileUpload')
         ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload  
   Route::delete('/'.$model.'/file/delete', ucfirst($model).'Controller@_fileDelete');  //Delete file          
-  Route::post('/'.$model.'/file/main', ucfirst($model).'Controller@_fileMain');  //Delete file          
+  Route::post('/'.$model.'/file/main', ucfirst($model).'Controller@_fileMain');  //Delete file   
+   
  
   // Men
   $model = 'man';

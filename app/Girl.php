@@ -18,6 +18,32 @@ class Girl extends _adminPanel
   protected $page           = "admin.pages.girls";
   protected $link           = "/girl/";
 
+  protected $activateSearch = [
+    'paramsRoute' => '/parametrs/girl',
+    'search' =>[   
+        [
+          'name'=>'search',
+          'type'=>'inputText',
+        ],
+        [
+          'name'=>'age',
+          'type'=>'fromTo',
+          'from'=>18,                          
+          'to'=>99,
+          'fromDef'=>18,
+          'toDef'=>99,
+          'fromName'=>'ageFrom',
+          'toName'=>'ageTo',
+        ], 
+        [
+          'name'=>'location',
+          'type'=>'select',
+          'caption'=>'location',
+          'def'=>0,
+        ],
+      ]                        
+    ];
+
   protected $columns  = [
     [
       'name'        => 'confirm',
@@ -32,7 +58,8 @@ class Girl extends _adminPanel
     ['name' => 'name'],
     [
       'name'        => 'birth',
-      'timeFormat'  => 'Y M j'
+      'caption'     => 'age',
+      'timeFormat'  => 'age'
     ],
     ['name' => 'location'],
     [
@@ -40,16 +67,16 @@ class Girl extends _adminPanel
       'caption' => 'email',
       'relation' => 'user.email',
     ],
-    [
-      'name'        => 'created_at',
-      'caption'     => 'created at',
-      'timeFormat'  => 'j F Y G:i' 
-    ],
     [          
       'name' => 'agent',
       'caption' => 'agent',
       'relationBelongsToOne' => 'agent.name',
-    ],          
+    ],  
+    [
+      'name'        => 'created_at',
+      'caption'     => 'created at',
+      'timeFormat'  => 'j F Y G:i' 
+    ],         
   ];  
 
   protected $inputs    = [
@@ -320,6 +347,17 @@ class Girl extends _adminPanel
   public function __construct(){
     //
     parent::__construct($this->single, $this->multi, $this->page, $this->inputs);
+
+    if(Auth::User()->role == 4){
+      array_push($this->activateSearch['search'],    
+                  [
+                    'name'=>'agents',
+                    'type'=>'checkbox',
+                    'def'=>1,
+                  ]  
+                );
+    }
+
   }
 
   public function validate($request){
@@ -339,6 +377,12 @@ class Girl extends _adminPanel
           'name' => 'id',
           'relation' => 'user.id'
         ],
+        [
+          'name'        => 'confirm',
+          'caption'     => 'confirm',
+          'relation'    => 'user.role',
+          'component'   => 'admin-girl-confirm-component',          
+        ],         
         ['name' => 'name'],
         ['name' => 'birth'],
         ['name' => 'location'],
@@ -350,6 +394,10 @@ class Girl extends _adminPanel
           'name' => 'agent',
           'caption' => 'agent',
           'relationBelongsToOne' => 'agent.name',
+        ], 
+        [          
+          'name' => 'created_at',
+          'timeFormat'  => 'j F Y G:i' 
         ],          
       ];
     $this->setColumns($columns);

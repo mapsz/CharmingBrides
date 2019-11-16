@@ -7,27 +7,60 @@ use Illuminate\Support\Facades\Auth;
 
 class Man extends _adminPanel
 {
-  protected $single    = 'man';
-  protected $multi     = 'men';        
-  protected $route     = [ 'prefix' => 'admin/' ];
-  protected $link      = "/man/";
-  protected $activateSearch       = true; 
-  protected $order       = ['row' => 'id','order' => 'DESC'];  
+  protected $single               = 'man';
+  protected $multi                = 'men';        
+  protected $route                = [ 'prefix' => 'admin/' ];
+  protected $link                 = "/man/";
+  protected $order                = ['row' => 'id','order' => 'DESC'];  
   
+
+  protected $activateSearch = [
+    'paramsRoute' => '/parametrs/men',
+    'search' =>[   
+        [
+          'name'=>'search',
+          'type'=>'inputText',
+        ],
+        [
+          'name'=>'age',
+          'type'=>'fromTo',
+          'from'=>18,                          
+          'to'=>99,
+          'fromDef'=>18,
+          'toDef'=>99,
+          'fromName'=>'ageFrom',
+          'toName'=>'ageTo',
+        ], 
+        [
+          'name'=>'country',
+          'type'=>'select',
+          'def'=>0,
+        ],   
+        [
+          'name'=>'favorites',
+          'type'=>'checkbox',
+          'def'=>false,
+        ], 
+      ]                        
+    ];
+
   protected $columns  = [
     [
       'name' => 'id',
       'relation' => 'user.id'
     ],
+    ['name' => 'favorite'],
     ['name' => 'name'],
     [
       'name' => 'surname',
       'caption' => 'surname',
     ], 
-    // [
-    //   'name' => 'age',
-    //   'caption' => 'age',
-    // ],     
+    ['name' => 'country'],
+    [
+      'name' => 'birth',
+      'caption' => 'age',
+      'timeFormat'  => 'age'
+    ],     
     [
       'name' => 'user_id',
       'caption' => 'email',
@@ -39,15 +72,14 @@ class Man extends _adminPanel
     [
       'name' => 'membership',
       'component' => 'men-membership',
+    ],
+    [
+      'name' => 'created_at',
+      'timeFormat'  => 'j F Y G:i'       
     ]
   ];  
-//age, location, created_at, last online, favorites,
-//send admin email
 
-  // Извините, David занят в данный момент, пожалуйста, попробуйте начать чат с David позже, вы также можете начать новый чат с любым из мужчин, которые сейчас на сайте.
-
-
-  protected $inputs    = [
+  protected $inputs   = [
       [ //Email
         'name'      => 'email', 
         'parent'    => 'User',
@@ -66,7 +98,16 @@ class Man extends _adminPanel
         'parent'    => 'User',
         'confirm'   => true,
         'hash'      => false,
-      ],  
+      ],
+      [ //favorite
+        'name' => 'favorite',
+        'type' => 'radio',
+        'required' => false,
+        'attributes' => [
+          ['id' => 1,'name' => 'Yes'], 
+          ['id' => 0,'name' => 'No'],
+        ],
+      ],       
       [ //Name
         'name' => 'name',
         'type' => 'text',
@@ -350,7 +391,6 @@ class Man extends _adminPanel
         'row' => 5,
         'required' => false,
       ],
-
   ];
 
   public function __construct(){

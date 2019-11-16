@@ -32,7 +32,7 @@ class _adminPanel extends Model
     protected $inputs    = [];
     protected $data      = [];
     protected $dbData    = []; 
-    protected $customQueries = [];
+    protected $customQueries = false;
         
     //Data settings
     protected $columns  = [];    
@@ -44,12 +44,12 @@ class _adminPanel extends Model
     protected $perPage  = 50;
 
     public function __construct($single, $multi, $page, $inputs) {
-        $this->single   = $single;
-        $this->multi    = $multi;
-        $this->page     = $page;
-        $this->inputs   = $inputs;
-        //Set inputs
-        $this->setInputs($inputs);
+      $this->single   = $single;
+      $this->multi    = $multi;
+      $this->page     = $page;
+      $this->inputs   = $inputs;
+      //Set inputs
+      $this->setInputs($inputs);
     }
 
     //Validate
@@ -89,6 +89,11 @@ class _adminPanel extends Model
     }
     public function setCustomQueries($queries){
       $this->customQueries = $queries;
+    }
+    public function setSettings($settings){
+      foreach ($settings as $k => $v) {
+        $this->$k = $v;
+      }
     }
 
     //Getters
@@ -287,22 +292,20 @@ class _adminPanel extends Model
         //Set getData
         $getData = $this;
 
-
-        //Custom queries
-        if(is_array($this->customQueries)){
-          foreach ($this->customQueries as $key => $query) {
-            $getData = $query;
-          }
-        } 
+        //Custom query
+        if($this->customQueries)
+          $getData = $this->customQueries;
 
         //Add relations
         $getData = $this->addDbRelations($this->columns, $getData);
+       
         //Order
         if($this->order) $getData->orderBy($this->order['row'], $this->order['order']);
         //Count
         if($this->count) $getData->take($this->count);
         //Search
         if($this->search){
+          dd('search');
           $quey = [];
           foreach ($this->columns as $k => $v) {
             //File
@@ -337,31 +340,23 @@ class _adminPanel extends Model
         }       
         //SingleId
         if($this->singleId){
-          $getData = $getData->where('id', '=', $this->singleId);
-        }
-        //Custom queries
-        if(is_array($this->customQueries)){
-          foreach ($this->customQueries as $key => $query) {
-            $getData = $query;
-          }
-        }         
+          $getData->where('id', '=', $this->singleId);
+        }       
         //Where
         if($this->where){
           foreach ($this->where as $w) {
             if(isset($w['or']) && $w['or']){
-              $getData = $getData->orWhere($w['column'], $w['condition'], $w['value']);
+              $getData->orWhere($w['column'], $w['condition'], $w['value']);
             }else{
-              $getData = $getData->where($w['column'], $w['condition'], $w['value']);
-            }
-            
+              $getData->where($w['column'], $w['condition'], $w['value']);
+            }            
           }
         }
-
-              
-              
               
         //Set data
         $this->dbData = $getData->paginate($this->perPage);
+
+
     }
     private function setFilesFromColumns(){
       
@@ -534,13 +529,22 @@ class _adminPanel extends Model
                   if(isset($dbValue[$c['name']]->timestamp)){  
                     $val = $dbValue[$c['name']]->format($c['timeFormat']);
                   }else{
-                    $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
+                    if($c['timeFormat'] == 'age'){
+                      $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->age;
+                    }else{
+                      $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
+                    }                    
                   }
                 }else{
                   if($dbValue[$c['name']] == null)
                     $val = "";
-                  else
-                    $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
+                  else{
+                    if($c['timeFormat'] == 'age'){
+                      $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->age;
+                    }else{
+                      $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
+                    }   
+                  }
                 }
               }
               //Simple data

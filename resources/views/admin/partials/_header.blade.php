@@ -22,6 +22,9 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ route('admin_letter') }}">Letters</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('admin_mailer') }}">Mailer</a>
+      </li>      
       @if(Auth::User()->role == 4)
         <li class="nav-item">
           <a class="nav-link" href="{{ route('admin_sign') }}">Signs</a>

@@ -13,12 +13,21 @@
 <script>
     export default {        
         mixins: [ mMoreAxios, mNotifications, mLoading ],
-        props:['p-row','p-attr'],
+        props:['p-row'],
         data(){
           return {
               //Data
               confirm:this.pRow.confirm,
           }
+        },
+        mounted() {
+          this.confirm=this.pRow.confirm;
+        },
+        watch: {
+          pRow: {
+            deep:true,
+            handler:function(){this.confirm=this.pRow.confirm;},
+          },
         },
         methods: {
           async doConfirm(c){

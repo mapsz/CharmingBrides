@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 use App\User;
 use App\Man;
 use App\Order;
@@ -17,6 +18,68 @@ class ManController extends _adminPanelController
 
     public function __construct(){
         parent::__construct($this->model);
+    }
+
+    public function _index(){
+      if(Auth::User()->role == 3){
+
+        //Get Model
+        $model = new $this->model();
+
+        $model->setColumns([
+                  [
+                    'name' => 'id',
+                    'relation' => 'user.id'
+                  ],
+                  ['name' => 'favorite'],
+                  ['name' => 'name'],
+                  ['name' => 'country'],
+                  [
+                    'name' => 'birth',
+                    'caption' => 'age',
+                    'timeFormat'  => 'age'
+                  ], 
+                  [
+                    'name' => 'created_at',
+                    'timeFormat'  => 'j F Y G:i'       
+                  ]
+                ]  
+              );  
+
+        //settings 
+        $settings = [
+          'add' => false,
+          'edit' => false,
+          'delete' => false,
+        ];
+
+        $model->setSettings($settings);
+
+        //Get Data
+        $data   = $model->getData(); // Data
+        $inputs = $model->getInputs();  //Inputs
+        $names   = $model->getNames();  //Names
+        $page   = $model->getPage();    //Page
+        $route = $model->getRoute(); 
+        $settings = $model->getSettings(); 
+       
+        //Encode
+        $data   = json_encode($data);
+        $inputs = json_encode($inputs);
+        $names   = json_encode($names);
+        $route   = json_encode($route);
+        $settings   = json_encode($settings);
+
+        return view($page)
+          ->with('data', $data)
+          ->with('inputs', $inputs)
+          ->with('name', $names)
+          ->with('route',$route)
+          ->with('settings',$settings);
+
+      }else{
+        return parent::_index();
+      }
     }
 
     public function index($id){
@@ -243,7 +306,6 @@ class ManController extends _adminPanelController
       return $this->_post($request);
     }
 
-
     public function create(){
         //Get Model
         $model = new $this->model();
@@ -308,14 +370,174 @@ class ManController extends _adminPanelController
       //Validate
       $model->validate($request); 
       //Save
-      $man_id = $model->saveRow($request->all());
+      $rows = $request->all();
+      $man_id = $model->saveRow($rows);
       if(!$man_id) return response()->json(['error' => '2', 'text' => 'something gone wrong']);
       $user = User::find($man_id);
-      if($user){
+      $user->role = 2;
+      if($user->save()){
         Auth::login($user);
         return response()->json(['error' => '0','id' => $man_id]);
       }else{
         return response()->json(['error' => '1', 'text' => 'something gone wrong']);
       }      
     }
+
+    public function getMenParametr(){
+
+      $params = [];
+      //Locations
+      $q = DB::select( DB::raw(
+                   "SELECT country, COUNT(*)
+                    FROM men
+                    GROUP BY country
+                    HAVING COUNT(*) > 1"
+                  ));
+
+      $param = [];
+      foreach ($q as $key => $v) {
+        array_push($param, $v->country);
+      }
+      $params['country'] = $param;
+
+
+      return response()->json(['error' => '0','data' => $params]);
+    }
+
+    public function search(request $request){
+
+      $model = new $this->model();
+
+      //Set up
+      $model->setPerPage(20);
+      // $model->setInfoColumns();
+      $model->setOrder(['row'=>'id','order'=>'DESC']);
+
+      if(!isset($request->search)) return response()->json(['error' => '1']);
+
+      // decode
+      $search = json_decode($request->search);
+
+      //where
+      $where = [];
+
+      //counry
+      if(isset($search->counry) && $search->counry != '0'){
+        array_push($where, ['column' => 'counry','condition' => '=','value' => $search->counry]);
+      }
+
+      //age from
+      if(isset($search->ageFrom)){
+        $from = Carbon::now()->subYear($search->ageFrom)->format('Y-m-d');
+        array_push($where, ['column' => 'birth','condition' => '<','value' => $from]);
+      }
+      //age to
+      if(isset($search->ageTo)){
+        $to = Carbon::now()->subYear($search->ageTo)->format('Y-m-d');
+        array_push($where, ['column' => 'birth','condition' => '>','value' => $to]);
+      }
+
+      //custom
+      if(isset($search->search)){
+        $val = $search->search;
+        $model->setCustomQueries([
+          $model->where(function($q)use($val) {
+            $q->where('name','LIKE','%'.$val.'%')
+              ->orWhere('id','LIKE','%'.$val.'%');
+          })
+        ]);
+      }
+
+      $model->setWhere($where);
+
+      //Get data
+      $data = $model->getData();   
+      if(!is_array($data)) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+
+      $data = $data['data'];
+      $settings = $model->getSettings();   
+
+      foreach ($data as $k => $v) {
+        $data[$k]['age']     = Carbon::parse($v['birth'])->age;
+      }      
+
+      $girls = json_encode($data);
+      $settings = json_encode($settings);
+      $data = ['men' => $girls, 'settings' => $settings];
+      return response()->json(['error' => '0','data' => $data]);      
+    }
+
+    public function _search(request $request){
+
+      $model = new $this->model();
+
+      //Set up
+      $model->setPerPage(50);
+
+      //Order
+      $model->setOrder(['row'=>'id','order'=>'DESC']);
+      if(isset($request->order)){
+        $order = json_decode($request->order);
+        if($order->name != ""){
+          $model->setOrder(['row'=>$order->name,'order'=>$order->type]);
+        }
+      }
+
+      if(!isset($request->search)) return response()->json(['error' => '1']);
+
+      // decode
+      $search = json_decode($request->search);
+
+      //where
+      $where = [];
+
+      //counry
+      if(isset($search->counry) && $search->counry != '0'){
+        array_push($where, ['column' => 'location','condition' => '=','value' => $search->location]);
+      }
+
+      //favorite
+      if(isset($search->favorites) && $search->favorites == true){
+        array_push($where, ['column' => 'favorite','condition' => '=','value' => 1]);
+      }
+
+      //age from
+      if(isset($search->ageFrom)){
+        $from = Carbon::now()->subYear($search->ageFrom)->format('Y-m-d');
+        array_push($where, ['column' => 'birth','condition' => '<','value' => $from]);
+      }
+      //age to
+      if(isset($search->ageTo)){
+        $to = Carbon::now()->subYear($search->ageTo)->format('Y-m-d');
+        array_push($where, ['column' => 'birth','condition' => '>','value' => $to]);
+      }
+
+      //custom
+      $custom = $model;
+      if(isset($search->search)){
+        $val = $search->search;      
+        $custom = $custom->where(function($q)use($val) {
+          $q->where('name','LIKE','%'.$val.'%')
+            ->orWhere('id','LIKE','%'.$val.'%');
+        });
+      }
+
+
+      $model->setCustomQueries($custom);
+
+      $model->setWhere($where);
+
+      //Get data
+      $data = $model->getData();   
+      if(!is_array($data)) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+        
+      $data = $data['data'];
+      $settings = $model->getSettings();   
+
+      $girls = json_encode($data);
+      $settings = json_encode($settings);
+      $data = ['data' => $girls, 'settings' => $settings];
+      return response()->json(['error' => '0','data' => $data]);
+    }
+
 }

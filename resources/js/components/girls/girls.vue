@@ -1,9 +1,9 @@
 <template>
-    <div class="container">
+    <div class="container girls-container">
       <!-- Header -->
       <h1 class="py-3">Girls</h1>
       <!-- Search -->
-      <girl-search @searchSuccess="updateData"/>
+      <girl-search @doSearch="doSearch"/>
       <!-- Girl List -->
       <div class="girls-list row px-lg-0">
         <div 
@@ -31,53 +31,46 @@
           No Girls found  
         </div>
       </div>
-      <!-- Paginator -->
-      <div v-if="setting.pages > 1" class="row d-flex justify-content-center">
-        <paginate        
-          :page-count="setting.pages"
-          :value="page"
-          :container-class="'pagination'"
-          :page-class="'page-item'"
-          :page-link-class="'page-link'"
-          :prev-class="'page-item'"
-          :prev-link-class="'page-link'"
-          :next-class="'page-item'"
-          :next-link-class="'page-link'"
-          :click-handler="pageHandler"
-        >
-        </paginate>
-      </div>
-
+      <!-- Paginator -->      
+      <pages :p-page="page" :p-pages="pages" @changePage="changePage"></pages>
     </div>
 </template>
 
 <script>
-    export default {
-        props:['p-girls','p-settings'],
-        data(){
-          return {
-            page:1,
-            girls:JSON.parse(this.pGirls),
-            setting:JSON.parse(this.pSettings),
-          }
-        },               
-        mounted() {
-          this.getCurrentPage();
-        },
-        methods: {
-          getCurrentPage(){
-            let qs = queryString.parse(location.search);
-            if(qs.page !== undefined){
-              this.page = parseInt(qs.page);
-            }
-          },
-          pageHandler(page){
-            location.replace(location.origin + location.pathname + '?page=' + page);
-          },
-          updateData(data){
-            this.girls = JSON.parse(data.girls);
-            this.setting = JSON.parse(data.settings);
-          }
+  export default {
+    mixins: [ mMoreAxios, mNotifications, mLoading ],
+    data(){
+      return {            
+        girls:[],
+        page:1,
+        pages:1,
+        search:{},
+      }
+    },               
+    mounted() {
+      this.getGirls();
+    },
+    methods: {
+      async getGirls(page = 1){
+        let l = this.loading('.girls-container');
+        let r = await this.ax('get','/all/girl/search',{page:page,search:this.search})
+        if(!r){
+          this.hideLoading(l);
+          return false;
         }
+
+        this.girls = JSON.parse(r.data);
+        this.pages = JSON.parse(r.settings).pages;
+        this.page = page;
+        this.hideLoading(l);
+      },
+      changePage(page){
+        this.getGirls(page);
+      },
+      doSearch(search){
+        this.search = search;
+        this.getGirls();
+      }
     }
+  }
 </script>

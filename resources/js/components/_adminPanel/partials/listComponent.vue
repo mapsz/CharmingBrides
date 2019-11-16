@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid p-0">
+    <div class="container-fluid list-container p-0">
       <!-- Attach -->
       <div v-if="isAttach" class="attach pb-4">
         <attach-component 
@@ -15,18 +15,14 @@
       </div>
       <!-- Search -->
       <div v-if="pSettings && pSettings.search" class="input-group my-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="basic-addon1">
-            <fa-icon icon="search"/>
-          </span>
-        </div>
-        <input type="text" class="form-control"@keyup="searchData()" v-model="search">
-        <div class="input-group-append">
-          <button class="btn btn-outline-secondary" type="button">Search</button>
-        </div>        
+        <juge-search
+          :p-search="pSettings.search.search"
+          :p-param-route="pSettings.search.paramsRoute"
+          @doSearch="doSearch"
+        ></juge-search>     
       </div>      
       <!-- List -->
-      <div v-if="!attach" class="list">
+      <div v-if="!attach" class="list"> 
         <table class="table table-striped">
           <thead class="bg-primary text-white">
             <!-- Captions -->
@@ -111,23 +107,10 @@
           </tbody>
         </table>
         <!-- Paginator -->
-        <div 
-          v-if="pSettings && pSettings.pages && pSettings.pages > 1" 
-          class="row d-flex justify-content-center"
-        >
-          <paginate        
-            :page-count="pSettings.pages"
-            :container-class="'pagination'"
-            :page-class="'page-item'"
-            :page-link-class="'page-link'"
-            :prev-class="'page-item'"
-            :prev-link-class="'page-link'"
-            :next-class="'page-item'"
-            :next-link-class="'page-link'"
-            :click-handler="pageHandler"
-          >
-          </paginate>
+        <div v-if="pages > 1"  class="row d-flex justify-content-center">        
+          <pages :p-page="1" :p-pages="pages" @changePage="changePage"></pages>  
         </div>
+        
       </div>
       <!-- List modal -->
       <div 
@@ -240,7 +223,7 @@
               name:false,
               type:false,
             },
-            search:"",
+            search:{},
             //List
             list:{
               header: "",
@@ -254,6 +237,7 @@
             attach:false,
             //Setting
             route: "", 
+            pages:1,
           }
         },
         computed: {
@@ -308,6 +292,8 @@
           }
         },        
         mounted() {
+          let l = this.loading('.list-container');          
+          this.pages = this.pSettings.pages;
           //Route
           if(this.pRoute != undefined){
             this.route = this.pRoute['prefix'] + this.pRoute['r'];
@@ -323,6 +309,8 @@
               this.recent.attach = this.pRecent.attach;
             }
           }
+
+          this.hideLoading(l);
         },
         methods:{
           //Attach
@@ -372,7 +360,6 @@
                   break;
               }
             });
-
           },
           async putSuccess(edit){
             //Refresh edit
@@ -397,7 +384,26 @@
           }, 
           //Data
           doSort(column){
+            //Sort name
+            this.sort.name = column;
+            //Sort
             if(this.sort.type == "asc" && column == this.sort.name){
+              this.sort.type = 'desc';
+            }else{
+              this.sort.name = column;
+              this.sort.type = 'asc';
+            }
+            //Single page front sort
+            if(this.pages <= 1){
+              this.pageSort(column);
+              return;
+            }
+            //Backend sort
+            this.searchData();
+            console.log(this.sort);
+          },
+          pageSort(column){
+            if(this.sort.type == "desc" && column == this.sort.name){
               this.data.sort(function (a, b) {
                 if (a[column] > b[column]) {
                   return -1;
@@ -407,7 +413,6 @@
                 }
                 return 0;
               });              
-              this.sort.type = 'desc';
             }else{
               this.data.sort(function (a, b) {
                 if (a[column] > b[column]) {
@@ -417,11 +422,8 @@
                   return -1;
                 }
                 return 0;
-              });                  
-              this.sort.type = 'asc';              
+              });                               
             }
-
-            this.sort.name = column;
           },
           async getData(){
             let r = await axios.get('/'+this.route+'/get?page='+this.page)
@@ -445,16 +447,31 @@
           },     
           async searchData(){
 
-            if(this.search.length < 3) return false;
+            let l = this.loading('.list-container');
+            let r = await this.ax('get','/'+this.route+'/search',{page:this.page,search:this.search,order:this.sort})
+            if(!r){
+              this.hideLoading(l);
+              return false;
+            }
 
-            console.log(this.search);
+            console.log(JSON.parse(r.settings).pages);
 
-            let r = await this.ax('get','/'+this.route+'/search?page='+this.page,{'search':this.search});
+            this.data    = JSON.parse(r.data);
+            this.pages   = JSON.parse(r.settings).pages;
 
-            this.data = r.data;
-
-            console.log(r);
+            this.hideLoading(l);
           },
+          //Search pages
+          changePage(page){
+            this.page = page;
+            this.searchData();
+          },
+          doSearch(search){
+            this.search = search;
+            this.page = 1;
+            this.searchData();
+          },
+
           //List            
           openList(id, key){
             this.list.header = key;

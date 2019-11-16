@@ -33,24 +33,23 @@
       }
     },           
     methods: {
-      showErrors(err,code=false){
-
+      showErrors(err,code=false,timeout = 99999){
         //log code
         if(code){
           console.log('error - '+code);
         } 
         if(typeof(err) == "string"){
-          this.showErrorMsg({message:err});
+          this.showErrorMsg({message:err,timeout:timeout});
           return;
         }
 
         $.each(err, (k, v) => {
           if(typeof(this.v) == "object"){
             $.each(v, (key, val) => {
-              this.showErrorMsg({message:val});
+              this.showErrorMsg({message:val,timeout:timeout});
             });   
           }else{
-            this.showErrorMsg({message:v});
+            this.showErrorMsg({message:v,timeout:timeout});
           }          
         });
       },

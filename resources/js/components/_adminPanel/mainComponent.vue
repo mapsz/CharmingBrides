@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container-fluid">
       <h1 class="text-capitalize">{{pName.m}}</h1>
       <div v-if="pSettings.add" class="mb-1">
         <a :href="'/' + pRoute.prefix + pRoute.r+'/create'">
@@ -11,8 +11,7 @@
         :p-settings = "pSettings"
         :p-route = "pRoute"
         :p-name = "pName"
-      />
-    
+      />   
 
       <!-- Edit modal -->
       <div 
@@ -43,7 +42,6 @@
           </div>
         </div>
       </div>
-      
 
     </div>
 

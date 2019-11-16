@@ -47,16 +47,16 @@
           },
           hideLoading(id){
             //Element exists
-            if(!$('#loading'+id).length){
+            if(!$('.loading'+id).length){
               this.dlog(id + ' not found');
               return false;
             }
-            this.dlog('#loading'+id);
-            $('#loading'+id).remove();
+            this.dlog('.loading'+id);
+            $('.loading'+id).remove();
           },
           editHTML(id){
             this.loadingHTML = ''+
-            '<div id="loading'+id+'" '+     
+            '<div class="loading'+id+'" '+     
               'style="position:absolute;'+
               'width: '+this.l.width+'px;'+
               'height: '+this.l.height+'px;'+

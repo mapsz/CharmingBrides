@@ -66,6 +66,11 @@ window.mDebug           = require ('./components/_adminPanel/lib/debug');
 window.mNotifications   = require ('./components/_adminPanel/lib/notifications');
 window.mLoading         = require ('./components/_adminPanel/lib/loading');
 
+//Mailer
+Vue.component('mailer', require('./components/admin/mailer/mailer.vue'));
+Vue.component('mailer-list', require('./components/admin/mailer/mailer_list.vue'));
+
+
 //pages
 Vue.component('home', require('./components/pages/home.vue'));
 Vue.component('news', require('./components/pages/news.vue'));
@@ -133,6 +138,7 @@ Vue.component('chat-history-component', require('./components/admin/chatHistory.
 Vue.component('girls-list-component', require('./components/admin/girls/list.vue'));
 Vue.component('admin-girls-special-ladies-component', require('./components/admin/girls/specialLadies.vue'));
 Vue.component('admin-girl-confirm-component', require('./components/admin/girls/confirm.vue'));
+Vue.component('admin-girl-search', require('./components/admin/girls/search.vue'));
 
 //men
 Vue.component('men-membership', require('./components/men/menMembership.vue'));
@@ -158,10 +164,12 @@ Vue.component('juge-input', require('./components/_adminPanel/partials/create/in
 Vue.component('juge-password-edit-input', require('./components/_adminPanel/partials/create/passwordEditInput.vue'));
 Vue.component('juge-errors', require('./components/_adminPanel/partials/create/errors.vue'));
 Vue.component('juge-required-text', require('./components/_adminPanel/partials/create/requiredText.vue'));
+Vue.component('juge-search', require('./components/_adminPanel/partials/search.vue'));
 Vue.component('modal-component', require('./components/_adminPanel/partials/modalComponent.vue'));
 Vue.component('list-component', require('./components/_adminPanel/partials/listComponent.vue'));
 Vue.component('attach-component', require('./components/_adminPanel/partials/attachComponent.vue'));
 Vue.component('file-upload-component', require('./components/_adminPanel/partials/fileUpload.vue'));
+Vue.component('pages', require('./components/_adminPanel/partials/pages.vue'));
 
 //  Pay
 Vue.component('juge-paypal', require('./components/pay/paypal.vue'));

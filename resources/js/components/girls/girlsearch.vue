@@ -117,14 +117,14 @@
             this.params = r;
           },
           async doSearch(){
-            let l = this.loading('.girls-list');
+            // let l = this.loading('.girls-list');
 
-            let r = await this.ax('get','/all/girl/search',{search:this.search});
+            // let r = await this.ax('get','/all/girl/search',{search:this.search});
 
-            if(!r) {this.hideLoading(l);return false;}
+            // if(!r) {this.hideLoading(l);return false;}
 
-            this.$emit('searchSuccess',r);
-            this.hideLoading(l);
+            this.$emit('doSearch',this.search);
+            // this.hideLoading(l);
 
             // return r;
           }
