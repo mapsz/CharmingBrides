@@ -9,14 +9,18 @@
             <span class="col-4 font-weight-bold">First Name:</span>
             <span class="col-8">{{man.name}}</span>
             <!-- Last Name: -->
-            <span class="col-4 font-weight-bold">Last Name:</span>
-            <span class="col-8">{{man.surname}}</span>            
+            <div class="col-12 p-0" v-if="man.surname != undefined">
+              <span class="col-4 font-weight-bold">Last Name:</span>
+              <span class="col-8">{{man.surname}}</span>  
+            </div>          
             <!-- Date of Birth: -->
             <span class="col-4 font-weight-bold">Date of Birth:</span>
             <span class="col-8">{{man.birth}}</span>            
-            <!-- E-Mail Address: -->
-            <span class="col-4 font-weight-bold">E-Mail Address:</span>
-            <span class="col-8">{{man.user_id}}</span>
+            <!-- E-Mail Address: -->            
+            <div class="col-12 p-0" v-if="man.user_id != undefined">
+              <span class="col-4 font-weight-bold">E-Mail Address:</span>
+              <span class="col-8">{{man.user_id}}</span>
+            </div>
           </div>
         </div>
         <div class="col-6">

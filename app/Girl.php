@@ -137,6 +137,7 @@ class Girl extends _adminPanel
           'fileName'        => '`parentId`_`rand`',
           'maxFileSize'     => '10mb',
           'fileType'        => ['image/*',],   
+          'default'         => 'no_passport.png'
       ],
       [ //Video
           'name'            => 'video',

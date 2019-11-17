@@ -162,6 +162,11 @@ class GirlController extends _adminPanelController
           array_push($columns,['name' => 'forAdminPhoneNumber']);
           array_push($columns,['name' => 'firstLetter']);
           array_push($columns,['name' => 'firstLetterSubject']); 
+          array_push($columns,  [
+                'name'    => 'passport',
+                'file'    => 'image',
+              ]);
+      
         }
       }
       $model->setColumns($columns);

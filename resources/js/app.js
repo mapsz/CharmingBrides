@@ -178,6 +178,7 @@ Vue.component('order', require('./components/pay/order.vue'));
 //Signs
 Vue.component('matched', require('./components/signs/matched.vue'));
 Vue.component('likedyou', require('./components/signs/likedyou.vue'));
+Vue.component('admin-signs', require('./components/admin/signs.vue'));
 
 Vue.component('pre-register', require('./components/registration/preregister.vue'));
 

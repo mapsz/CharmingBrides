@@ -16,10 +16,46 @@ class SignController extends _adminPanelController
         parent::__construct($this->model);
     }
 
+    public function _index(){
+      return view('admin.pages.vue')->with('vue','admin-signs');
+    }
+
+    public function getSigns (){
+      $data = $this->model::whereHas('from',function($q){
+                              $q->whereHas('man');
+                            })
+                            ->whereHas('to',function($q){
+                              $q->whereHas('girl');
+                            })
+                            ->with('from.man')
+                            ->with('to.girl')
+                            ->with('to.girl.agent')
+                            ->orderBy('id', 'desc');
+
+      if(Auth::User()->role == 3){
+        $id = Auth::User()->id;
+        $data = $data->whereHas('to.girl.agent',function($q)use($id){
+          $q->where('user_id',$id);
+        });
+      }
+
+      $data = $data->paginate(20);
+
+      foreach ($data as $k => $v) {
+        if($v->created_at == NULL){
+          $data[$k]->created_at = '2019-10-25 00:00:00';
+        }
+      }
+
+
+      return response()->json(['error' => '0', 'data' => ['signs' =>$data->toArray()['data'], 'pages' => $data->lastPage()]]);
+
+
+    }
+
     public function matched(){
 
       return view('pages.matched');
-
     }
 
     public function matches(Request $request){
@@ -127,8 +163,18 @@ class SignController extends _adminPanelController
 
     public function like(Request $request){
 
-      //Get data
-      $userId  = Auth::user()->id;
+      // //Validation
+      // $request->validate([
+      //     'user_id'=> new CurrentUserOrAdmin
+      // ]);
+
+      if(isset($request->fromId)){
+        $userId = $request->fromId;
+      }else{
+        $userId  = Auth::user()->id;
+      }
+
+      //Get data      
       $toId    = $request->toId;
       $like    = $request->like;
       //Check data
@@ -174,7 +220,6 @@ class SignController extends _adminPanelController
       if(!$sign->save()) return response()->json(['error' => '4', 'text' => 'something gone wrong']);
 
       return response()->json(['error' => '0']);
-
     }
 
 }

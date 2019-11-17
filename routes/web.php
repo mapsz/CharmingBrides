@@ -227,6 +227,10 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   //Letter
   Route::get('/letter/girls', 'letterController@getAdminGirls');
 
+  //signs
+  Route::get('/signs/', 'signController@getSigns');  
+  Route::get('/sign', 'signController@_index')->name('admin_sign'); 
+
 });
 
 //Admin
@@ -280,7 +284,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   // Signs
   $model = 'sign';
   $namePrefix = "admin_";
-  Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);                               //Index
+                                //Index
   Route::get('/'.$model.'/get/{id?}', ucfirst($model).'Controller@_get')->name($namePrefix.'get'.ucfirst($model));           //Get
   Route::get('/'.$model.'/create', ucfirst($model).'Controller@_create')->name($namePrefix.'create'.ucfirst($model));  //Create
   Route::get('/'.$model.'/edit/{id}', ucfirst($model).'Controller@_edit')->name($namePrefix.'edit'.ucfirst($model));     //edit

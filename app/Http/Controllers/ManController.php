@@ -95,13 +95,7 @@ class ManController extends _adminPanelController
           'name' => 'id',
           'relation' => 'user.id'
         ],
-        [
-          'name' => 'user_id',
-          'caption' => 'email',
-          'relation' => 'user.email',
-        ], 
         ['name' => 'name'],
-        ['name' => 'surname'],
         ['name' => 'birth'],
         ['name' => 'country'],
         ['name' => 'city'],
@@ -130,6 +124,16 @@ class ManController extends _adminPanelController
         ['name' => 'girl_children'],
         ['name' => 'girl_info'],        
       ];
+
+      if(Auth::User()->role == 2 || Auth::User()->role == 4){
+        array_push($columns, [
+          'name' => 'user_id',
+          'caption' => 'email',
+          'relation' => 'user.email',
+        ]);
+
+        array_push($columns, ['name' => 'surname']);
+      }
       $model->setColumns($columns);
 
       //Set where

@@ -10,7 +10,7 @@
           <!-- passport -->
           <div class="col-2">
             <div class="girl-passport">
-              <img class="w-100" :src="assets+'/media/passport/'+girl.id+'_0.jpg'" alt="Passport">
+              <img class="w-100" :src="'/'+girl.passport[0]" alt="Passport">
             </div>  
           </div>
           <!-- for admin info -->
