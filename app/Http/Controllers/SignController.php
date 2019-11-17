@@ -47,9 +47,7 @@ class SignController extends _adminPanelController
         }
       }
 
-
       return response()->json(['error' => '0', 'data' => ['signs' =>$data->toArray()['data'], 'pages' => $data->lastPage()]]);
-
 
     }
 
@@ -186,6 +184,20 @@ class SignController extends _adminPanelController
         return response()->json(['error' => '2', 'text' => 'something gone wrong']);
       }
 
+      if(isset($request->a) && $request->a > 0){
+        $a = new $this->model;
+
+        $a = $a::find($request->a);
+        $a->to_confirmed = $like;
+
+        // $a->update();
+
+        dd($a->save());
+
+        return response()->json(['error' => '0']);
+      }
+
+
       //Get existing
       $sign = $this->model
           ::where(function ($query)use($userId,$toId) {
@@ -196,6 +208,7 @@ class SignController extends _adminPanelController
             $query->where  ('from_id', '=', $toId)
                   ->where('to_id',   '=', $userId);
           })  
+          ->orderBy('id', 'desc')
           ->first();
 
       

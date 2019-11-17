@@ -172,7 +172,18 @@ class Migra extends Model
       dd('done!');
   }
 
-  // letter pays 
+  public static function memc(){
+
+    $men = Man::get();
+
+    dd($men);
+
+    foreach ($men as $key => $value) {
+      # code...
+    }
+
+
+  }
 
   public static function lpays(){
 
@@ -187,7 +198,7 @@ class Migra extends Model
 
       foreach ($ls as $j => $l) {
         echo "
-man - ".(intval($mt)-intval($i)) ." letter - ".(intval($lt)-intval($j));
+        man - ".(intval($mt)-intval($i)) ." letter - ".(intval($lt)-intval($j));
         
         $lo = DB::select( DB::raw("
               SELECT `mail_id`,`mail_read` FROM charmin_b2.mail2customers
@@ -205,7 +216,6 @@ man - ".(intval($mt)-intval($i)) ." letter - ".(intval($lt)-intval($j));
       
 
     }
-
   }
 
   public static function gp(){

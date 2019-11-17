@@ -32,11 +32,16 @@
               <td>{{sign.created_at}}</td>
 
               <td v-if="day = sign.created_at.slice(8,10)">
-                <button 
-                  v-if="sign.to_confirmed == 0" 
-                  @click="doLike(sign.to_id,sign.from_id)"
-                  class="btn btn-primary"
-                >Send Sign</button>
+                <div v-if="sign.to_confirmed == 0" >
+                  <button 
+                    @click="doLike(sign.to_id,sign.from_id,1,sign.id)"
+                    class="btn btn-primary"
+                  >yes</button>
+                  <button 
+                    @click="doLike(sign.to_id,sign.from_id,-1,sign.id)"
+                    class="btn btn-primary"
+                  >no</button> 
+                </div>               
                 <span  v-else>Already send</span>
               </td>
             </tr>
@@ -95,10 +100,10 @@
             
             this.hideLoading(l);
           },
-          async doLike(from,to){
+          async doLike(from,to,like,id){
             let l = this.loading('.like-buttons');
 
-            let likes = await this.ax('post', '/like',{fromId:from,toId:to,like:1});
+            let likes = await this.ax('post', '/like',{fromId:from,toId:to,like:like,a:id});
 
             this.hideLoading(l);
 
