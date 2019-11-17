@@ -217,7 +217,6 @@ class SignController extends _adminPanelController
         }
       }
 
-          dd($sign , $like);
       if(!$sign->save()) return response()->json(['error' => '4', 'text' => 'something gone wrong']);
 
       return response()->json(['error' => '0']);
