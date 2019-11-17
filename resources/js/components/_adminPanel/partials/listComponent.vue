@@ -292,8 +292,11 @@
           }
         },        
         mounted() {
-          let l = this.loading('.list-container');          
-          this.pages = this.pSettings.pages;
+          let l = this.loading('.list-container');  
+          if(this.pSettings != undefined && this.pSettings.pages != undefined){
+            this.pages = this.pSettings.pages;
+          }
+          
           //Route
           if(this.pRoute != undefined){
             this.route = this.pRoute['prefix'] + this.pRoute['r'];

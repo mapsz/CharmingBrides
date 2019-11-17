@@ -28,7 +28,7 @@
                   {{sign.to.girl.name}} ({{sign.to.girl.id}})
                 </a>
               </td>
-              <td><span v-if="sign.to.girl.agent.lenght > 0">{{sign.to.girl.agent[0].name}}</span></td>
+              <td><span v-if="sign.to.girl.agent.length > 0">{{sign.to.girl.agent[0].name}}</span></td>
               <td>{{sign.created_at}}</td>
 
               <td v-if="day = sign.created_at.slice(8,10)">

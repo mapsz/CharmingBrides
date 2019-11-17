@@ -192,7 +192,7 @@ class SignController extends _adminPanelController
 
         // $a->update();
 
-        dd($a->save());
+        $a->save();
 
         return response()->json(['error' => '0']);
       }
