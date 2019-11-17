@@ -228,8 +228,8 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/letter/girls', 'letterController@getAdminGirls');
 
   //signs
-  Route::get('/signs/', 'signController@getSigns');  
-  Route::get('/sign', 'signController@_index')->name('admin_sign'); 
+  Route::get('/signs/', 'SignController@getSigns');  
+  Route::get('/sign', 'SignController@_index')->name('admin_sign'); 
 
 });
 
