@@ -198,6 +198,7 @@ class SignController extends _adminPanelController
           })  
           ->first();
 
+          dd($sign);
       
       if(!$sign){
         //Make new
