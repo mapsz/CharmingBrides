@@ -168,14 +168,14 @@ class SignController extends _adminPanelController
       //     'user_id'=> new CurrentUserOrAdmin
       // ]);
 
-      if(isset($request->fromid)){
-        $userId = $request->fromid;
+      if(isset($request->fromId)){
+        $userId = $request->fromId;
       }else{
         $userId  = Auth::user()->id;
       }
 
       //Get data      
-      $toId    = $request->toid;
+      $toId    = $request->toId;
       $like    = $request->like;
       //Check data
       if(
@@ -217,9 +217,7 @@ class SignController extends _adminPanelController
         }
       }
 
-      
           dd($sign);
-
       if(!$sign->save()) return response()->json(['error' => '4', 'text' => 'something gone wrong']);
 
       return response()->json(['error' => '0']);
