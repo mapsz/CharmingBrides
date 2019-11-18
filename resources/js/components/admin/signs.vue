@@ -10,6 +10,7 @@
               <th scope="col">Agent</th>
               <th scope="col">Date</th>
               <th scope="col">Sign</th>
+              <th scope="col">Letter</th>
             </tr>
           </thead>
           <tbody>
@@ -43,6 +44,11 @@
                   >no</button> 
                 </div>               
                 <span  v-else>Already send</span>
+              </td>
+              <td>
+                <a :href="'/letters?girl='+sign.to_id+'&companion='+sign.from_id">
+                  <button class="btn btn-primary">More</button>
+                </a>
               </td>
             </tr>
           </tbody>

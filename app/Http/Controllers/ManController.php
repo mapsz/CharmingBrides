@@ -20,6 +20,17 @@ class ManController extends _adminPanelController
         parent::__construct($this->model);
     }
 
+    public function loginAdminMan(request $request){
+
+
+      $user = User::find($request->user_id);
+      Auth::login($user);
+
+
+      return response()->json(['error' => '0', 'text' => $request->user_id]);
+
+    }
+
     public function _index(){
       if(Auth::User()->role == 3){
 

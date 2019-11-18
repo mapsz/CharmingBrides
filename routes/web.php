@@ -306,6 +306,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 
   //Men  
   Route::post('/man/balance/edit', 'ManController@editBalance');
+  Route::post('/man/login', 'ManController@loginAdminMan');
 
   //Orders
 

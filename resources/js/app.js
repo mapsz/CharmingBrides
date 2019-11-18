@@ -139,6 +139,8 @@ Vue.component('girls-list-component', require('./components/admin/girls/list.vue
 Vue.component('admin-girls-special-ladies-component', require('./components/admin/girls/specialLadies.vue'));
 Vue.component('admin-girl-confirm-component', require('./components/admin/girls/confirm.vue'));
 Vue.component('admin-girl-search', require('./components/admin/girls/search.vue'));
+//Men
+Vue.component('admin-man-login', require('./components/admin/man/login.vue'));
 
 //men
 Vue.component('men-membership', require('./components/men/menMembership.vue'));

@@ -175,11 +175,28 @@ class Migra extends Model
   public static function memc(){
 
     $men = Man::get();
+    $c = Man::count();
 
-    dd($men);
 
-    foreach ($men as $key => $value) {
-      # code...
+    foreach ($men as $i => $value) {
+      echo "
+man - ".(intval($c)-intval($i));
+
+      $countryCode = $value->country;
+
+      if($countryCode == NULL) continue;
+      if($countryCode == 'United States') continue;
+
+      $c = DB::select( DB::raw("
+            SELECT countries_name AS `name` FROM charmin_b2.countries
+            WHERE countries_id = {$countryCode}
+          "))[0]->name;
+
+
+      $value->country = $c;
+
+      $value->save();
+
     }
 
 

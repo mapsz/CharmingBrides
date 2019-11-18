@@ -76,7 +76,12 @@ class Man extends _adminPanel
     [
       'name' => 'created_at',
       'timeFormat'  => 'j F Y G:i'       
-    ]
+    ],
+    [
+      'name'        => 'login',
+      'caption'     => 'Login',
+      'component'   => 'admin-man-login',          
+    ], 
   ];  
 
   protected $inputs   = [
