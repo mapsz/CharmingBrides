@@ -226,7 +226,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
         ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload   
 
 
-  Route::get('/letter', 'letterController@_index')->name($namePrefix.$model);    
+  Route::get('/letter', 'LetterController@_index')->name($namePrefix.$model);    
   Route::get('/letter/history', ucfirst($model).'Controller@adminLetterHistory');
 
   //Letter

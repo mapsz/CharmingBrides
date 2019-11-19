@@ -176,6 +176,7 @@ class Migra extends Model
         self::lpays();
         self::memc();
         self::mfav();
+        self::s();
 
         DB::commit();        
       } catch (Exception $e) {   
