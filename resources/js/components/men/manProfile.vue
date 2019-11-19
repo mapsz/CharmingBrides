@@ -1,6 +1,5 @@
 <template>
     <div class="container my-3">
-
       <div class="row my-3">
         <div class="col-6">
           <h4>Personal Details</h4>

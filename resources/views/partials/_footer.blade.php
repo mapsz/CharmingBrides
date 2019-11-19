@@ -4,7 +4,7 @@
 			<div class="col-12 col-sm-6 pt-sm-4 col-md-4 py-3">
 				<div class="footerLogo d-flex justify-content-center">
 					<a href="/">
-						<img src="{{asset('img/logo.jpg')}}" alt="">
+						{{-- <img src="{{asset('img/logo.jpg')}}" alt=""> --}}
 					</a>
 				</div>
 				<div class="footerMenu d-none d-sm-flex pl-4">

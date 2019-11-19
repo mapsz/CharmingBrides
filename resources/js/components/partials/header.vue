@@ -49,10 +49,10 @@
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="/memberships">Memberships</a>
-                <a class="dropdown-item" href="/matchmaker">Matchmaker</a>
-                <a class="dropdown-item" href="/chatting">Chatting</a>
-                <a class="dropdown-item" href="/Photos/Videos">Photos & Videos</a>
-                <a class="dropdown-item" href="/Local/City/Services">Local City Services</a>
+                <a class="dropdown-item" href="#"><coming-soon></coming-soon>Matchmaker</a>
+                <a class="dropdown-item" href="#"><coming-soon></coming-soon>Chatting</a>
+                <a class="dropdown-item" href="#"><coming-soon></coming-soon>Photos & Videos</a>
+                <a class="dropdown-item" href="#"><coming-soon></coming-soon>Local City Services</a>
               </div>
             </li> 
             <!-- Help -->

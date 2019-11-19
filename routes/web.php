@@ -85,6 +85,7 @@ Route::post('/profile', 'ManController@post');
 Route::get('/parametrs/men','ManController@getMenParametr');
 Route::get('/all/men/search','ManController@search');
 Route::put('/add/girl/favorites','ManFavoriteController@put');
+Route::get('/favorite/girls','ManFavoriteController@index');
 
 
 //chat

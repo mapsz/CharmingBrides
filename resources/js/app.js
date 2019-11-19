@@ -90,6 +90,7 @@ Vue.component('service-blocks', require('./components/partials/serviceblocks.vue
 Vue.component('carusel', require('./components/partials/carusel.vue'));
 Vue.component('card', require('./components/partials/card.vue'));
 Vue.component('header-component', require('./components/partials/header.vue'));
+Vue.component('coming-soon', require('./components/partials/comingsoon.vue'));
 
 //Partials
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
@@ -152,6 +153,7 @@ Vue.component('man-edit', require('./components/men/manEdit.vue'));
 Vue.component('man-control', require('./components/men/partials/manControl.vue'));
 Vue.component('man-to-control', require('./components/men/partials/manToControl.vue'));
 Vue.component('man-admin', require('./components/admin/man/adminman.vue'));
+Vue.component('favorite-girls', require('./components/men/favoritegirls.vue'));
 
 //Membership
 Vue.component('memberships', require('./components/membership/membership.vue'));

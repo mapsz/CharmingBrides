@@ -3,6 +3,7 @@
     <div class="row">
       <div class="col"><h1>Profile</h1></div>
       <div class="col">
+        <a class=" px-3" style="float: right; font-size: 16pt;" href="/favorite/girls"><b>Favorite Girls</b></a>
         <a style="float: right; font-size: 16pt;" href="/profile/membership"><b>Membership</b></a>
       </div>
     </div>    

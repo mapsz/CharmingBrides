@@ -17,11 +17,13 @@
                 <input v-model="letter.subject" class="form-control"  id="subject" type="text" name="subject" placeholder="Enter subject">
               </div>
           </div>
-
           <div class="form-group">
             <label for="letter">Letter:</label>
             <textarea v-model="letter.body" class="form-control" id="letter" rows="5"></textarea>
           </div> 
+          <div>
+            <button class="btn btn-primary"><coming-soon></coming-soon>Add Photo</button>
+          </div>
           <!-- errors -->
           <div v-show="errors" class="alert alert-danger">
               <ul>

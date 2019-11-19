@@ -106,14 +106,17 @@
                 Send me a kiss
               </div>
               <div class="action-item col-4 p-3">
+                <coming-soon></coming-soon>
                 <fa-icon :icon="['fab', 'skype']" class="far fa-5x d-block mx-auto"/>
                 Getting a girl's skype contact
               </div>
               <div class="action-item col-4 p-3">
+                <coming-soon></coming-soon>
                 <fa-icon :icon="['fas', 'gifts']" class="far fa-5x d-block mx-auto"/>
                 Gifts ideas
               </div>
-              <div class="action-item col-4 p-3">
+              <div class="coming-soon action-item col-4 p-3">
+                <coming-soon></coming-soon>
                 <fa-icon :icon="['fas', 'gift']" class="far fa-5x d-block mx-auto"/>
                 Send virtual gift
               </div>
@@ -136,8 +139,9 @@
       </div>
     </div>
 
-  <!-- Letter -->
-  <message-send-component @closeLetter="letter = false" :p-user="girl" :p-letter="letter" />
+    <!-- Letter -->
+    <message-send-component @closeLetter="letter = false" :p-user="girl" :p-letter="letter" />
+
 
   </div>
 </template>
@@ -293,6 +297,7 @@
   .girl-admin-info {
       background-color: #ffc8004a;
   }
+
 
 </style>
 

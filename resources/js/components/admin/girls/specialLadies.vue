@@ -71,7 +71,7 @@
 
                let r = await axios({
                     method: 'delete',
-                    url: 'girls/special/ladies',
+                    url: '/admin/girls/special/ladies',
                     data: {'id':id},
                   })
                   .then((r) => {                    
@@ -103,7 +103,7 @@
                 
               let r = await axios({
                     method: 'put',
-                    url: 'girls/special/ladies',
+                    url: '/admin/girls/special/ladies',
                     data: {'id':this.putGirl},
                   })
                   .then((r) => {                    

@@ -465,11 +465,14 @@ class GirlController extends _adminPanelController
 
       $speacialLadies = SpecialLady::get();
 
+      if($speacialLadies->count() < 1) return response()->json(['error' => '0', 'data' => []]);
+
       $model = new $this->model();
 
       $where = [];
-      foreach ($speacialLadies as $lady) {
-        array_push($where, ['column' => 'user_id','condition' => '=','value' => $lady->user_id,'or' => true]);
+      foreach ($speacialLadies as $k => $lady) {
+        if($k == 0) array_push($where, ['column' => 'user_id','condition' => '=','value' => $lady->user_id]);
+        else array_push($where, ['column' => 'user_id','condition' => '=','value' => $lady->user_id,'or' => true]);
       }
 
       $model->setInfoColumns();
@@ -482,6 +485,8 @@ class GirlController extends _adminPanelController
         $data[$k]['age']     = Carbon::parse($v['birth'])->age;
       }
 
+
+      
       return response()->json(['error' => '0', 'data' => $data]);
     }
 

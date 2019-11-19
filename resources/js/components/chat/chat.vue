@@ -206,6 +206,7 @@
                 <!-- Attach -->
                 <div class="input-group-append">
                   <span class="input-group-text attach_btn">
+                    <coming-soon></coming-soon>
                     <fa-icon icon="paperclip" />
                   </span>
                 </div>
