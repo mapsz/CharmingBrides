@@ -73,6 +73,11 @@ class Girl extends _adminPanel
       'relationBelongsToOne' => 'agent.name',
     ],  
     [
+      'name'        => 'updated_at',
+      'caption'     => 'Updated at',
+      'timeFormat'  => 'j M Y G:i' 
+    ],   
+    [
       'name'        => 'created_at',
       'caption'     => 'created at',
       'timeFormat'  => 'j M Y G:i' 
