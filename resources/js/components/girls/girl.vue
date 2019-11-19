@@ -251,7 +251,7 @@
       },
       methods:{
         sendLetter(){
-          this.letter = true;
+          location.href = '/letters?companion='+this.girl.id;
         },
         async sendLike(){
           let l = this.loading('.send-kiss');
