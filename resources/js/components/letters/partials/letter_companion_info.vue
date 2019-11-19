@@ -3,7 +3,7 @@
       <div class="media">
         
         <div class="media-body align-self-center">
-          <a :href="(pCompanion.man == 1) ? '/man/'+pCompanion.id : '/man/'+pCompanion.id  " >
+          <a :href="(pCompanion.man == 1) ? '/man/'+pCompanion.id : '/girl/'+pCompanion.id  " >
             <h2 class="mt-0">{{pCompanion.name}} ({{pCompanion.id}})</h2>
           </a>
             From {{pCompanion.location}}<br>

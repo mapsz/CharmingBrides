@@ -52,7 +52,7 @@ class ManController extends _adminPanelController
                   ], 
                   [
                     'name' => 'created_at',
-                    'timeFormat'  => 'j F Y G:i'       
+                    'timeFormat'  => 'j M Y G:i'       
                   ]
                 ]  
               );  
@@ -531,10 +531,22 @@ class ManController extends _adminPanelController
       $custom = $model;
       if(isset($search->search)){
         $val = $search->search;      
-        $custom = $custom->where(function($q)use($val) {
-          $q->where('name','LIKE','%'.$val.'%')
-            ->orWhere('id','LIKE','%'.$val.'%');
-        });
+        if(Auth::user()->role == 4){
+           $custom = $custom->where(function($q)use($val) {
+            $q->where('name','LIKE','%'.$val.'%')
+              ->orWhere('user_id','LIKE','%'.$val.'%')
+              ->orWhere('surname','LIKE','%'.$val.'%')
+              ->orWhereHas('user', function($qu)use($val){
+                            $qu->where('email','LIKE','%'.$val.'%');
+                          });
+          });         
+        }
+        if(Auth::user()->role == 3){
+            $custom = $custom->where(function($q)use($val) {
+            $q->where('name','LIKE','%'.$val.'%')
+              ->orWhere('user_id','LIKE','%'.$val.'%');
+          });      
+        }
       }
 
 

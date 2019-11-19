@@ -25,7 +25,7 @@ class Agent extends _adminPanel
       ['name' => 'name'],
       ['name' => 'email','caption' => 'email', 'relation' => 'user.email'],
       ['name' => 'location'],
-      ['name' => 'created_at','timeFormat' => 'j F y G:i'],
+      ['name' => 'created_at','timeFormat' => 'j M y G:i'],
       [
         'name'         => 'girls',
         'relationMany' => 'girl', 

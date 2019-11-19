@@ -358,13 +358,15 @@ class _adminPanel extends Model
         if($this->where){
           foreach ($this->where as $w) {
             if(isset($w['or']) && $w['or']){
-              $getData->orWhere($w['column'], $w['condition'], $w['value']);
+              $getData = $getData->orWhere($w['column'], $w['condition'], $w['value']);
             }else{
-              $getData->where($w['column'], $w['condition'], $w['value']);
+              $getData = $getData->where($w['column'], $w['condition'], $w['value']);
             }            
           }
         }
+
               
+        
         //Set data
         $this->dbData = $getData->paginate($this->perPage);
 

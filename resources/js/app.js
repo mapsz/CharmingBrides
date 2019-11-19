@@ -151,6 +151,7 @@ Vue.component('man-profile-membership', require('./components/men/manProfileMemb
 Vue.component('man-edit', require('./components/men/manEdit.vue'));
 Vue.component('man-control', require('./components/men/partials/manControl.vue'));
 Vue.component('man-to-control', require('./components/men/partials/manToControl.vue'));
+Vue.component('man-admin', require('./components/admin/man/adminman.vue'));
 
 //Membership
 Vue.component('memberships', require('./components/membership/membership.vue'));

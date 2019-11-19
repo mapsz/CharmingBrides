@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Input;
 use Auth;
 use Illuminate\Support\Facades\Config;
 use App\Rules\CurrentUserOrAdmin;
+use Illuminate\Support\Carbon;
+
 class LetterController extends _adminPanelController
 {
 
@@ -24,18 +26,33 @@ class LetterController extends _adminPanelController
       parent::__construct($this->model);
   }
 
-  public function adminLetterHistory(){
-
-    $agent = (Auth::user()->role < 4) ? User::where('id',Auth::user()->id)->with('agent')->first()->agent->id : false;
+  public function adminLetterHistory(Request $request){
 
 
-    //Get letters
+    //Agnt
+    $agent = (Auth::user()->role < 4) ? User::where('id',Auth::user()->id)->with('agent')->first()->agent->id : false;    
     $letters = new Letter;
     if($agent){
       $letters = $letters->whereHas('toUser.girl.agent',function($q) use($agent) {
         $q->where('id',$agent);
       });
     } 
+
+
+    //Period
+    if(isset($request->search)){
+      $search = json_decode($request->search);
+      $dates = [
+        'from' => $search->periodFrom,
+        'to'   => $search->periodTo
+      ];
+      $letters = $letters->where(function($q)use($dates) {
+                                  $q->where('created_at', '>=', $dates['from'])
+                                  ->where('created_at', '<=', $dates['to']);
+                                });
+    }
+
+
 
     $letters = $letters
                   ->whereHas('user.man')                      
@@ -46,6 +63,7 @@ class LetterController extends _adminPanelController
                   ->with('toUser.girl.agent')
                   ->paginate(10);
                   
+
     //Get answers
     $lettersWithAnswers = [];
     $got = [];
@@ -73,58 +91,70 @@ class LetterController extends _adminPanelController
 
 
     public function _index(){
-      //Get Model
-      $model = new $this->model();
-      if(Auth::User()->role == 3){  
+      // //Get Model
+      // $model = new $this->model();
+      // if(Auth::User()->role == 3){  
 
-        $id =  Auth::User()->agent->id; 
-        $callback = function($q)use($id) {
-          $q->where('id','=',$id);
-        };        
-        $dbData = letter::with('user.man')
-                      ->with('user.girl')
-                      ->with(['user.girl.agent' => $callback])
-                      ->with('toUser.man')
-                      ->with(['toUser.girl.agent' => $callback])                      
-                      ->whereHas('user.girl.agent' , $callback)
-                      ->orWhereHas('toUser.girl.agent' , $callback)
-                      ->orderBy('created_at','DESC')
-                      ->paginate(50);
-      }else{
-        $dbData = letter::with('user.man')
-                      ->with('user.girl')
-                      ->with('user.girl.agent')
-                      ->with('toUser.man')
-                      ->with('toUser.girl.agent')
-                      ->orderBy('created_at','DESC')
-                      ->paginate(50);        
-      }
-
-
+      //   $id =  Auth::User()->agent->id; 
+      //   $callback = function($q)use($id) {
+      //     $q->where('id','=',$id);
+      //   };        
+      //   $dbData = letter::with('user.man')
+      //                 ->with('user.girl')
+      //                 ->with(['user.girl.agent' => $callback])
+      //                 ->with('toUser.man')
+      //                 ->with(['toUser.girl.agent' => $callback])                      
+      //                 ->whereHas('user.girl.agent' , $callback)
+      //                 ->orWhereHas('toUser.girl.agent' , $callback)
+      //                 ->orderBy('created_at','DESC')
+      //                 ->paginate(50);
+      // }else{
+      //   $dbData = letter::with('user.man')
+      //                 ->with('user.girl')
+      //                 ->with('user.girl.agent')
+      //                 ->with('toUser.man')
+      //                 ->with('toUser.girl.agent')
+      //                 ->orderBy('created_at','DESC')
+      //                 ->paginate(50);        
+      // }
 
 
-      //Get Data
-      $data   = $model->getData($dbData); // Data
-      $inputs = $model->getInputs();  //Inputs
-      $names   = $model->getNames();  //Names
-      $page   = $model->getPage();    //Page
-      $route = $model->getRoute(); 
-      $settings = $model->getSettings(); 
+      // //Get Data
+      // $data   = $model->getData($dbData); // Data
+      // $inputs = $model->getInputs();  //Inputs
+      // $names   = $model->getNames();  //Names
+      // $page   = $model->getPage();    //Page
+      // $route = $model->getRoute(); 
+      // $settings = $model->getSettings(); 
 
 
-      //Encode
-      $data   = json_encode($data);
-      $inputs = json_encode($inputs);
-      $names   = json_encode($names);
-      $route   = json_encode($route);
-      $settings   = json_encode($settings);
+      // //Encode
+      // $data   = json_encode($data);
+      // $inputs = json_encode($inputs);
+      // $names   = json_encode($names);
+      // $route   = json_encode($route);
+      // $settings   = json_encode($settings);
 
-      return view($page)
-        ->with('data', $data)
-        ->with('inputs', $inputs)
-        ->with('name', $names)
-        ->with('route',$route)
-        ->with('settings',$settings);
+      // return view($page)
+      //   ->with('data', $data)
+      //   ->with('inputs', $inputs)
+      //   ->with('name', $names)
+      //   ->with('route',$route)
+      //   ->with('settings',$settings);
+
+
+      $data['search'] = [
+        ['name'=>'period',
+        'type'=>'fromToDate',
+        'fromDef'=>'2007-04-10',
+        'toDef'=>Carbon::now()->format('Y-m-d'),
+        'fromName'=>'periodFrom',
+        'toName'=>'periodTo'],      
+      ];
+
+      return view('admin.pages.vue')
+        ->with('vue', 'admin-letter-history')
+        ->with('data', json_encode($data));
     }
 
     public function index(){

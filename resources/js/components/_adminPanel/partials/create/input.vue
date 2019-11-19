@@ -128,7 +128,7 @@
         </div>
       </div>
 
-      <!-- Date input @@@ some date picker -->
+      <!-- Date  -->
       <div v-else-if="input.type === 'date'">
         <div  class="form-group row">
           <!-- caption -->

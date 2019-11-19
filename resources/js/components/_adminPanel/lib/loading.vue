@@ -15,7 +15,7 @@
           }
         },
         mounted() {
-        },        
+        },
         methods:{
           loading(element){
             return this.showLoading(element);
@@ -42,6 +42,11 @@
 
             $(element).prepend(this.loadingHTML);
 
+            //Preload fix
+            setTimeout(()=>{
+              this.changeLoadSize(element, id);
+            }, 250);
+
             return id;
 
           },
@@ -62,7 +67,15 @@
               'height: '+this.l.height+'px;'+
               'background-color: #000000a6;z-index: 100;">'+
             '</div>';
+          },
+          changeLoadSize(element,id){
+            if(!$('.loading'+id).length || !$(element).length){
+              return false;
+            }
+            $('.loading'+id).width($(element)[0].offsetWidth).height($(element)[0].offsetHeight);
+
           }
+
         },
 
     }

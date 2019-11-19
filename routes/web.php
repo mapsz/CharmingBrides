@@ -46,6 +46,9 @@ Route::get('/home', function () {
 })->name('home');
 
 
+//Notifications
+Route::get('/notifications',         'ManNotificationController@get');
+
 //Pay
 Route::get('/order',         'PayController@order');
 
@@ -81,6 +84,8 @@ Route::put('/man', 'ManController@put');
 Route::post('/profile', 'ManController@post');
 Route::get('/parametrs/men','ManController@getMenParametr');
 Route::get('/all/men/search','ManController@search');
+Route::put('/add/girl/favorites','ManFavoriteController@put');
+
 
 //chat
 Route::get('/chat', 'ChatController@index')->name('chat');
@@ -221,7 +226,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
         ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload   
 
 
-  Route::get('/letter', function () {return view('admin.pages.letters');})->name($namePrefix.$model);    
+  Route::get('/letter', 'letterController@_index')->name($namePrefix.$model);    
   Route::get('/letter/history', ucfirst($model).'Controller@adminLetterHistory');
 
   //Letter

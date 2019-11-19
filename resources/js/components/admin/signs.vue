@@ -1,6 +1,15 @@
 <template>
     <div class="admin-signs-history container-fluid" style="min-height: 100px">
       <h1>Signs</h1>
+
+      <!-- Signs Search -->
+      <div class="row justify-content-center mx-4">
+        <juge-search
+          :p-search="search"
+          @doSearch="doSearch"
+        ></juge-search>   
+      </div>      
+
       <div >
         <table class="table">
           <thead class="bg-primary">
@@ -30,7 +39,7 @@
                 </a>
               </td>
               <td><span v-if="sign.to.girl.agent.length > 0">{{sign.to.girl.agent[0].name}}</span></td>
-              <td>{{sign.created_at}}</td>
+              <td>{{formateDate(sign.created_at)}}</td>
 
               <td v-if="day = sign.created_at.slice(8,10)">
                 <div v-if="sign.to_confirmed == 0" >
@@ -76,16 +85,19 @@
 <script>
     export default {        
         mixins: [ mMoreAxios, mNotifications, mLoading ],
+        props:['p-data'],
         data(){
           return {
             signs:[],
             page:1,
             pages:1,
             day:'',
+            search:JSON.parse(this.pData).search,
+            toSearch:{},            
           }
         },              
         mounted() {
-                    this.getSigns();
+          //
         },
         methods: {
           async getSigns(){
@@ -93,7 +105,7 @@
             let l = this.showLoading('.admin-signs-history');
 
             //Get letters
-            let data = await this.ax('get', '/admin/signs?page='+this.page);
+            let data = await this.ax('get', '/admin/signs?page='+this.page,{search:this.toSearch});
 
             //Error            
             if(!data){
@@ -118,7 +130,15 @@
           pageHandler(p){
             this.page = p;
             this.getSigns();
-          }
+          },
+          doSearch(search){
+            this.pages = 1; //Trigger
+            this.toSearch = search;
+            this.getSigns();
+          },
+          formateDate(date){
+            return moment(date).format('DD MMM Y hh:mm')
+          }        
         }
     }
 </script>

@@ -78,7 +78,7 @@ class Letter extends _adminPanel
         [
           'name' => 'created_at',
           'caption' => 'date',
-          'timeFormat'  => 'j F Y G:i' 
+          'timeFormat'  => 'j M Y G:i' 
         ],
         [
           'name' => 'read',

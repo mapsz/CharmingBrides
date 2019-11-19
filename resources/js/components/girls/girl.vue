@@ -117,7 +117,7 @@
                 <fa-icon :icon="['fas', 'gift']" class="far fa-5x d-block mx-auto"/>
                 Send virtual gift
               </div>
-              <div class="action-item col-4 p-3">
+              <div @click="addFavorites();" class="action-item add-favorite col-4 p-3">
                 <fa-icon :icon="['far', 'star']" class="far fa-5x d-block mx-auto"/>
                 Add {{girl.name}} to favorites
               </div>
@@ -260,7 +260,16 @@
 
           this.hideLoading(l);
 
-          this.showSuccess('Kiss Send!');
+          this.showSuccess('Kiss Sent!');          
+        },
+        async addFavorites(){
+          let l = this.loading('.add-favorite');
+
+          let r = await this.ax('put', '/add/girl/favorites',{girl_user_id:this.girl.id});
+
+          if(r) this.showSuccess(this.girl.name+' added to favorites!');
+
+          this.hideLoading(l);
 
           
         }

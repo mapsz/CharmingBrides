@@ -1,7 +1,17 @@
 <template>
     <div class="admin-letter-history container-fluid" style="min-height: 100px">
       <h1>Letters</h1>
-      <div >
+
+      <!-- Search Mailer -->
+      <div class="row justify-content-center mx-4">
+        <juge-search
+          :p-search="search"
+          @doSearch="doSearch"
+        ></juge-search>   
+      </div>      
+
+      <!-- List -->
+      <div>
         <table class="table">
           <thead class="bg-primary">
             <tr>
@@ -36,7 +46,7 @@
                   {{letter.to_user.girl.agent[0].name}}
                 </div>
               </td>
-              <td>{{letter.created_at}}</td>
+              <td>{{formateDate(letter.created_at)}}</td>
               <td v-if="day = letter.created_at.slice(8,10)">
                 <a :href="'/letters?girl='+letter.to_user.id+'&companion='+letter.user.id">
                   <button class="btn btn-primary">More</button>
@@ -68,17 +78,19 @@
 <script>
     export default {        
         mixins: [ mMoreAxios, mNotifications, mLoading ],
-        props:[],
+        props:['p-data'],
         data(){
           return {
             letters:[],
             day:'',
             page:1,
             pages:0,
+            search:JSON.parse(this.pData).search,
+            toSearch:{},
           }
         },           
         mounted() {
-          this.getLetters()
+          //
         },
         methods: {
           async getLetters(){
@@ -86,7 +98,7 @@
             let l = this.showLoading('.admin-letter-history');
 
             //Get letters
-            let data = await this.ax('get', '/admin/letter/history?page='+this.page);
+            let data = await this.ax('get', '/admin/letter/history?page='+this.page, {search:this.toSearch});
 
             //Error            
             if(!data){
@@ -94,14 +106,23 @@
               return false;
             } 
 
-            this.letters = data.letters;
+            this.letters = data.letters;            
             this.pages = data.pages;
+            this.page = 1;
             
             this.hideLoading(l);
           },
           pageHandler(p){
             this.page = p;
             this.getLetters();
+          },
+          doSearch(search){
+            this.pages = 1; //Trigger
+            this.toSearch = search;
+            this.getLetters();
+          },
+          formateDate(date){
+            return moment(date).format('DD MMM Y hh:mm')
           }
         }
     }
@@ -111,7 +132,7 @@
 <style scoped>
   
   .next{
-    border-top: 2px #96004659 dashed;  
+    border-top: 3px #96004659 dashed;  
   }
 
 </style>

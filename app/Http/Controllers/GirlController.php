@@ -65,8 +65,22 @@ class GirlController extends _adminPanelController
               [
                 'name' => 'location',
                 'caption' => 'city',
-              ]
+              ],
+              [
+                'name'        => 'created_at',
+                'caption'     => 'created at',
+                'timeFormat'  => 'j M Y G:i' 
+              ],     
             ]);  
+
+        //settings 
+        $settings = [
+          'add' => true,
+          'edit' => true,
+          'delete' => false,
+        ];
+
+        $model->setSettings($settings);        
 
         //Only agent girls
         $custom = $model;        
@@ -354,8 +368,12 @@ class GirlController extends _adminPanelController
       if(isset($search->search)){
         $val = $search->search;      
         $custom = $custom->where(function($q)use($val) {
-          $q->where('name','LIKE','%'.$val.'%')
-            ->orWhere('user_id','LIKE','%'.$val.'%');
+            $q->where('name','LIKE','%'.$val.'%')
+              ->orWhere('user_id','LIKE','%'.$val.'%')
+              ->orWhere('forAdminName','LIKE','%'.$val.'%')
+              ->orWhereHas('user', function($qu)use($val){
+                            $qu->where('email','LIKE','%'.$val.'%');
+                          });
         });
       }
        //Only agent girls

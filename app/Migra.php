@@ -142,13 +142,27 @@ class Migra extends Model
       try {
         DB::beginTransaction();
 
-
+        echo "del special_ladies -- ";        
+        DB::table('special_ladies')->delete();
+        echo "del mailers -- ";
+        DB::table('mailers')->delete();
+        echo "del orders -- ";
+        DB::table('orders')->delete();
+        echo "del letter_pays -- ";
+        DB::table('letter_pays')->delete();
+        echo "del signs -- ";
         DB::table('signs')->delete();
+        echo "del letters -- ";
         DB::table('letters')->delete();
+        echo "del agent_girl -- ";
         DB::table('agent_girl')->delete();
+        echo "del girls -- ";
         DB::table('girls')->delete();
+        echo "del agents -- ";
         DB::table('agents')->delete();
+        echo "del men -- ";
         DB::table('men')->delete();
+        echo "del users -- ";
         DB::table('users')->delete();
         
 
@@ -158,6 +172,10 @@ class Migra extends Model
         self::girl_agent();
         self::men();
         self::l();
+        self::gp();
+        self::lpays();
+        self::memc();
+        self::mfav();
 
         DB::commit();        
       } catch (Exception $e) {   
@@ -172,15 +190,55 @@ class Migra extends Model
       dd('done!');
   }
 
+
+
+  //Men favorites
+  public static function mfav(){
+
+    DB::table('man_favorites')->delete();
+
+    $ms = Man::get();
+    $mt = Man::count();
+
+    foreach ($ms as $i => $m) {
+        
+      $fs = DB::select( DB::raw("
+            SELECT * FROM `charmin_b2`.`favorites`
+            WHERE customer_id = {$m->user_id}
+          "));
+
+      foreach ($fs as $j => $s) {
+        echo "
+        man - ".(intval($mt)-intval($i));
+
+        // if(count($s) < 1) continue;
+
+        if (Girl::where('user_id',$s->girls_id)->count() == 0) {
+          echo '  -- ! no girl '.$s->girls_id;
+          continue;
+        }
+
+        ManFavorite::create(['man_user_id' => $m->user_id, 'girl_user_id' => $s->girls_id, ]); 
+
+        echo '  ! add {$s->girls_id}';
+
+
+      }
+
+           
+    }
+
+  }
+
+  //Men country
   public static function memc(){
 
     $men = Man::get();
     $c = Man::count();
 
-
     foreach ($men as $i => $value) {
       echo "
-man - ".(intval($c)-intval($i));
+      man - ".(intval($c)-intval($i));
 
       $countryCode = $value->country;
 
@@ -198,12 +256,12 @@ man - ".(intval($c)-intval($i));
       $value->save();
 
     }
-
-
   }
 
+  //Letter pays
   public static function lpays(){
 
+    DB::table('letter_pays')->delete();
 
 
     $ms = Man::get();
@@ -235,6 +293,7 @@ man - ".(intval($c)-intval($i));
     }
   }
 
+  //Girl photo
   public static function gp(){
 
     $girl = Girl::get();
@@ -945,6 +1004,7 @@ man - ".(intval($c)-intval($i));
         $p['info']                    = $v->girls_info;
         $p['firstLetterSubject']      = $v->girls_1st_letter_subj;
         $p['firstLetter']             = $v->girls_1st_letter;
+        $p['forAdminInfo']            = $v->girls_admininfo;  
 
         DB::insert('INSERT IGNORE INTO ' . $table . ' ('.implode(',',array_keys($p)).
             ') values (?'.str_repeat(',?',count($p) - 1).')',array_values($p));
@@ -981,6 +1041,8 @@ man - ".(intval($c)-intval($i));
   }
 
   public static function s(){
+
+    DB::table('signs')->delete();
 
     echo 'hi';
 
@@ -1070,37 +1132,58 @@ man - ".(intval($c)-intval($i));
         // check exists
         $q = Sign::where('from_id' , $v->mail_from)->where('to_id', $v->mail_to);
 
+        $q = Sign::where(function($q)use($v) {
+                    $q->where('from_id' , $v->mail_from)
+                      ->where('to_id', $v->mail_to);
+                  })
+            ->orWhere(function($q)use($v) {
+                    $q->where('to_id' , $v->mail_from)
+                      ->where('from_id', $v->mail_to);
+                  });
+
+        $e = false;
+        if(count($q->get()) > 0){
+          $exists = $q->first()->toArray();
+          if(!isset($exists['to_id'])) dd($v,$exists);
+          if($v->mail_to != $exists['to_id']){
+            $e = true;
+          }
+        }
+
         $table = 'signs';
         $rows = [
           'from_id' => $v->mail_from,
           'to_id' => $v->mail_to,
+          'created_at' => $v->date,
         ];
 
-        if($type == 1){
-          $rows['from_confirmed'] = 1;
+        if($type == 1){          
+          if($e) $rows['to_confirmed'] = 1;
+          else $rows['from_confirmed'] = 1;
         };
 
         if($type == 2){
-          $rows['from_confirmed'] = -1;
+          if($e) $rows['to_confirmed'] = -1;
+          else $rows['from_confirmed'] = -1;
         };
 
         if($type == 3){
           $rows['from_confirmed'] = 1;
           $rows['to_confirmed'] = 1;
-        };        
-
+        };    
         
         if(count($q->get()) > 0){
           //Update
           $q->update($rows);
 
           echo '
-          update ' . $v->mail_from . ' - '. $v->mail_to;
+          update ' . $v->mail_from . ' - '. $v->mail_to . ' -- ' . $i;
         }else{
-          //Insert
+          //Insert          
+          $rows['`read`'] = '2019-11-19 00:00:00';
           self::dbInsert($table, $rows);
           echo '
-          insert ' . $v->mail_from . ' - '. $v->mail_to;
+          insert ' . $v->mail_from . ' - '. $v->mail_to . ' -- ' . $i;
         }
 
       }

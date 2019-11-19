@@ -75,7 +75,7 @@ class Man extends _adminPanel
     ],
     [
       'name' => 'created_at',
-      'timeFormat'  => 'j F Y G:i'       
+      'timeFormat'  => 'j M Y G:i'       
     ],
     [
       'name'        => 'login',

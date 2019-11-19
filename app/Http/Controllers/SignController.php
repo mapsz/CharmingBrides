@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\User;
+use Illuminate\Support\Carbon;
 
 class SignController extends _adminPanelController
 {
@@ -17,10 +18,19 @@ class SignController extends _adminPanelController
     }
 
     public function _index(){
-      return view('admin.pages.vue')->with('vue','admin-signs');
+      $data['search'] = [
+        ['name'=>'period',
+        'type'=>'fromToDate',
+        'fromDef'=>'2007-04-10',
+        'toDef'=>Carbon::now()->format('Y-m-d'),
+        'fromName'=>'periodFrom',
+        'toName'=>'periodTo'],      
+      ];
+
+      return view('admin.pages.vue')->with('vue','admin-signs')->with('data', json_encode($data));;
     }
 
-    public function getSigns (){
+    public function getSigns (Request $request){
       $data = $this->model::whereHas('from',function($q){
                               $q->whereHas('man');
                             })
@@ -30,7 +40,7 @@ class SignController extends _adminPanelController
                             ->with('from.man')
                             ->with('to.girl')
                             ->with('to.girl.agent')
-                            ->orderBy('id', 'desc');
+                            ->orderBy('created_at', 'desc');
 
       if(Auth::User()->role == 3){
         $id = Auth::User()->id;
@@ -38,6 +48,19 @@ class SignController extends _adminPanelController
           $q->where('user_id',$id);
         });
       }
+
+    //Period
+    if(isset($request->search)){
+      $search = json_decode($request->search);
+      $dates = [
+        'from' => $search->periodFrom,
+        'to'   => $search->periodTo
+      ];
+      $data = $data->where(function($q)use($dates) {
+                                  $q->where('created_at', '>=', $dates['from'])
+                                  ->where('created_at', '<=', $dates['to']);
+                                });
+    }      
 
       $data = $data->paginate(20);
 

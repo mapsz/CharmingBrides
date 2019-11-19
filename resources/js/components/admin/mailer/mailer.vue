@@ -1,7 +1,8 @@
 <template>
   <div class="container-fluid mailer-container p-0">
     <h1 class="m-4">Mailer</h1>
-    <!-- Search -->
+
+    <!-- Search Users-->
     <div class="search-container">
       <div class="col-12 text-center search-container">
         <h3>Search</h3>

@@ -72,7 +72,9 @@ class MailerController extends Controller
                           'type'=>'checkbox',
                           'def'=>false,
                         ]);
-  }
+    }
+
+
 
     return view('admin.pages.vue')->with('vue','mailer')->with('data',json_encode($data));
   }
@@ -138,7 +140,7 @@ class MailerController extends Controller
         [
           'name'        => 'created_at',
           'caption'     => 'created at',
-          'timeFormat'  => 'j F Y G:i' 
+          'timeFormat'  => 'j M Y G:i' 
         ], 
       ];
       $order = ['row' => 'id', 'order' => 'desc'];

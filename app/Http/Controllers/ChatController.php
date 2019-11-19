@@ -360,9 +360,16 @@ class ChatController extends Controller
         //set where
         $where = [];
         foreach ($users as $key => $user) {
-          $u = ['column' => 'user_id','condition' => '=','value' => $user->user_id,'or' => true];
+
+          if($key == 0)
+            $u = ['column' => 'user_id','condition' => '=','value' => $user->user_id];
+          else
+            $u = ['column' => 'user_id','condition' => '=','value' => $user->user_id,'or' => true];
+
           array_push($where, $u);
         }
+
+
 
         $model = new Girl();        
         $columns = [
@@ -378,6 +385,8 @@ class ChatController extends Controller
 
         $model->setWhere($where);
         $data = $model->getData();
+
+
 
         return $data['data'];
     } 

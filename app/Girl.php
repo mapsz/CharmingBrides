@@ -75,7 +75,7 @@ class Girl extends _adminPanel
     [
       'name'        => 'created_at',
       'caption'     => 'created at',
-      'timeFormat'  => 'j F Y G:i' 
+      'timeFormat'  => 'j M Y G:i' 
     ],         
   ];  
 
@@ -398,7 +398,7 @@ class Girl extends _adminPanel
         ], 
         [          
           'name' => 'created_at',
-          'timeFormat'  => 'j F Y G:i' 
+          'timeFormat'  => 'j M Y G:i' 
         ],          
       ];
     $this->setColumns($columns);

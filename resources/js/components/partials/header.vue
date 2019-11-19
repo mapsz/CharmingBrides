@@ -75,12 +75,22 @@
             <fa-icon icon="comments" /> ONLINE CHAT
           </a>
 
-          <a v-if="auth" class="nav-link" href="/letters">
-            <fa-icon icon="envelope" /> Letters</a>
+          <a 
+            v-if="auth" 
+            class="nav-link" 
+            href="/letters"
+            :class="(noty.l > 0) ? 'notification':''"
+          >
+            <fa-icon icon="envelope" /> Letters  {{(noty.l > 0) ? '('+noty.l+')':''}}</a>
           </a>
 
-          <a v-if="auth" class="nav-link" href="/matched">
-            <fa-icon icon="heart" /> Signs of Interest</a>
+          <a 
+            v-if="auth" 
+            class="nav-link" 
+            href="/matched"
+            :class="(noty.s > 0) ? 'notification':''"
+          >
+            <fa-icon icon="heart" /> Signs of Interest   {{(noty.s > 0) ? '('+noty.s+')':''}}</a>
           </a>
 
           <a v-if="auth && role < 3" class="nav-link" href="/profile">
@@ -130,7 +140,10 @@
     props:['p-user'],
     data(){
       return {
-        //
+        noty:{
+          l:0,
+          s:0,
+        },
       }
     },
     computed:{
@@ -148,12 +161,31 @@
           return false;
         }   
       }
-    },        
+    },  
+    mounted() {
+      this.getNotifications();
+    },          
     methods: {
       async logout(){
         await this.ax('post','/logout');
         location.reload();
+      },
+      async getNotifications(){
+        let r = await this.ax('get','/notifications');
+
+        if(!r) return;
+
+        this.noty = r;
       }
     }
   }
 </script>
+
+<style scoped>
+  
+  .notification{
+    color:yellow !important;
+  }
+
+
+</style>
