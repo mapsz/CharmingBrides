@@ -10,7 +10,6 @@ use Illuminate\Support\ServiceProvider;
 // use Symfony\Component\Console\Output\NullOutput;
 // use BeyondCode\LaravelWebSockets\Server\Logger\WebsocketsLogger;
 
-
 class AppServiceProvider extends ServiceProvider
 {
     /**

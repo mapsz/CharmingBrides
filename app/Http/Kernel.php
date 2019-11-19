@@ -63,7 +63,12 @@ class Kernel extends HttpKernel
       //Custom
       'admin' => \App\Http\Middleware\IsAdmin::class,
       'agent' => \App\Http\Middleware\IsAgent::class,
+      'last-activity' => \App\Http\Middleware\LastActivity::class,
 		
       'under-construction' => \LarsJanssen\UnderConstruction\UnderConstruction::class,
     ];
+
+
+
+    
 }

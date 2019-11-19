@@ -536,39 +536,41 @@ class _adminPanel extends Model
 
             }
             //No Relations
-            else{               
-              //Data/time
-              if(isset($c['timeFormat'])){
-                if(is_object($dbValue[$c['name']])){
-                  if(isset($dbValue[$c['name']]->timestamp)){  
-                    $val = $dbValue[$c['name']]->format($c['timeFormat']);
-                  }else{
-                    if($c['timeFormat'] == 'age'){
-                      $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->age;
-                    }else{
-                      $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
-                    }                    
-                  }
+            else{ 
+              //Simple data                   
+              $val = $dbValue[$c['name']];                       
+              
+            }
+
+            //Data/time
+            if(isset($c['timeFormat'])){
+
+              if(is_object($val)){
+                if(isset($val->timestamp)){  
+                  $val = $val->format($c['timeFormat']);
                 }else{
-                  if($dbValue[$c['name']] == null)
-                    $val = "";
-                  else{
-                    if($c['timeFormat'] == 'age'){
-                      $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->age;
-                    }else{
-                      $val = Carbon::createFromFormat('Y-m-d',$dbValue[$c['name']])->format($c['timeFormat']);
-                    }   
-                  }
+                  if($c['timeFormat'] == 'age'){
+                    $val = Carbon::parse($val)->age;
+                  }else{
+                    $val = Carbon::parse($val)->format($c['timeFormat']);
+                  }                    
                 }
-              }
-              //Simple data
-              else{                     
-                $val = $dbValue[$c['name']];                       
+              }else{
+                if($val == null)
+                  $val = "";
+                else{
+                  if($c['timeFormat'] == 'age'){
+                    $val = Carbon::createFromFormat('Y-m-d',$val)->age;
+                  }else{
+                    $val = Carbon::parse($val)->format($c['timeFormat']);
+                  }   
+                }
               }
             }
 
+            
             $d[$c['name']] = $val;          
-          }            
+          }
 
           if(isset($dbValue['id'])) $d['_id'] = $dbValue['id'];            
           array_push($formatedData, $d);

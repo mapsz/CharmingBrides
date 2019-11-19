@@ -16,6 +16,13 @@
             <!-- E-Mail Address: -->            
             <span v-if="man.user_id != undefined" class="col-4 font-weight-bold">E-Mail Address:</span>
             <span v-if="man.user_id != undefined" class="col-8">{{man.user_id}}</span>
+
+            <!-- Registration date-->            
+            <span class="pt-3 col-4 font-weight-bold">Registration Date:</span>
+            <span class="pt-3 col-8">{{man.created_at}}</span>
+            <!-- Last Activity -->            
+            <span v-if="man.user_id != undefined" class="col-4 font-weight-bold">Last Activity:</span>
+            <span v-if="man.user_id != undefined" class="col-8">{{man.last_activity}}</span>
           </div>
         </div>
         <div class="col-6">

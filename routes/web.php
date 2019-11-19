@@ -16,7 +16,9 @@
 // });
 use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 
-Route::group(['middleware' => 'under-construction'], function () {
+
+
+Route::group(['middleware' => ['under-construction','last-activity']], function () {
 
 
 //    Info pages

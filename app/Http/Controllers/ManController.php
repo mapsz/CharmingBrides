@@ -52,6 +52,8 @@ class ManController extends _adminPanelController
                   ], 
                   [
                     'name' => 'created_at',
+                    'caption' => 'Registration Date',
+                    'relation' => 'user.created_at',                    
                     'timeFormat'  => 'j M Y G:i'       
                   ]
                 ]  
@@ -106,8 +108,20 @@ class ManController extends _adminPanelController
           'name' => 'id',
           'relation' => 'user.id'
         ],
+        [
+          'name' => 'last_activity',
+          'caption' => 'Last activity',
+          'relation' => 'user.last_login',
+          'timeFormat'  => 'j M Y G:i'
+        ], 
+        [
+          'name' => 'created_at',
+          'caption' => 'Registration Date',
+          'relation' => 'user.created_at',
+          'timeFormat'  => 'j M Y G:i'
+        ], 
         ['name' => 'name'],
-        ['name' => 'birth'],
+        ['name' => 'birth','timeFormat'  => 'j M Y'],
         ['name' => 'country'],
         ['name' => 'city'],
         ['name' => 'height'],
@@ -181,9 +195,21 @@ class ManController extends _adminPanelController
           'caption' => 'email',
           'relation' => 'user.email',
         ], 
+        [
+          'name' => 'created_at',
+          'caption' => 'Registration Date',
+          'relation' => 'user.created_at',
+          'timeFormat'  => 'j M Y G:i'
+        ],
+        [
+          'name' => 'last_activity',
+          'caption' => 'Last activity',
+          'relation' => 'user.last_login',
+          'timeFormat'  => 'j M Y G:i'
+        ],  
         ['name' => 'name'],
         ['name' => 'surname'],
-        ['name' => 'birth'],
+        ['name' => 'birth','timeFormat'  => 'j M Y'],
         ['name' => 'country'],
         ['name' => 'city'],
         ['name' => 'height'],
