@@ -46,17 +46,27 @@
               <div v-if="room" class="d-flex bd-highlight">
                 <!-- Avatar -->
                 <div class="img_cont">
-                  <img 
-                    :src="companion.photo[0]"
-                    class="rounded-circle user_img"
-                  >
+                  <a 
+                    :href="((room.companion.role == 1) ? '/girl/' : '/man/') + room.companion.id"
+                    target="_blank"
+                  >                  
+                    <img 
+                      :src="companion.photo[0]"
+                      class="rounded-circle user_img"
+                    >
+                  </a>
                   <span v-bind:class="{'offline': !onlineUsers.some(e => e.id == companion.id)}" class="online_icon"></span>
                 </div>
                 <!-- Info -->
                 <div class="user_info">
-                  <span>
-                    {{room.companion.name}} {{room.companion.surname}}
-                  </span>
+                  <a 
+                    :href="((room.companion.role == 1) ? '/girl/' : '/man/') + room.companion.id"
+                    target="_blank"
+                  >
+                    <span>
+                      {{room.companion.name}}
+                    </span>
+                  </a>
                   <p>{{room.id}} - room</p>
                 </div>
                 <!-- Connection info -->
@@ -81,8 +91,21 @@
                   <span>
                      {{payedChatCaptions.currentTimer}}
                   </span>
-                  <p>Total: - {{payedChatCaptions.totalPrice}}$</p>
-                </div>                                      
+                  <p >Total: - {{payedChatCaptions.totalPrice}}$</p>
+                </div>  
+                <div v-if="!user.man" class="user_info">
+                  <div v-for="payed in payedChat"> <!-- triger timer -->
+                    <span 
+                      v-if="payed.room == room.id && (currentTime() - payed.payedTime < 32)"
+                      :class="'text-' + ((currentTime() - payed.payedTime > 11) ? 'warning' : 'success')"
+                    >
+                      {{payedChatTime(payed.startTime)}} 
+                      <span style="color:gray;font-size:10pt">
+                       {{currentTime() - payed.payedTime}} 
+                      </span>
+                    </span>
+                  </div>
+                </div>                                    
                 <!-- Stop     -->
                 <div v-if="user.man" class="user_info">
                   <button class="btn btn-primary" @click="stopPayedChat(room.id)">Stop</button>
@@ -90,7 +113,7 @@
                 <!-- @@@ Timer pause -->
               </div>
                 <!-- More @@@ ?? -->
-                <!-- <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
+<!--                 <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
                 <div class="action_menu">
                     <ul>
                         <li><i class="fas fa-user-circle"></i> View profile</li>
@@ -432,7 +455,7 @@
             }
 
             return true;
-          }
+          },
         },        
         watch: {
           chatOnlineConnection: {
@@ -494,6 +517,10 @@
 
           //Resend invites
           this.reSendInvites();
+
+          if(this.pUser !== 1){
+            this.payedChatTriger();
+          }
         },
         methods: {
           //Admin
@@ -815,11 +842,15 @@
               }
           },            
           async connectRoom(){
-
             //Connect chanel
             let c = await this.echo.join('privateChat.' + this.room.id) //@@@ private chat
-              .listen('PrivateChat', ({message}) => {
-                  this.messages.push(message);
+              .listen('PrivateChat', (response) => {
+                //Message
+                if(response.message != false){                  
+                  this.messages.push(response.message);
+                  return;
+                }
+
               })
 
             //Save connection params
@@ -990,6 +1021,39 @@
                 }
 
                 break;
+              case 'payedChat':
+
+                if(this.prop_user.man < 3) break;
+
+                console.log(data);
+
+                let i = this.payedChat.findIndex(x => x.room == data.roomId);
+
+                //Stop chat
+                if(data.sType == 2){
+                  console.log('del '+i);
+                  this.payedChat.splice(i, 1);
+                  break;
+                }
+
+                //Pay chat
+                if(data.sType == 1){
+                  if(i < 0){
+                    this.payedChat.push({
+                      room:data.roomId,
+                      startTime:data.start,
+                      payedTime:data.pay,
+                    })
+                  }else{
+                    this.payedChat[i].room = data.roomId;
+                    this.payedChat[i].startTime = data.start;
+                    this.payedChat[i].payedTime = data.pay;
+                  }    
+                  break;                  
+                }
+
+                
+                break;
               default:
                 return;
                 break;
@@ -1123,8 +1187,15 @@
               }
             }
 
+            //Add start time
+            payedChat.startTime = moment().unix();
+
             // Start History
-            let h = await this.ax('put','chat/history',{room:roomId,session:this.session});
+            let h = await this.ax('put','chat/history',{
+                                                          room:roomId,
+                                                          session:this.session,
+                                                          startTime:payedChat.startTime
+                                                        });
             if(!h){this.hideLoading(l);return false;}
             payedChat.history = h;
 
@@ -1145,8 +1216,6 @@
 
             //Add timer
             payedChat.timer = this.startRoomTimer(roomId);
-
-            // console.log(payedChat);
 
             this.payedChat.push(payedChat);
 
@@ -1181,21 +1250,23 @@
               this.payedChat[i].captionTime = minutes+":"+_seconds;
 
 
+              //Pay
+              if(seconds % 10 == 0){
+                if(!this.payedChat[i].payed){
+                  this.payChat(this.payedChat[i]);
+                  this.payedChat[i].payed = true;
+                }
+              }else{
+                this.payedChat[i].payed = false;
+              }
+
               if(seconds > 60){
                 //Total
                 this.payedChat[i].totalPrice = (
                   parseFloat(this.payedChat[i].pricePerSecond * seconds)                   
                   // parseFloat(this.user.membership.chat_price)
                 ).toFixed(2);
-                //Pay
-                if(seconds % 10 == 0 && seconds > 61){
-                  if(!this.payedChat[i].payed){
-                    this.payChat(this.payedChat[i]);
-                    this.payedChat[i].payed = true;
-                  }
-                }else{
-                  this.payedChat[i].payed = false;
-                }
+
 
                 //Balance
                 let pay = parseFloat(this.payedChat[i].totalPrice) -
@@ -1246,6 +1317,32 @@
           unFreezeRoom(){
               //
               this.freeze = false;
+          },
+          getPayedChat(roomId){
+            let i = this.payedChat.findIndex(x => x.room == response.roomId);
+            if(i < 0){
+              return false;
+            }else{
+              return payedChat[i];
+            }
+          },          
+          payedChatTime (time){
+            return parseInt((moment().unix() - time) / 60)  
+            +':'+           (moment().unix() - time) % 60;
+          },
+          payedChatTriger(){
+            setTimeout(() => {
+                let i = this.payedChat.findIndex(x => x.room == -1);
+                if(i < 0){
+                  this.payedChat.push({'room':-1});              
+                }            
+                this.payedChat.splice(i, 1);
+                this.payedChatTriger();       
+              },500); 
+          },
+          currentTime(){
+            //
+            return moment().unix();
           },
           //Messages
           async getMessages(){

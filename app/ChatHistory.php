@@ -9,6 +9,8 @@ use Storage;
 use App\User;
 use Auth;
 use Illuminate\Support\Facades\DB;
+use App\Events\PrivateChat;
+use App\Events\Chat;
 
 // ChatHistory::chatDisconnect($this->channelName, $this); //###
 
@@ -38,6 +40,15 @@ class ChatHistory extends Model
       }
 
       if(!$history) return false;     
+
+      //show payed 
+      Chat::dispatch([
+        'type'        => 'payedChat',
+        'sType'       => 1,
+        'roomId'      => $history->room_id,
+        'start'       => $history->created_at->timestamp,
+        'pay'         => Carbon::now()->timestamp,
+      ]);          
 
       //Get last pay
       $last_pay = ($history->last_pay ? $history->last_pay : $history->created_at) ;
@@ -159,6 +170,12 @@ class ChatHistory extends Model
         DB::rollback();
         return false;
       }
+
+      Chat::dispatch([
+        'type'        => 'payedChat',
+        'sType'       => 2,
+        'roomId'      => $history->room_id,
+      ]);   
 
       return true;
     }

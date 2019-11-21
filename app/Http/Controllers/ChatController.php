@@ -77,6 +77,7 @@ class ChatController extends Controller
 
       $id = ChatHistory::startHistory($request->room,$request->session);
 
+
       if(!$id){
         return response()->json(['error' => '1', 'text' => 'Connect error!']);
       }

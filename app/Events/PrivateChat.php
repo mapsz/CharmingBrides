@@ -14,8 +14,7 @@ class PrivateChat implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private $roomId;
-    public $body;
+    public $roomId;
     public $message;
 
     /**
@@ -23,7 +22,7 @@ class PrivateChat implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($roomId, $message)
+    public function __construct($roomId, $message,$payedChat = false)
     {
         $this->roomId = $roomId;
         $this->message = $message;
