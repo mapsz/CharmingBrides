@@ -352,7 +352,7 @@ class _adminPanel extends Model
         }       
         //SingleId
         if($this->singleId){
-          $getData->where('id', '=', $this->singleId);
+          $getData = $getData->where('id', '=', $this->singleId);
         }       
         //Where
         if($this->where){

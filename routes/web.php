@@ -324,6 +324,13 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);
 
 
+  //Email
+  Route::get('/email', 'EmailController@index')->name('admin_email');
+  Route::put('/email', 'EmailController@send');
+
+
+
+
 });
 
 

@@ -34,7 +34,10 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ route('admin_order') }}">Orders</a>
-        </li>        
+        </li>  
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('admin_email') }}">Email</a>
+        </li>                
       @endif
     </ul>
   </div>

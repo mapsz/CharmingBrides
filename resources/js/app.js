@@ -187,6 +187,11 @@ Vue.component('admin-signs', require('./components/admin/signs.vue'));
 
 Vue.component('pre-register', require('./components/registration/preregister.vue'));
 
+//admin
+Vue.component('admin-email', require('./components/admin/email.vue'));
+Vue.component('admin-mailer-man-search', require('./components/admin/mailer/partials/mansearch.vue'));
+
+
 const app = new Vue({
     el: '#app'
 });

@@ -65,6 +65,7 @@ abstract class _adminPanelController extends Controller
 
     public function _edit($id){
 
+
       //Get Model
       $model = new $this->model();
 

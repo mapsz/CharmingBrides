@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Mail;
 
 class GirlController extends _adminPanelController
 {
@@ -120,6 +121,7 @@ class GirlController extends _adminPanelController
 
 
     public function index($id) {
+
       //Auth
       $auth = Auth::user();
 
