@@ -55,10 +55,13 @@ class EmailController extends Controller
       $d['subject'] =$data['subject'];   
       $d['email'] =$v['user_id'];
       $d['name'] =$v['name'];
+      $d['content'] = $data['content'];
 
-      Mail::raw($data['content'], function ($m)use($d) {
-        $m->from('no-reply@charmingbrides.com', 'Charming Brides');
-        $m->to($d['email'], $d['name'])->subject($d['subject']);
+      Mail::send([], [], function ($m)use($d) {
+        $m->from('no-reply@charmingbrides.com', 'Charming Brides')
+          ->to($d['email'], $d['name'])
+          ->subject($d['subject'])
+          ->setBody($d['content'], 'text/html');
       });
     }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid email-sender">
   
     <h1>Send Email Letters</h1>
 
@@ -193,16 +193,14 @@ import { VueEditor } from "vue2-editor";
         this.hideLoading(l);
       },
       async sendEmails(){
-
+        let l = this.loading('.email-sender');
         if(this.toList.length < 1) this.showErrors(['Select Men!'])
-
 
         let r = await this.ax('put','/admin/email',{content:this.content,subject:this.subject,list:this.toList , all:this.toAllMen});
 
+        if(!r) this.hideLoading(l);
 
-        console.log(r);
-
-        console.log(this.content);
+        this.showSuccess('Mails Sent!');
       }
     }
   }
