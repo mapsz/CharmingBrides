@@ -74,6 +74,8 @@
             console.log(memberships.data);
 
             this.memberships = memberships.data;
+
+            this.hideLoading(l);
           }
         }
     }
