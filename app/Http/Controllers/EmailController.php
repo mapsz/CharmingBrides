@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Auth;
 use Mail;
+use App\Man;
 
 class EmailController extends Controller
 {
@@ -49,11 +50,17 @@ class EmailController extends Controller
 
     $data = $Request->all();
 
+    //All men
+    if($data['all']){
+      $men = Man::with('user')->get();      
+      $data['list'] = $men->toArray();
+    };
+
     foreach ($data['list'] as $v) {
 
       $d['email'] = $v;
       $d['subject'] =$data['subject'];   
-      $d['email'] =$v['user_id'];
+      $d['email'] = ($data['all']) ? $v['user']['email'] : $v['user_id'];
       $d['name'] =$v['name'];
       $d['content'] = $data['content'];
 
@@ -64,8 +71,6 @@ class EmailController extends Controller
           ->setBody($d['content'], 'text/html');
       });
     }
-
-
 
     return response()->json(['error' => '0','data' => 123]);
   }

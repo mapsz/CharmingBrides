@@ -275,7 +275,7 @@ class ManController extends _adminPanelController
         DB::beginTransaction();
 
         //Store pay
-        Man::where('user_id',$man->id)
+        Man::where('user_id',$man->user_id)
           ->update(['balance' => $value]);
 
         //save order

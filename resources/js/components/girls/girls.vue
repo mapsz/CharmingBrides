@@ -39,6 +39,7 @@
 <script>
   export default {
     mixins: [ mMoreAxios, mNotifications, mLoading ],
+    props:['p-data'],
     data(){
       return {            
         girls:[],
@@ -53,7 +54,7 @@
     methods: {
       async getGirls(page = 1){
         let l = this.loading('.girls-container');
-        let r = await this.ax('get','/all/girl/search',{page:page,search:this.search})
+        let r = await this.ax('get','/all/girl/search',{page:page,search:this.search,new:this.pData})
         if(!r){
           this.hideLoading(l);
           return false;

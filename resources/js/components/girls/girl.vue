@@ -8,13 +8,13 @@
         </div>
         <div class="row">
           <!-- passport -->
-          <div class="col-2">
+          <div class="col">
             <div class="girl-passport">
               <img class="w-100" :src="'/'+girl.passport[0]" alt="Passport">
             </div>  
           </div>
           <!-- for admin info -->
-          <div class="col-3">
+          <div class="col">
             <!-- name -->
             <div class="row">
               <div class="col-5">name:</div>
@@ -42,7 +42,7 @@
             </div>               
           </div>
           <!-- letter -->
-          <div class="col-7">
+          <div class="col">
             <!-- subject -->
             <div class="row">
               <div class="col" style="color: #bf005a;"><b> {{girl.firstLetterSubject}}</b></div> 
@@ -51,6 +51,14 @@
             <div class="row">
               <div class="col" style="color: #bf005a;"> {{girl.firstLetter}}</div> 
             </div>         
+          </div>
+          <div class="col">
+            <div class="row">
+              <div class="col" style="color: #bf005a;"><b>Info</b></div> 
+            </div>       
+            <div class="row">
+              <div class="col" style="color: #bf005a;">{{girl.forAdminInfo}}</div> 
+            </div>  
           </div>
         </div>
       </div>

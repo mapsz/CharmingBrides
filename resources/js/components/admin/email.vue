@@ -196,9 +196,13 @@ import { VueEditor } from "vue2-editor";
         let l = this.loading('.email-sender');
         if(this.toList.length < 1) this.showErrors(['Select Men!'])
 
-        let r = await this.ax('put','/admin/email',{content:this.content,subject:this.subject,list:this.toList , all:this.toAllMen});
+        let r = await this.ax('put','/admin/email',{content:this.content,subject:this.subject,list:this.toList , all:this.toAllMen,all:this.toAllMen});
 
-        if(!r) this.hideLoading(l);
+        if(!r){
+          this.hideLoading(l);
+          return;
+
+        } 
 
         this.showSuccess('Mails Sent!');
       }

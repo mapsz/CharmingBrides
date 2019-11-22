@@ -176,6 +176,7 @@ class GirlController extends _adminPanelController
           array_push($columns,['name' => 'forAdminSurname']);
           array_push($columns,['name' => 'forAdminFathersName']);
           array_push($columns,['name' => 'forAdminPhoneNumber']);
+          array_push($columns,['name' => 'forAdminInfo']);
           array_push($columns,['name' => 'firstLetter']);
           array_push($columns,['name' => 'firstLetterSubject']); 
           array_push($columns,  [
@@ -218,26 +219,27 @@ class GirlController extends _adminPanelController
 
     public function newGirls(){
 
-      $model = new $this->model();
+      // $model = new $this->model();
 
-      $model->setPerPage(20);
-      $model->setInfoColumns();
-      $model->setOrder(['row'=>'id','order'=>'DESC']);
-      $where = [['column' => 'created_at','condition' => '>=','value' => Carbon::now()->subMonth()->toDateTimeString()]];
-      $model->setWhere($where);
+      // $model->setPerPage(20);
+      // $model->setInfoColumns();
+      // $model->setOrder(['row'=>'id','order'=>'DESC']);
+      // $where = [['column' => 'created_at','condition' => '>=','value' => Carbon::now()->subMonth()->toDateTimeString()]];
+      // $model->setWhere($where);
 
-      $data = $model->getData();
-      $data = $data['data'];
-      $settings = $model->getSettings();
+      // $data = $model->getData();
+      // $data = $data['data'];
+      // $settings = $model->getSettings();
 
-      foreach ($data as $k => $v) {
-        $data[$k]['age']     = Carbon::parse($v['birth'])->age;
-      }
+      // foreach ($data as $k => $v) {
+      //   $data[$k]['age']     = Carbon::parse($v['birth'])->age;
+      // }
 
-      $girls = json_encode($data);
-      $settings = json_encode($settings);
+      // $girls = json_encode($data);
+      // $settings = json_encode($settings);
 
-      return view('pages.girls')->with('girls',$girls)->with('settings',$settings);
+      // return view('pages.girls')->with('girls','new');
+      return view('pages.vue')->with('vue','girls')->with('data',1);
 
     }
 
@@ -257,6 +259,7 @@ class GirlController extends _adminPanelController
 
       //where
       $where = [];
+
 
       //location
       if(isset($search->location) && $search->location != '0'){
@@ -297,6 +300,11 @@ class GirlController extends _adminPanelController
       $custom = $custom->whereHas('user',function($q){
         $q->where('role',1);
       });
+
+      //New
+      if(isset($request->new) && $request->new == '1'){
+        $custom = $custom->where('created_at','>=',Carbon::now()->subMonth()->toDateTimeString());
+      }      
 
       $model->setCustomQueries($custom);
 
