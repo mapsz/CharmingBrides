@@ -17,14 +17,18 @@ window.Vue = require('vue');
  //Assets
  window.assets = '';
 
+Vue.config.devtools = false
+Vue.config.debug = false
+Vue.config.silent = true
+
 //Modules
 // var VueChatScroll = require('vue-chat-scroll');
 // Vue.component('VueChatScroll', require('vue-chat-scroll'));
 
  // Websockets
 import _echo from 'laravel-echo';
-import _pusher from 'pusher-js';
 window._echo    = _echo;
+import _pusher from 'pusher-js';
 window._pusher  = _pusher;
 
 window.d3 = require('d3-timer');

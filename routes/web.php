@@ -51,8 +51,7 @@ Route::get('/home', function () {
 //Notifications
 Route::get('/notifications',         'ManNotificationController@get');
 
-//Pay
-Route::get('/order',         'PayController@order');
+
 
 //Membership
 Route::get('/memberships',         'MembershipController@index');
@@ -131,6 +130,9 @@ Route::delete('/chat/admin/deleteOnline', 'ChatController@deleteHardOnline')->na
 //Auth
 Route::group(['middleware' => ['auth']],function(){
 
+  //Pay
+  Route::get('/order',         'PayController@order');
+  
   // Letter
   $model = 'letter';
   $namePrefix = "";                
