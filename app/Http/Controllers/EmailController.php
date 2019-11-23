@@ -48,6 +48,8 @@ class EmailController extends Controller
 
   public function send(Request $Request){
 
+    ini_set('memory_limit', '-1');
+
     $data = $Request->all();
 
     //All men
