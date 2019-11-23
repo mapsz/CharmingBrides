@@ -136,6 +136,7 @@ class MailerController extends Controller
         ],
         ['name' => 'name'],
         ['name' => 'surname'],
+        ['name' => 'country'],
         ['name' => 'birth','timeFormat'  => 'age' ],
         [
           'name'        => 'created_at',

@@ -462,9 +462,9 @@ class ManController extends _adminPanelController
       //where
       $where = [];
 
-      //counry
-      if(isset($search->counry) && $search->counry != '0'){
-        array_push($where, ['column' => 'counry','condition' => '=','value' => $search->counry]);
+      //country
+      if(isset($search->country) && $search->country != '0'){
+        array_push($where, ['column' => 'country','condition' => '=','value' => $search->country]);
       }
 
       //age from
@@ -533,8 +533,8 @@ class ManController extends _adminPanelController
       $where = [];
 
       //counry
-      if(isset($search->counry) && $search->counry != '0'){
-        array_push($where, ['column' => 'location','condition' => '=','value' => $search->location]);
+      if(isset($search->country) && $search->country != '0'){
+        array_push($where, ['column' => 'country','condition' => '=','value' => $search->country]);
       }
 
       //favorite

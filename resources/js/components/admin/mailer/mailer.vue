@@ -84,6 +84,7 @@
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
                     <th scope="col">Age</th>
+                    <th scope="col">Country</th>
                     <th scope="col">Created At</th>
                   </tr>
                 </thead>
@@ -99,6 +100,7 @@
                     <th>{{men.id}}</th>
                     <td>{{men.name}}{{(men.surname)?' '+men.surname:""}}</td>
                     <td>{{men.birth}}</td>
+                    <td>{{men.country}}</td>
                     <td>{{men.created_at}}</td>
                   </tr>
                 </tbody>
