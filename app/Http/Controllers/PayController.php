@@ -46,8 +46,8 @@ class PayController extends Controller
 
 
   //PayPal
-  protected $clientID       = "AVkHSxLhWMxnJY8OuJ5dbEjpPbUrdWvSxwVqsTDMTJc1RN5rhvxdZ_KBNj0dpW_Sma25Q4FDob6mgTn-";
-  protected $clientSecret   = "EH7gnof54HE_y_CkNM-OGuQ66O1Z_D-60oKPmy2y4z_d8dQqJ7KJvo5vhEMnA58PnKiFeJ1J2tcqoLQB";
+  protected $clientID       = "ARrbqkpBMp1i-tZ3Mca6ljr0KfOrYCGGRHimwEtb-TqS3Q_axb06MucF_XjHkEXp9v4KnhBfvBpAzUxu";
+  protected $clientSecret   = "EFfv8xmlXMGdg-5ZhpzYrq8LizcybYX2tbC_EXThIrMUhgzJtPz1kywaZl783EtePKVtw9UGWjRN8ocZ";
 
   public function paypalCreatePayment(request $request)
   {
@@ -59,7 +59,7 @@ class PayController extends Controller
     ){
       return false;
     }
-
+ 
     if($request->cat == "membership"){
       $product = Membership::where('id',$request->id)->first();
     }
@@ -81,12 +81,20 @@ class PayController extends Controller
 
     if(!$order_id) return false;
 
+
+
     $apiContext = new \PayPal\Rest\ApiContext(
         new \PayPal\Auth\OAuthTokenCredential(
             $this->clientID,     // ClientID
             $this->clientSecret      // ClientSecret
         )
     );
+
+    $apiContext->setConfig(
+      array(
+        'mode' => 'live',
+      )
+    );  
 
     $payer = new Payer();
     $payer->setPaymentMethod("paypal");

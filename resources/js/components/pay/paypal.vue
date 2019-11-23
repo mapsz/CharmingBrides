@@ -28,7 +28,7 @@ export default {
       let userId = this.pUserId;
       let $this = this;
       paypal.Button.render({
-        env: 'sandbox', // Or 'production'
+        env: 'production', // Or 'production'
         // Set up the payment:
         // 1. Add a payment callback
         payment: function(data, actions) {
