@@ -18,7 +18,10 @@ use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 
 
 
-Route::group(['middleware' => ['under-construction','last-activity']], function () {
+Route::group(['middleware' => [
+  // 'under-construction',
+  'last-activity']
+], function () {
 
 
 //    Info pages
@@ -132,7 +135,7 @@ Route::group(['middleware' => ['auth']],function(){
 
   //Pay
   Route::get('/order',         'PayController@order');
-  
+
   // Letter
   $model = 'letter';
   $namePrefix = "";                
