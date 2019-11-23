@@ -166,6 +166,12 @@ class PayController extends Controller
         )
     );
 
+    $apiContext->setConfig(
+      array(
+        'mode' => 'live',
+      )
+    );  
+    
     $paymentId = $request->paymentID;
     $payment = Payment::get($paymentId, $apiContext);
 
