@@ -6,7 +6,13 @@
         <div class="logo-container">
           <img class="logo" src="/img/logo.png">
         </div>
-        
+
+        <div class="upper-text">
+          International Dating Agency<br>
+          <span>
+            Meet your Ukrainian wife here
+          </span>
+        </div>        
         <div class="text-container align-self-center">
           <div>Charming Brides <b>Ladies are:</b></div>
           <div>
@@ -89,5 +95,19 @@
     text-shadow: 1px 1px #804a5a;
   }
 
+  .upper-text {
+    position:absolute;
+    transform: translate(200px ,-35px);
+    color: #e11b21;
+    font-size: 28pt;
+    font-family: times;
+    font-weight: 550;
+    line-height: 30px;
+  }
+
+  .upper-text span{
+    font-size: 20pt;
+    padding-left: 30px;
+  }
 
 </style>
