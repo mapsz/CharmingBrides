@@ -178,9 +178,10 @@
         
         let l = this.showLoading('.chat-admin-girl-search-list');
 
-        let r = await this.ax('get','/chat/search/girl',{'search':this.search});
+        // let r = await this.ax('get','/chat/search/girl',{'search':this.search});
+        let r = await this.ax('get','/all/girl/search',{search:{search:this.search}})
 
-        this.searchList = r.data;
+        this.searchList  = JSON.parse(r.data);
 
         this.hideLoading(l);
       },
