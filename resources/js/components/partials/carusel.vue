@@ -1,5 +1,9 @@
 <template>
   <div class="container">
+    <h2 class="mobile-text" style="display:none">
+      International Dating Agency<br>
+      Meet your Ukrainian wife here
+    </h2>
     <div class="carusel-container media">
       <div class="row m-0">
 
@@ -52,6 +56,28 @@
 
 <style scoped>
   
+  
+
+
+  @media screen and (max-width: 992px) {
+    .carusel-container {
+      display: none;
+    }
+
+    .mobile-text{
+      color: #e11b21;
+      padding-top: 20px;
+      display:block !important;
+      text-align: center;
+    }
+  }
+
+  @media screen and (max-width: 460px) {
+    .mobile-text{
+      font-size: 16pt !important;
+    }
+  }
+
   .logo{
     width: 150px;
     height: 150px;

@@ -194,7 +194,7 @@ import { VueEditor } from "vue2-editor";
       },
       async sendEmails(){
         let l = this.loading('.email-sender');
-        if(this.toList.length < 1) this.showErrors(['Select Men!'])
+        if(this.toList.length < 1 && this.toAllMen == false) this.showErrors(['Select Men!'])
 
         let r = await this.ax('put','/admin/email',{content:this.content,subject:this.subject,list:this.toList , all:this.toAllMen,all:this.toAllMen});
 
