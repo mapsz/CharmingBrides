@@ -348,7 +348,7 @@
               key: process.env.MIX_PUSHER_APP_KEY,
               cluster: process.env.MIX_PUSHER_APP_CLUSTER,
               encrypted: true,
-              wsHost: window.location.hostname,
+              wsHost: process.env.APP_URL,
               wsPort: 6001,
               wssPort: 6001,
               disableStats: true,
