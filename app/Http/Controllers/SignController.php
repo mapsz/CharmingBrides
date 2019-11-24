@@ -21,7 +21,7 @@ class SignController extends _adminPanelController
       $data['search'] = [
         ['name'=>'period',
         'type'=>'fromToDate',
-        'fromDef'=>'2007-04-10',
+        'fromDef'=>Carbon::now()->subMonth(2)->format('Y-m-d'),
         'toDef'=>Carbon::now()->format('Y-m-d'),
         'fromName'=>'periodFrom',
         'toName'=>'periodTo'],      

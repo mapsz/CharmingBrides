@@ -28,7 +28,6 @@ class LetterController extends _adminPanelController
 
   public function adminLetterHistory(Request $request){
 
-
     //Agnt
     $agent = (Auth::user()->role < 4) ? User::where('id',Auth::user()->id)->with('agent')->first()->agent->id : false;    
     $letters = new Letter;
@@ -37,7 +36,6 @@ class LetterController extends _adminPanelController
         $q->where('id',$agent);
       });
     } 
-
 
     //Period
     if(isset($request->search)){
@@ -51,9 +49,6 @@ class LetterController extends _adminPanelController
                                   ->where('created_at', '<=', $dates['to']);
                                 });
     }
-
-
-
     $letters = $letters
                   ->whereHas('user.man')                      
                   ->whereHas('toUser.girl')                      
@@ -61,8 +56,7 @@ class LetterController extends _adminPanelController
                   ->with('user.man')
                   ->with('toUser.girl')
                   ->with('toUser.girl.agent')
-                  ->paginate(10);
-                  
+                  ->paginate(10);         
 
     //Get answers
     $lettersWithAnswers = [];
@@ -146,7 +140,7 @@ class LetterController extends _adminPanelController
       $data['search'] = [
         ['name'=>'period',
         'type'=>'fromToDate',
-        'fromDef'=>'2007-04-10',
+        'fromDef'=>Carbon::now()->subMonth(2)->format('Y-m-d'),
         'toDef'=>Carbon::now()->format('Y-m-d'),
         'fromName'=>'periodFrom',
         'toName'=>'periodTo'],      
