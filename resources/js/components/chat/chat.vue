@@ -943,7 +943,7 @@
           },
           //Notifications
           eventHandler(data){
-            // console.log(data);
+            console.log(data);
 
             switch (data.type) {
               case 'message':
