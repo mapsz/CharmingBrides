@@ -204,7 +204,7 @@ import { VueEditor } from "vue2-editor";
 
         } 
 
-        this.showSuccess('Mails Sent!');
+        this.showSuccess('Mails Queued!');
       }
     }
   }

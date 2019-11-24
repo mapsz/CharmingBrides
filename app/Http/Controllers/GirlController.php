@@ -132,33 +132,6 @@ class GirlController extends _adminPanelController
     public function index($id) {
 
 
-      //Get mailer
-      // $m = Mailer::find(1);
-      // if(!$m) throw new Exception("bad mailer", 3);      
-        
-      // //Get users
-      // $girls = json_decode($m->from_user_ids);
-      // $men = json_decode($m->to_user_ids);
-      // if(!$girls) throw new Exception("bad from", 1);    
-      // if(!$men) throw new Exception("bad to", 2);   
-              
-
-      // foreach ($girls as $girl) {
-      //   foreach ($men as $man) {
-      //     dd($girl->id,$man);
-      //   }        
-      // }
-
-
-
-      
-
-      dd($this->dispatch(new MailerLetters(4)));
-      // dd($this->dispatch(new SignSendJob(10658, 58701,2)));
-
-
-
-
       //Auth
       $auth = Auth::user();
 
