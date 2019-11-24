@@ -17,9 +17,9 @@ window.Vue = require('vue');
  //Assets
  window.assets = '';
 
-Vue.config.devtools = false
-Vue.config.debug = false
-Vue.config.silent = true
+// Vue.config.devtools = false
+// Vue.config.debug = false
+// Vue.config.silent = true
 
 //Modules
 // var VueChatScroll = require('vue-chat-scroll');

@@ -47,7 +47,8 @@
                 </div>
               </td>
               <td>{{formateDate(letter.created_at)}}</td>
-              <td v-if="day = letter.created_at.slice(8,10)">
+              <td>
+                {{setDay(letter.created_at.slice(8,10))}}
                 <a :href="'/letters?girl='+letter.to_user.id+'&companion='+letter.user.id">
                   <button class="btn btn-primary">More</button>
                 </a>
@@ -93,6 +94,10 @@
           //
         },
         methods: {
+          setDay(a){
+            // this.day=a;
+            return "";
+          },
           async getLetters(){
             //Show loading
             let l = this.showLoading('.admin-letter-history');
