@@ -40,6 +40,9 @@ Route::get('/ukraine', function () {return view('pages.page')->with('page','ukra
 
 //Main
 Route::get('/', function () {
+
+    
+
     return view('pages.home');
 });
 

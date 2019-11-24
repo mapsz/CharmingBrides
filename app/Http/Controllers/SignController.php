@@ -49,18 +49,18 @@ class SignController extends _adminPanelController
         });
       }
 
-    //Period
-    if(isset($request->search)){
-      $search = json_decode($request->search);
-      $dates = [
-        'from' => $search->periodFrom,
-        'to'   => $search->periodTo
-      ];
-      $data = $data->where(function($q)use($dates) {
-                                  $q->where('created_at', '>=', $dates['from'])
-                                  ->where('created_at', '<=', $dates['to']);
-                                });
-    }      
+      //Period
+      if(isset($request->search)){
+        $search = json_decode($request->search);
+        $dates = [
+          'from' => $search->periodFrom,
+          'to'   => $search->periodTo
+        ];
+        $data = $data->where(function($q)use($dates) {
+                                    $q->where('created_at', '>=', $dates['from'])
+                                    ->where('created_at', '<=', $dates['to']);
+                                  });
+      }      
 
       $data = $data->paginate(20);
 
@@ -184,10 +184,11 @@ class SignController extends _adminPanelController
 
     public function like(Request $request){
 
-      // //Validation
+      // //Validation @@@
       // $request->validate([
       //     'user_id'=> new CurrentUserOrAdmin
       // ]);
+
 
       if(isset($request->fromId)){
         $userId = $request->fromId;
@@ -221,39 +222,8 @@ class SignController extends _adminPanelController
       }
 
 
-      //Get existing
-      $sign = $this->model
-          ::where(function ($query)use($userId,$toId) {
-            $query->where  ('from_id', '=', $userId)
-                  ->where('to_id',   '=', $toId);
-          })            
-          ->orWhere(function ($query)use($userId,$toId) {
-            $query->where  ('from_id', '=', $toId)
-                  ->where('to_id',   '=', $userId);
-          })  
-          ->orderBy('id', 'desc')
-          ->first();
-
-      
-      if(!$sign){
-        //Make new
-        $sign = new $this->model;
-        $sign->from_id        = $userId;
-        $sign->to_id          = $toId;
-        $sign->from_confirmed = $like;
-      }else{
-        //Edit existing
-        if     ($sign->from_id == $userId){
-          $sign->from_confirmed = $like;
-        }
-        elseif ($sign->to_id == $userId){
-          $sign->to_confirmed   = $like;
-        }else{
-          return response()->json(['error' => '3', 'text' => 'something gone wrong']);
-        }
-      }
-
-      if(!$sign->save()) return response()->json(['error' => '4', 'text' => 'something gone wrong']);
+      if(!$this->model::sendSign($userId,$toId,$like))
+        return response()->json(['error' => '4', 'text' => 'something gone wrong']);
 
       return response()->json(['error' => '0']);
     }

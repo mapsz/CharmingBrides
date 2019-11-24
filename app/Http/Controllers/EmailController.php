@@ -7,6 +7,7 @@ use App\User;
 use Auth;
 use Mail;
 use App\Man;
+use App\Jobs\EmailSendJob;
 
 class EmailController extends Controller
 {
@@ -66,12 +67,8 @@ class EmailController extends Controller
       $d['name'] =$v['name'];
       $d['content'] = $data['content'];
 
-      Mail::send([], [], function ($m)use($d) {
-        $m->from('no-reply@charmingbrides.com', 'Charming Brides')
-          ->to($d['email'], $d['name'])
-          ->subject($d['subject'])
-          ->setBody($d['content'], 'text/html');
-      });
+
+      $this->dispatch(new EmailSendJob($d));
     }
 
     return response()->json(['error' => '0','data' => 123]);
