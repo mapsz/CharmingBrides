@@ -1,14 +1,6 @@
 <?php
 
 return [
-
-    /*
-     * This package comes with multi tenancy out of the box. Here you can
-     * configure the different apps that can use the webSockets server.
-     *
-     * Optionally you can disable client events so clients cannot send
-     * messages to each other via the webSockets.
-     */
     'apps' => [
         [
             'id' => env('PUSHER_APP_ID'),
@@ -20,32 +12,14 @@ return [
             'enable_statistics' => true,
         ],
     ],
-
-    /*
-     * This class is responsible for finding the apps. The default provider
-     * will use the apps defined in this config file.
-     *
-     * You can create a custom provider by implementing the
-     * `AppProvider` interface.
-     */
     'app_provider' => BeyondCode\LaravelWebSockets\Apps\ConfigAppProvider::class,
 
-    /*
-     * This array contains the hosts of which you want to allow incoming requests.
-     * Leave this empty if you want to accept requests from all hosts.
-     */
     'allowed_origins' => [
         //
     ],
 
-    /*
-     * The maximum request size in kilobytes that is allowed for an incoming WebSocket request.
-     */
     'max_request_size_in_kb' => 250,
 
-    /*
-     * This path will be used to register the necessary routes for the package.
-     */
     'path' => 'laravel-websockets',
 
     'statistics' => [
@@ -74,7 +48,7 @@ return [
         // 'local_cert' => env('LOCAL_CERT', null),
         'local_pk' => null,
         // 'local_pk' => env('LOCAL_KEY', null),
-        'passphrase' => null,
+        'passphrase' => null
         // 'verify_peer' => false,
         // 'verify_peer_name' => false,
     ],
