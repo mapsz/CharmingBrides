@@ -347,12 +347,12 @@
               broadcaster: 'pusher',
               key: process.env.MIX_PUSHER_APP_KEY,
               cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-              encrypted: true,
               wsHost: window.location.hostname,
               wsPort: 6001,
               wssPort: 6001,
               disableStats: true,
-              enabledTransports: ['ws', 'wss']
+              enabledTransports: ['ws', 'wss'],
+              encrypted: process.env.MIX_PUSHER_SCHEME == 'https',
             }),
             //admin
             hardOnline:[],
@@ -505,6 +505,8 @@
           }
         },      
         mounted() {
+          console.log(process.env);
+          console.log(process.env.MIX_PUSHER_SCHEME == 'https');
           //set user
           this.user = this.prop_user;
 

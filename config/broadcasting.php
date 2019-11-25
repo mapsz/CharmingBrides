@@ -38,9 +38,10 @@ return [
             'options' => [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'encrypted' => true,
-                'host' => env('APP_URL'),
+                'host' => env('APP_URL'),                
+                'scheme' => 'http',
+                'scheme' => env('MIX_PUSHER_SCHEME'),
                 'port' => 6001,
-                'scheme' => env('PUSHER_SCHEME'),
                 'curl_options' => [
                     CURLOPT_SSL_VERIFYHOST => 0,
                     CURLOPT_SSL_VERIFYPEER => 0,
