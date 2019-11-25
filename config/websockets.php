@@ -8,7 +8,7 @@ return [
             'key' => env('PUSHER_APP_KEY'),
             'secret' => env('PUSHER_APP_SECRET'),
             // 'enable_client_messages' => true,
-            'enable_client_messages' => false,
+            'enable_client_messages' => true,
             'enable_statistics' => true,
         ],
     ],
@@ -17,11 +17,8 @@ return [
     'allowed_origins' => [
         //
     ],
-
     'max_request_size_in_kb' => 250,
-
     'path' => 'laravel-websockets',
-
     'statistics' => [
         /*
          * This model will be used to store the statistics of the WebSocketsServer.
@@ -44,12 +41,12 @@ return [
 
 
     'ssl' => [
-        'local_cert' => null,
-        // 'local_cert' => env('LOCAL_CERT', null),
-        'local_pk' => null,
-        // 'local_pk' => env('LOCAL_KEY', null),
+        // 'local_cert' => null,
+        'local_cert' => env('LOCAL_CERT', null),
+        // 'local_pk' => null,
+        'local_pk' => env('LOCAL_KEY', null),
         'passphrase' => null
-        // 'verify_peer' => false,
+        'verify_peer' => false,
         // 'verify_peer_name' => false,
     ],
 ];
