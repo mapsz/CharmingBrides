@@ -352,7 +352,7 @@
               wssPort: 6001,
               disableStats: true,
               enabledTransports: ['ws', 'wss'],
-              encrypted: process.env.MIX_PUSHER_SCHEME == 'https',
+              encrypted: window.location.protocol == 'https:',
             }),
             //admin
             hardOnline:[],
@@ -505,8 +505,6 @@
           }
         },      
         mounted() {
-          console.log(process.env);
-          console.log(process.env.MIX_PUSHER_SCHEME == 'https');
           //set user
           this.user = this.prop_user;
 
