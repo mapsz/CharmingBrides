@@ -352,7 +352,7 @@
               wssPort: 6001,
               disableStats: true,
               enabledTransports: ['ws', 'wss'],
-              encrypted: window.location.protocol == 'https:',
+              encrypted: window.location.protocol == "https:",
             }),
             //admin
             hardOnline:[],
