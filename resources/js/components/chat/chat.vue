@@ -348,11 +348,13 @@
               key: process.env.MIX_PUSHER_APP_KEY,
               cluster: process.env.MIX_PUSHER_APP_CLUSTER,
               wsHost: window.location.hostname,
-              wsPort: 6001,
-              wssPort: 6001,
-              disableStats: true,
-              enabledTransports: ['ws', 'wss'],
+              wssHost: window.location.hostname,
+              wsPort: 6002,
+              wssPort: 6002,
+              disableStats: false,              
               encrypted: window.location.protocol == "https:",
+              enabledTransports: ['ws', 'wss'],
+              disabledTransports: ['sockjs', 'xhr_polling', 'xhr_streaming']
             }),
             //admin
             hardOnline:[],
