@@ -354,7 +354,6 @@
               disableStats: false,              
               encrypted: window.location.protocol == "https:",
               enabledTransports: ['ws', 'wss'],
-              disabledTransports: ['sockjs', 'xhr_polling', 'xhr_streaming']
             }),
             //admin
             hardOnline:[],
