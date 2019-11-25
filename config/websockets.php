@@ -46,7 +46,7 @@ return [
         // 'local_pk' => null,
         'local_pk' => env('LOCAL_KEY', null),
         'passphrase' => null,
-        'verify_peer' => false,
+        'verify_peer' => false
         // 'verify_peer_name' => false,
     ],
 ];
