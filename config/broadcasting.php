@@ -40,7 +40,7 @@ return [
                 'encrypted' => true,
                 'host' => env('APP_URL'),        
                 'scheme' => env('MIX_PUSHER_SCHEME'),
-                'port' => 6001,
+                'port' => 443,
                 'curl_options' => [
                     CURLOPT_SSL_VERIFYHOST => 0,
                     CURLOPT_SSL_VERIFYPEER => 0,
