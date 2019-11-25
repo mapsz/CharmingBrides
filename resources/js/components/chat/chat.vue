@@ -349,7 +349,7 @@
               // cluster: process.env.MIX_PUSHER_APP_CLUSTER,
               wsHost: window.location.hostname,
               // wssHost: window.location.hostname,
-              wsPort: 433,
+              wsPort: 6001,
               // wssPort: 6001,
               disableStats: true,              
               encrypted: window.location.protocol == "https:",
