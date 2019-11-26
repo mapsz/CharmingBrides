@@ -20,8 +20,8 @@
 
 Route::group(['middleware' => [
   // 'under-construction',
-  'last-activity']
-], function () {
+  'last-activity'
+]], function () {
 
 
 //    Info pages
