@@ -26,10 +26,48 @@ window.Vue = require('vue');
 // Vue.component('VueChatScroll', require('vue-chat-scroll'));
 
  // Websockets 
-import _pusher from 'pusher-js';
+// import _pusher from 'pusher-js';
 window.Pusher = require('pusher-js');
-import _echo from 'laravel-echo';
-window._echo    = _echo;
+import Echo from 'laravel-echo';
+
+window.Echo = new Echo({
+  broadcaster: 'pusher',
+  key: process.env.MIX_PUSHER_APP_KEY,
+  wsHost: window.location.hostname,
+  wsPort: window.location.protocol == "https:"? 3001 : 6001,
+  wssPort: window.location.protocol == "https:"? 3001 : 6001,
+  disableStats: true,              
+  encrypted: window.location.protocol == "https:",
+  enabledTransports: ['ws', 'wss'],
+});
+
+var onlineUsers = 0;
+
+function update_online_counter() {
+    jQuery('#online').text(onlineUsers);
+}
+
+window.Echo.join('common_room')
+    .here((users) => {
+        onlineUsers = users.length;
+
+        update_online_counter();
+    })
+    .joining((user) => {
+        onlineUsers++;
+
+        update_online_counter();
+    })
+    .leaving((user) => {
+        onlineUsers--;
+
+        update_online_counter();
+    });
+
+  console.log(onlineUsers);
+
+
+// window._echo    = _echo;
 
 window.d3 = require('d3-timer');
 
