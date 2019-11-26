@@ -351,7 +351,7 @@
               // wssHost: window.location.hostname,
               wsPort: 6001,
               // wssPort: 6001,
-              disableStats: false,              
+              disableStats: true,              
               // encrypted: window.location.protocol == "https:",
               // enabledTransports: ['ws', 'wss'],
               // path: '/ws/'+window.location.hostname,
