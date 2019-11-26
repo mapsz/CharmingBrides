@@ -347,7 +347,7 @@
               broadcaster: 'pusher',
               key: process.env.MIX_PUSHER_APP_KEY,
               cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-              wsHost: window.location.hostname,
+              wsHost: '127.0.0.1',
               // wssHost: window.location.hostname,
               wsPort: window.location.protocol == "https:"? 3001 : 6001,
               wssPort: window.location.protocol == "https:"? 3001 : 6001,

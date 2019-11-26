@@ -33,7 +33,7 @@ import Echo from 'laravel-echo';
 window.Echo = new Echo({
   broadcaster: 'pusher',
   key: process.env.MIX_PUSHER_APP_KEY,
-  wsHost: window.location.hostname,
+  wsHost: '127.0.0.1',
   wsPort: window.location.protocol == "https:"? 3001 : 6001,
   wssPort: window.location.protocol == "https:"? 3001 : 6001,
   disableStats: true,              
@@ -47,7 +47,7 @@ function update_online_counter() {
     jQuery('#online').text(onlineUsers);
 }
 
-window.Echo.join('common_room')
+let a = window.Echo.join('common_room')
     .here((users) => {
         onlineUsers = users.length;
 
@@ -64,7 +64,7 @@ window.Echo.join('common_room')
         update_online_counter();
     });
 
-  console.log(onlineUsers);
+  console.log(a);
 
 
 // window._echo    = _echo;
