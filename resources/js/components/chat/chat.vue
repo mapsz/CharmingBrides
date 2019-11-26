@@ -342,19 +342,19 @@
             //files
             assets:assets,   
             //websockets
-            pusher : _pusher,
+            // pusher : _pusher,
             echo : new _echo({
               broadcaster: 'pusher',
               key: process.env.MIX_PUSHER_APP_KEY,
               cluster: process.env.MIX_PUSHER_APP_CLUSTER,
               wsHost: window.location.hostname,
               // wssHost: window.location.hostname,
-              wsPort: 3001,
-              wssPort: 3001,
+              wsPort: 6001,
+              wssPort: 6001,
               disableStats: true,              
               // encrypted: window.location.protocol == "https:",
               encrypted: true,
-              // enabledTransports: ['ws', 'wss'],
+              enabledTransports: ['ws', 'wss'],
               // path: '/ws/'+window.location.hostname,
             }),
             //admin
