@@ -41,7 +41,7 @@ window.Echo = new Echo({
   enabledTransports: ['ws', 'wss'],
 });
 
-var onlineUsers = 0;
+var onlineUsers = 1;
 
 function update_online_counter() {
     jQuery('#online').text(onlineUsers);
