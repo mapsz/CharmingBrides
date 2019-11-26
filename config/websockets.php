@@ -41,10 +41,10 @@ return [
 
 
     'ssl' => [
-        // 'local_cert' => null,
-        'local_cert' => env('LOCAL_CERT', null),
-        // 'local_pk' => null,
-        'local_pk' => env('LOCAL_KEY', null),
+        'local_cert' => null,
+        // 'local_cert' => env('LOCAL_CERT', null),
+        'local_pk' => null,
+        // 'local_pk' => env('LOCAL_KEY', null),
         'passphrase' => null
         // 'verify_peer' => false
         // 'verify_peer_name' => false,
