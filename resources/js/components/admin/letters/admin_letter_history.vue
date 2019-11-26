@@ -26,8 +26,8 @@
           </thead>
           <tbody>
             <tr 
-              v-for="letter in letters"               
-              :class="(day != letter.created_at.slice(8,10)) ? 'next' : ''"
+              v-for="(letter, i) in letters"               
+              :class="setDay(i) ? 'next' : ''"
             >
               <td>
                 <a :href="/man/+letter.user.id">{{letter.user.man.name}} {{letter.user.man.surname}}({{letter.user.id}})</a>
@@ -48,7 +48,6 @@
               </td>
               <td>{{formateDate(letter.created_at)}}</td>
               <td>
-                {{setDay(letter.created_at.slice(8,10))}}
                 <a :href="'/letters?girl='+letter.to_user.id+'&companion='+letter.user.id">
                   <button class="btn btn-primary">More</button>
                 </a>
@@ -94,9 +93,10 @@
           //
         },
         methods: {
-          setDay(a){
-            // this.day=a;
-            return "";
+          setDay(i){     
+            if(i == 0) return false;
+            if(this.letters[i-1].created_at.slice(8,10) != this.letters[i].created_at.slice(8,10)) return true
+            else return false;
           },
           async getLetters(){
             //Show loading

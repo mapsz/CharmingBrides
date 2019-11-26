@@ -24,8 +24,8 @@
           </thead>
           <tbody>
             <tr 
-              v-for="sign in signs"               
-              :class="(day != sign.created_at.slice(8,10)) ? 'next' : ''"
+              v-for="(sign, i) in signs"               
+              :class="setDay(i) ? 'next' : ''"
             >
 
               <td>
@@ -100,6 +100,11 @@
           //
         },
         methods: {
+          setDay(i){     
+            if(i == 0) return false;
+            if(this.signs[i-1].created_at.slice(8,10) != this.signs[i].created_at.slice(8,10)) return true
+            else return false;
+          },
           async getSigns(){
             //Show loading
             let l = this.showLoading('.admin-signs-history');
