@@ -348,12 +348,13 @@
               key: process.env.MIX_PUSHER_APP_KEY,
               cluster: process.env.MIX_PUSHER_APP_CLUSTER,
               wsHost: window.location.hostname,
-              wssHost: window.location.hostname,
-              wsPort: 6001,
-              wssPort: 6001,
+              // wssHost: window.location.hostname,
+              wsPort: 3001,
+              // wssPort: 3001,
               disableStats: true,              
               encrypted: window.location.protocol == "https:",
               enabledTransports: ['ws', 'wss'],
+              path: '/ws/'+window.location.hostname,
             }),
             //admin
             hardOnline:[],
@@ -588,13 +589,13 @@
                     this.eventHandler(data);
                   })                
                   .here((users) => {
-                      this.handleOnlineUsers(users);                                 
+                    this.handleOnlineUsers(users);                                 
                   })
                   .joining((user) => {
-                      this.handleOnlineUsers(user);
+                    this.handleOnlineUsers(user);
                   })
                   .leaving((user) => {
-                      this.handleOnlineUsers(user,true);
+                    this.handleOnlineUsers(user,true);
                   });
 
               //Save connection params
