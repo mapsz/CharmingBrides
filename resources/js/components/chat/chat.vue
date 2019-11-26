@@ -584,7 +584,7 @@
               this.leaveOnline();
 
               //Echo connect                
-              let c = await this.echo.join(`chat`)
+              let c = await this.echo.join('chat')
                   .listen('Chat', ({data}) => {
                     this.eventHandler(data);
                   })                
