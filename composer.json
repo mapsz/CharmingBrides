@@ -15,7 +15,7 @@
         "laravel/tinker": "^1.0",
         "larsjanssen6/underconstruction": "4",
         "paypal/rest-api-sdk-php": "*",
-        "pusher/pusher-php-server": "~3.0",
+        "pusher/pusher-php-server": "^4.1",
         "sopamo/laravel-filepond": "^0.1.0"
     },
     "require-dev": {
