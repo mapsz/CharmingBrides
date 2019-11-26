@@ -33,7 +33,7 @@ import Echo from 'laravel-echo';
 window.Echo = new Echo({
   broadcaster: 'pusher',
   key: process.env.MIX_PUSHER_APP_KEY,
-  wsHost: '127.0.0.1',
+  wsHost: window.location.hostname,
   wsPort: window.location.protocol == "https:"? 3001 : 6001,
   wssPort: window.location.protocol == "https:"? 3001 : 6001,
   disableStats: true,              
