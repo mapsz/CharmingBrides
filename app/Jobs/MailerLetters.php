@@ -47,7 +47,7 @@ class MailerLetters implements ShouldQueue
           if(!is_int($man)){
             $man = $man->id;
           }
-          dispatch(new LetterSendJob($girl->id, $man,$this->mailerId));
+          dispatch((new LetterSendJob($girl->id, $man,$this->mailerId))->onQueue('low'));
         }        
       }
     }

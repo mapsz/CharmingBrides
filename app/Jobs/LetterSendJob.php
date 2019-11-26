@@ -38,19 +38,35 @@ class LetterSendJob implements ShouldQueue
     public function handle()
     {
 
+      //Get girl
       $girl = Girl::where('user_id',$this->from)->first();
       if(!$girl) throw new Exception("girl error", 1);   
 
+      //Check mail empty
       if($girl->firstLetterSubject == "") throw new Exception("no subject {$this->from}", 2);      
       if($girl->firstLetter == "") throw new Exception("no body {$this->from}", 2);   
 
-      $l = new Letter;
-      $l->subject = $girl->firstLetterSubject;
-      $l->body = $girl->firstLetter;
-      $l->user_id = $girl->user_id;
-      $l->to_user_id = $this->to;
+      //Check letter exist
+      $ft = ['from' => $this->from , 'to' => $this->to];
+      $count = Letter::where(function($q)use($ft){
+                        $q->where('user_id',$ft['from'])
+                          ->where('to_user_id',$ft['to']);
+                      })
+                    ->orWhere(function($q)use($ft){
+                        $q->where('user_id',$ft['to'])
+                          ->where('to_user_id',$ft['from']);
+                      })
+                    ->count();
 
-      if(!$l->save()) throw new Exception("save error", 3);           
+      if($count < 1){
+        //Send letter
+        $l = new Letter;
+        $l->subject = $girl->firstLetterSubject;
+        $l->body = $girl->firstLetter;
+        $l->user_id = $girl->user_id;
+        $l->to_user_id = $this->to;
+        if(!$l->save()) throw new Exception("save error", 3); 
+      }          
 
       $m = Mailer::find($this->mailer);
       $m->progress -= 1;

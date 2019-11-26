@@ -9,7 +9,7 @@ return [
             'secret' => env('PUSHER_APP_SECRET'),
             // 'enable_client_messages' => true,
             'enable_client_messages' => false,
-            'enable_statistics' => true,
+            'enable_statistics' => false,
         ],
     ],
     'app_provider' => BeyondCode\LaravelWebSockets\Apps\ConfigAppProvider::class,

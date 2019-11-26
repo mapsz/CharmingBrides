@@ -24,7 +24,6 @@ class MailerSigns implements ShouldQueue
     {
       $this->mailerId = $mailerId;
     }
-
     /**
      * Execute the job.
      *
@@ -47,7 +46,7 @@ class MailerSigns implements ShouldQueue
           if(!is_int($man)){
             $man = $man->id;
           }
-          dispatch(new SignSendJob($girl->id, $man,$this->mailerId));
+          dispatch((new SignSendJob($girl->id, $man,$this->mailerId))->onQueue('low'));
         }        
       }
 

@@ -8,6 +8,8 @@ use App\Man;
 use App\Mailer;
 use App\User;
 use Auth;
+use App\Jobs\MailerLetters;
+use App\Jobs\MailerSigns;
 
 class MailerController extends Controller
 {
@@ -192,6 +194,7 @@ class MailerController extends Controller
       }      
     }
 
+
     $m = new Mailer();
     $m->user_id         = Auth::User()->id;
     $m->from_user_ids   = json_encode($request->from);
@@ -201,6 +204,13 @@ class MailerController extends Controller
 
     if(!$m->save()) return response()->json(['error' => '1']);
 
+
+    if($m->type == 'letters'){
+      $this->dispatch((new MailerLetters($m->id))->onQueue('low'));
+    }
+    if($m->type == 'signs'){
+      $this->dispatch((new MailerSigns($m->id))->onQueue('low'));
+    }
     return response()->json(['error' => '0', 'data' => $m->id]);
   }
 

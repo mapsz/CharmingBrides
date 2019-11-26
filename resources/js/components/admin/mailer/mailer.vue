@@ -168,7 +168,7 @@
 
     <!-- Make Maile --> 
     <div class="row justify-content-center m-0 my-4">
-      <button @click="createMailer('lettres')" class="btn" style="
+      <button @click="createMailer('letters')" class="btn" style="
             color: #000;
             background-color: #ddc200;
             border-color: #000000;
@@ -310,7 +310,7 @@
           return;
         }
 
-        location.reload();
+        // location.reload();
       },
       //Search pages
       girlSearch(search){
