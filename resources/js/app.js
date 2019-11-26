@@ -25,11 +25,11 @@ window.Vue = require('vue');
 // var VueChatScroll = require('vue-chat-scroll');
 // Vue.component('VueChatScroll', require('vue-chat-scroll'));
 
- // Websockets
+ // Websockets 
+import _pusher from 'pusher-js';
+window.Pusher = require('pusher-js');
 import _echo from 'laravel-echo';
 window._echo    = _echo;
-import _pusher from 'pusher-js';
-window._pusher  = _pusher;
 
 window.d3 = require('d3-timer');
 

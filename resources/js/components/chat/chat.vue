@@ -343,17 +343,17 @@
             assets:assets,   
             //websockets
             // pusher : _pusher,
-            echo : new _echo({
+            Echo : new _echo({
               broadcaster: 'pusher',
               key: process.env.MIX_PUSHER_APP_KEY,
               cluster: process.env.MIX_PUSHER_APP_CLUSTER,
               wsHost: window.location.hostname,
               // wssHost: window.location.hostname,
-              wsPort: 3001,
-              wssPort: 3001,
+              wsPort: window.location.protocol == "https:"? 3001 : 6001,
+              wssPort: window.location.protocol == "https:"? 3001 : 6001,
               disableStats: true,              
-              // encrypted: window.location.protocol == "https:",
-              encrypted: true,
+              encrypted: window.location.protocol == "https:",
+              // encrypted: true,
               enabledTransports: ['ws', 'wss'],
               // path: '/ws/'+window.location.hostname,
             }),
@@ -585,7 +585,7 @@
               this.leaveOnline();
 
               //Echo connect                
-              let c = await this.echo.join('chat')
+              let c = await this.Echo.join('chat')
                   .listen('Chat', ({data}) => {
                     this.eventHandler(data);
                   })                
@@ -610,7 +610,7 @@
           },
           async leaveOnline(){
               this.onlineUsers =[];
-              await this.echo.leave('chat');
+              await this.Echo.leave('chat');
               this.onlineChat = false;
               return true;
           },
@@ -848,7 +848,7 @@
           },            
           async connectRoom(){
             //Connect chanel
-            let c = await this.echo.join('privateChat.' + this.room.id) //@@@ private chat
+            let c = await this.Echo.join('privateChat.' + this.room.id) //@@@ private chat
               .listen('PrivateChat', (response) => {
                 //Message
                 if(response.message != false){                  
@@ -867,7 +867,7 @@
               //Exit if no room
               if(!this.room) return;
               //Disconncet room
-              let l = await this.echo.leave('privateChat.' + this.room.id);           
+              let l = await this.Echo.leave('privateChat.' + this.room.id);           
               //Remove room
               this.room = false;
               this.chatPrivateConnection = {};

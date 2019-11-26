@@ -25,7 +25,7 @@ use App\Membership;
 //Online
 Broadcast::channel('chat', function ($authtUser) {
 
-  return true;
+  return [33];
 
 	//Check user auth
 	if(Auth::user()->id != $authtUser->id && !Auth::user()->role > 2) return false;
