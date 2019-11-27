@@ -18,7 +18,7 @@ class Agent extends _adminPanel
 
     protected $columns  = [
       [
-        'name' => 'user_id',
+        'name' => 'id',
         'caption' => 'user id',
         'relation' => 'user.id'
       ],
@@ -49,8 +49,34 @@ class Agent extends _adminPanel
           ],            
         ],
         'settings' => [
+          'route'        => [ 'prefix' => 'admin/', 'r' => 'girl' ],
           'attach'       => true,
           'detach'       => true,
+          'attachSearch' =>[
+            'paramsRoute' => '/parametrs/girl',
+            'search' =>[   
+                [
+                  'name'=>'search',
+                  'type'=>'inputText',
+                ],
+                [
+                  'name'=>'age',
+                  'type'=>'fromTo',
+                  'from'=>18,                          
+                  'to'=>99,
+                  'fromDef'=>18,
+                  'toDef'=>99,
+                  'fromName'=>'ageFrom',
+                  'toName'=>'ageTo',
+                ], 
+                [
+                  'name'=>'location',
+                  'type'=>'select',
+                  'caption'=>'location',
+                  'def'=>0,
+                ],
+              ]                        
+            ],
         ]        
       ],
     ];

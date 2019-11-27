@@ -16,15 +16,6 @@
     <!--Attach list -->
     <div v-if="attach" >
       <h4 class="pt-2">Attach New {{pName.relation.m}}</h4>
-      <!-- search -->
-      <div  class="attach-search">
-        <div class="input-group my-3">
-          <input v-model="search" @keyup="searchAttach()" type="text" class="form-control" placeholder="Search..." aria-label="Search...">
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button">Search</button>
-          </div>
-        </div>
-      </div>
       <!-- list -->
       <div class="attach-list">        
         <div v-if="isEmpty" class="empty">
@@ -71,6 +62,7 @@
               },
               listSettings:{
                 attachAdd:true,
+                search:this.pSettings.attachSearch,
               },
           }
         },    
@@ -105,7 +97,7 @@
             let targetName  = this.pName.relation.s;
 
             //Attach Query
-            let attach = await this.ax('put','/'+this.route+'/attach',{targetId:targetId,modelId:modelId,targetName:targetName});
+            let attach = await this.ax('put','/'+this.pSettings.attachRoute.prefix+this.pSettings.attachRoute.r+'/attach',{targetId:targetId,modelId:modelId,targetName:targetName});
 
             //Error
             if(!attach){this.hideLoading(loading);return false;}  

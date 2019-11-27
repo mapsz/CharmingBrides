@@ -74,6 +74,12 @@ class Man extends _adminPanel
       'component' => 'men-membership',
     ],
     [
+      'name' => 'last_login',
+      'caption' => 'last login',
+      'relation' => 'user.last_login',
+      'timeFormat'  => 'j M Y G:i'       
+    ],     
+    [
       'name' => 'created_at',
       'timeFormat'  => 'j M Y G:i'       
     ],

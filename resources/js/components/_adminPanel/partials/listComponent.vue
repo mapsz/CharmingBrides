@@ -89,19 +89,45 @@
               </td>
               <!-- Delete -->
               <td v-if="isDelete" class="float">
-                <button data-toggle="modal" data-target="#delete-modal" @click="toDelete=row._id" type="button" class="btn btn-sm btn-danger border border-primary">Delete</button>
+                <button 
+                  data-toggle="modal" 
+                  data-target="#delete-modal" 
+                  @click="toDelete=row._id" 
+                  type="button" 
+                  class="btn btn-sm btn-danger border border-primary"
+                >
+                  Delete
+                </button>
               </td>
               <!-- Attach -->
               <td v-if="isAttachAdd && !isRecentAttached(row.id)" class="float">
-                <button @click="$emit('attach', row.id)" type="button" class="btn-attach btn btn-sm bg-attach border border-primary">Attach</button>
+                <button 
+                  @click="$emit('attach', row.id)" 
+                  type="button" 
+                  class="btn-attach btn btn-sm bg-attach border border-primary"
+                >
+                  Attach
+                </button>
               </td>
               <!-- Detach -->
               <td v-if="isDetach" class="float">
-                <button data-toggle="modal" data-target="#detach-modal" @click="toDetach=row.id" type="button" class="btn btn-sm bg-orange border border-primary">Detach</button>
+                <button 
+                  data-toggle="modal" 
+                  data-target="#detach-modal"
+                  @click="toDetach=row._id" 
+                  type="button" 
+                  class="btn btn-sm bg-orange border border-primary"
+                >
+                  Detach
+                </button>
               </td>
               <!-- Link -->
               <td v-if="isLink" class="float">
-                <a :href="pSettings.link+row.id"><button type="button" class="btn btn-sm btn-primary">More</button></a>
+                <a :href="pSettings.link+row.id">
+                  <button type="button" class="btn btn-sm btn-primary">
+                    More
+                  </button>
+                </a>
               </td>
             </tr>
           </tbody>
@@ -130,7 +156,7 @@
               <list-component 
                 :p-data="listData"
                 :p-settings="listData.settings"
-                :p-route="pRoute"
+                :p-route="listData.route"
                 :p-name="listName"
                 :container-class="'pagination'"
                 :page-class="'page-item'"              
@@ -236,7 +262,6 @@
             //Attach
             attach:false,
             //Setting
-            route: "", 
             pages:1,
           }
         },
@@ -271,6 +296,13 @@
             if(this.pSettings.attachAdd == undefined) return false;
             else return this.pSettings.attachAdd;
           },
+          route:function(){
+            if(this.pRoute != undefined){
+              return this.pRoute['prefix'] + this.pRoute['r'];
+            }       
+
+            return ""; 
+          }
         },
         watch: {
           pData: {
@@ -297,10 +329,7 @@
             this.pages = this.pSettings.pages;
           }
           
-          //Route
-          if(this.pRoute != undefined){
-            this.route = this.pRoute['prefix'] + this.pRoute['r'];
-          }
+
 
           this.updateData();
           this.prepareSubList();
@@ -474,18 +503,21 @@
             this.page = 1;
             this.searchData();
           },
-
           //List            
           openList(id, key){
+            console.log(id);
+            console.log(key);
             this.list.header = key;
             this.listData = {
               name:     this.pData.columns.filter(x => x.name == key)[0].relationMany,       
               columns:  this.pData.columns.filter(x => x.name == key)[0].list,              
-              data:     this.pData.data.filter(x => x.id == id)[0][key],
-              settings: this.pData.columns.filter(x => x.name == key)[0].settings,     
+              settings: this.pData.columns.filter(x => x.name == key)[0].settings,  
+              route:    this.pData.columns.filter(x => x.name == key)[0].settings.route,  
+              data:     this.pData.data.filter(x => x.id == id)[0][key],   
             }
             //Append settungs
-            this.listData.settings.subList  = id;
+            this.listData.settings.subList  = this.pData.data.filter(x => x.id == id)[0]['_id'];  
+            this.listData.settings.attachRoute  = this.pRoute;
             this.listName.relation  = {
               s:this.pData.columns.filter(x => x.name == key)[0].relationMany,
               m:this.pData.columns.filter(x => x.name == key)[0].name
@@ -522,7 +554,7 @@
             let detachId = this.toDetach;
             let model = this.pSettings.subList;
             let target = this.pData.name;
-            axios.delete('/'+this.route+'/detach', {data:{detachId:detachId,model:model,target:target}} )
+            axios.delete('/'+this.pSettings.attachRoute.prefix+this.pSettings.attachRoute.r+'/detach', {data:{detachId:detachId,model:model,target:target}} )
               .then((r) => {
                   if(!r.data) return false;
 
