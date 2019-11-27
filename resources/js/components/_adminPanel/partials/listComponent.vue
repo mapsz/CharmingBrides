@@ -102,7 +102,7 @@
               <!-- Attach -->
               <td v-if="isAttachAdd && !isRecentAttached(row.id)" class="float">
                 <button 
-                  @click="$emit('attach', row.id)" 
+                  @click="$emit('attach', row._id)" 
                   type="button" 
                   class="btn-attach btn btn-sm bg-attach border border-primary"
                 >
