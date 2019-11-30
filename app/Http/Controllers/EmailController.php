@@ -68,7 +68,7 @@ class EmailController extends Controller
       $d['content'] = $data['content'];
 
 
-      $this->dispatch((new EmailSendJob($d)->onQueue('low')));
+      $this->dispatch((new EmailSendJob($d))->onQueue('low'));
     }
 
     return response()->json(['error' => '0','data' => 123]);
