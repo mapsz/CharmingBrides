@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Email;
 
 class Sign extends _adminPanel
 {
@@ -74,6 +75,9 @@ class Sign extends _adminPanel
       }
 
       if(!$sign->save()) return false;
+
+      //Send email notification
+      if($like == 1) Email::sendEmailNotification($userId,$toId,'sign of interest');      
 
       return true;
 

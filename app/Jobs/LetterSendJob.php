@@ -61,11 +61,14 @@ class LetterSendJob implements ShouldQueue
       if($count < 1){
         //Send letter
         $l = new Letter;
-        $l->subject = $girl->firstLetterSubject;
-        $l->body = $girl->firstLetter;
-        $l->user_id = $girl->user_id;
-        $l->to_user_id = $this->to;
-        if(!$l->save()) throw new Exception("save error", 3); 
+        $id = $l::sendLetter([
+            'subject'     => $girl->firstLetterSubject,
+            'body'        => $girl->firstLetter,
+            'user_id'     => $girl->user_id,
+            'to_user_id'  => $this->to,
+        ]);
+
+        if(!$l) throw new Exception("save error", 3); 
       }          
 
       $m = Mailer::find($this->mailer);

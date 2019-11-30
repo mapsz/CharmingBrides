@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Membership;
 use App\User;
 use App\Settings;
+use App\Email;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Auth;
+
+
 
 class Letter extends _adminPanel
 {
@@ -26,31 +29,6 @@ class Letter extends _adminPanel
     protected $add       = false; 
 
     protected $order       = ['row' => 'created_at','order' => 'DESC'];
-
-    // protected $columns  = [
-    //     [
-    //       'name' => 'girl',
-    //       'component' => 'admin-letter-user-component',
-    //       'attr' => ['man'=>'girl','route'=>'letters'],
-    //     ],
-    //     [
-    //       'name' => 'man',
-    //       'component' => 'admin-letter-user-component',
-    //       'attr' => ['man'=>'man','route'=>'letters'],
-    //     ],
-    //     [
-    //       'name' => 'letters',
-    //       'caption' => 'letters count',
-    //     ],
-    //     [
-    //       'name' => 'pay_count',
-    //       'caption' => 'pay count',
-    //     ],
-    //     [
-    //       'name' => 'pay_summ',
-    //       'caption' => 'pay summary',
-    //     ] 
-    // ];
 
     protected $columns  = [
         [
@@ -105,6 +83,23 @@ class Letter extends _adminPanel
 
         return $val;
     }
+
+    public static function sendLetter($data){
+      //Send letter        
+      $l = new self;
+      $l->subject      = $data['subject'];
+      $l->body         = $data['body'];
+      $l->user_id      = $data['user_id'];
+      $l->to_user_id   = $data['to_user_id'];
+      if(!$l->save()) return false;   
+
+      //Send email notification
+      Email::sendEmailNotification($data['user_id'],$data['to_user_id'],'letter');
+
+      return $l->id;
+    }    
+
+
 
     public static function getLetterType($id){
       
@@ -482,6 +477,8 @@ class Letter extends _adminPanel
 
       return $correspondences;
     }
+
+
 
 
     public function setColumns($columns){

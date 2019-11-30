@@ -19,7 +19,7 @@ class EmailSendJob implements ShouldQueue
 
     public function __construct($d)
     {
-      $this->d       = $d;
+      $this->d = $d;
     }
     /**
      * Execute the job.

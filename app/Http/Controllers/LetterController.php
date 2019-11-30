@@ -178,14 +178,17 @@ class LetterController extends _adminPanelController
             return response()->json(['error' => '1', 'text' => 'bad user']);
         }
 
-        $put = new $model;
-        foreach ($inputs as $k => $v) {
-          $put->$k = $v;
-        }
+        $id = $model::sendLetter([
+            'subject'     => $inputs['subject'],
+            'body'        => $inputs['body'],
+            'user_id'     => $inputs['user_id'],
+            'to_user_id'  => $inputs['to_user_id'],
+        ]);
+
 
         //Save
-        if($put->save()){
-            return response()->json(['error' => '0', 'id' => $put->id]);
+        if($id){
+            return response()->json(['error' => '0', 'id' => $id]);
         }else{
             return response()->json(['error' => '1', 'text' => 'something gone wrong']);
         }
