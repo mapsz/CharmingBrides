@@ -316,6 +316,7 @@ class ManController extends _adminPanelController
 
       //Get Data
       $inputs     = $model->getInputs();  //Inputs
+      unset($inputs[3]);  //@@@@@
       $names      = $model->getNames();  //Names
       // $route      = $model->getRoute(); 
       $settings   = $model->getSettings(); 

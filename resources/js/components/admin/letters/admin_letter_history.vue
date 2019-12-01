@@ -35,7 +35,7 @@
               <td>
                 <a :href="/girl/+letter.to_user.id">{{letter.to_user.girl.name}}({{letter.to_user.id}})</a>
               </td>
-              <td>{{letter.subject.slice(0, 30)}}</td>
+              <td>{{(letter.subject) ? letter.subject.slice(0, 30) : ""}}</td>
               <td>
                 <div v-for="(answer,k) in letter.answers">
                   {{k+1}}){{answer.body.slice(0, 30)}}...
