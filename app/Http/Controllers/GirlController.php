@@ -267,6 +267,8 @@ class GirlController extends _adminPanelController
       // decode
       $search = json_decode($request->search);
 
+      // dd($search);
+
       //where
       $where = [];
 

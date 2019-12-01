@@ -78,31 +78,10 @@
           },
           async getGirl(id){
             let l = this.showLoading('.admin-girls-list');
-            let columns = [
-              {'name' : 'name'},
-              {
-                'name' : 'id',
-                'relation' : 'user.id'
-              },
-              {
-                'name'        : 'birth',
-                'timeFormat'  : 'Y M j'
-              },           
-              {          
-                'name' : 'agent',
-                'caption' : 'agent',
-                'relationBelongsToOne' : 'agent.name',
-              },  
-              {
-                'name'    : 'photo',
-                'file'    : 'image',
-              },
-            ];
 
-            let r = await this.ax('get','/girl/get/'+id,{'columns':columns});
+            let r = await this.ax('get','/all/girl/search',{search:{search:id}});
 
-            this.girls = [r];
-
+            this.girls = [JSON.parse(r.data)[0]];
 
             this.hideLoading(l);
             
