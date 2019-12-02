@@ -11,6 +11,13 @@
             </div>
             <input @keyup="doSearch()" v-model="toSearch[s.name]" type="text" class="form-control" style="width:100px;" >
           </div>
+          
+          <!-- hidden -->
+          <div v-if="s.type == 'hidden'">
+            <input 
+              v-model="toSearch[s.name]" 
+            >
+          </div>
 
           <!-- From to -->
           <div v-if="s.type == 'fromTo'" class="">

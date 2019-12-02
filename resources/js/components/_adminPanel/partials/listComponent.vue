@@ -56,7 +56,7 @@
           </thead>
           <tbody>
             <!-- Data -->
-            <tr v-for='row in data' 
+            <tr v-for='(row, index) in data' 
               :id="'row'+row.id" 
               :class="{
                 'bg-success':(recent.add == row.id),
@@ -68,7 +68,7 @@
               <td v-for="key in columns">
                 <!-- Custom components -->
                 <span v-if="key.component">
-                  <component :is="key.component" :p-attr="key.attr" :p-row="row"></component>
+                  <component :is="key.component" :p-attr="key.attr" :p-row="row" :p-index="index"></component>
                 </span>
                 <!-- List -->
                 <span v-else-if="typeof(key.list) == 'object'">

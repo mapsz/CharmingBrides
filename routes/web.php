@@ -201,7 +201,9 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
         ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload  
   Route::delete('/'.$model.'/file/delete', ucfirst($model).'Controller@_fileDelete');  //Delete file          
   Route::post('/'.$model.'/file/main', ucfirst($model).'Controller@_fileMain');  //Delete file   
-   
+
+  Route::get('/girls/hidden','GirlController@getHidden');
+  Route::post('/girls/hidden','GirlController@setHidden');
  
   // Men
   $model = 'man';

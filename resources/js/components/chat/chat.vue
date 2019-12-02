@@ -7,6 +7,7 @@
         :p-online-users="onlineUsers"
         :p-invite-in="inviteIn"
         :p-hard-online="hardOnline"
+        :p-search="pSearch"
         @onlineReset="onlineReset()"
         @selectUser="selectUser"
         @hard-online="setHardOnline"
@@ -306,7 +307,7 @@
           FontAwesomeIcon,
         },
         mixins: [ mMoreAxios, mNotifications, mLoading ],
-        props:['prop_user'],
+        props:['prop_user','p-search'],
         data(){
           return {
             //loading

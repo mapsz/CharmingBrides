@@ -23,12 +23,39 @@ class ChatController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+      $this->middleware('auth');
     }
 
     public function index()
     {
-        return view('pages.chat')->with('user', json_encode(User::getWithInfo(Auth::id())));
+
+
+      $search = [
+                    [
+                      'name'=>'search',
+                      'type'=>'inputText',
+                    ],
+                    [
+                      'name'=>'age',
+                      'type'=>'fromTo',
+                      'from'=>18,                          
+                      'to'=>99,
+                      'fromDef'=>18,
+                      'toDef'=>99,
+                      'fromName'=>'ageFrom',
+                      'toName'=>'ageTo',
+                    ], 
+                    [
+                      'name'=>'locations',
+                      'type'=>'select',
+                      'def'=>0,
+                    ]
+                ];
+
+
+      return view('pages.chat')
+                  ->with('user', json_encode(User::getWithInfo(Auth::id())))
+                  ->with('search',json_encode($search));
     }
 
     public function chatInvite(Request $request){
@@ -431,6 +458,7 @@ class ChatController extends Controller
     }
 
     public function searchGirl(Request $request){
+
 
       $role = Auth::User()->role;
 

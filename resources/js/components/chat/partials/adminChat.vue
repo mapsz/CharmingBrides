@@ -13,10 +13,11 @@
       <div class="chat-admin-girl-search">
         <h2>Search Girls</h2>
         <div class="col-12">
-          <div class="row">
-            <input type="text" @keyup="searchGirl()" v-model="search">
-            <button class="btn btn-primary" @click="searchGirl(true)">Search</button>
-          </div>       
+          <juge-search
+            :p-search="pSearch"
+            :p-param-route="'/parametrs/girl'"
+            @doSearch="searchGirl"
+          ></juge-search>            
           <div class="row chat-admin-girl-search-list p-1">
             <div v-for="girl in searchList" class="col mb-2">
               <center>
@@ -74,7 +75,7 @@
 <script>
   export default {
     mixins: [ mMoreAxios, mNotifications, mLoading ],
-    props:['p-online-users','p-invite-in'],
+    props:['p-online-users','p-invite-in','pSearch'],
   	data(){
       return {
         hardOnline:[],
@@ -172,19 +173,31 @@
     		this.user = user;
     		this.$emit('selectUser', user);
     	},
-      async searchGirl(button = false){
-        if(!button)
-          if(this.search.length < 3) return false;
+      // async searchGirl(button = false){
+      //   if(!button)
+      //     if(this.search.length < 3) return false;
         
-        let l = this.showLoading('.chat-admin-girl-search-list');
+      //   let l = this.showLoading('.chat-admin-girl-search-list');
 
-        // let r = await this.ax('get','/chat/search/girl',{'search':this.search});
-        let r = await this.ax('get','/all/girl/search',{search:{search:this.search}})
+      //   // let r = await this.ax('get','/chat/search/girl',{'search':this.search});
+      //   let r = await this.ax('get','/all/girl/search',{search:{search:this.search}})
 
-        this.searchList  = JSON.parse(r.data);
+      //   this.searchList  = JSON.parse(r.data);
+
+      //   this.hideLoading(l);
+      // },
+      async searchGirl(search){
+        let l = this.loading('.chat-admin-girl-search-list');
+        let r = await this.ax('get','/admin/girl/search',{page:1,search:search,chat:1})
+        if(!r){
+          this.hideLoading(l);
+          return false;
+        }
+
+        this.searchList = JSON.parse(r.data);
 
         this.hideLoading(l);
-      },
+      },      
       async getNewMessages(id){
           var r = await this.ax('get','/chat/recentRooms',{user_id:id});
 
@@ -204,9 +217,6 @@
               }
             }
           });
-
-
-
           return;
       }
     }

@@ -41,16 +41,15 @@ class Girl extends _adminPanel
           'caption'=>'location',
           'def'=>0,
         ],
+        [
+          'name'=>'showHidden',
+          'value'=>1,
+          'type'=>'hidden',
+        ]
       ]                        
     ];
 
   protected $columns  = [
-    [
-      'name'        => 'confirm',
-      'caption'     => 'confirm',
-      'relation'    => 'user.role',
-      'component'   => 'admin-girl-confirm-component',          
-    ], 
     [
       'name' => 'id',
       'relation' => 'user.id'
@@ -351,7 +350,6 @@ class Girl extends _adminPanel
   ];
 
   public function __construct(){
-    //
     parent::__construct($this->single, $this->multi, $this->page, $this->inputs);
 
     if(Auth::User() && Auth::User()->role == 4){
@@ -363,6 +361,24 @@ class Girl extends _adminPanel
                   ]  
                 );
     }
+
+    
+    if(Auth::User() && Auth::User()->role)
+      $role = Auth::User()->role;
+    else
+      $role = 0;
+
+    array_unshift($this->columns,
+                      [
+                        'name'        => 'confirm',
+                        'caption'     => 'Show',
+                        'relation'    => 'user.role',
+                        'component'   => 'admin-girl-confirm-component',   
+                        'attr'        => $role,
+                      ]
+              );
+
+    
 
   }
 

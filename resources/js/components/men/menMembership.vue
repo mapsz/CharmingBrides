@@ -106,10 +106,19 @@
         balance:'',
       }},
       mixins: [ mMoreAxios, mNotifications, mLoading, mDebug ],
-      props:['p-row','p-attr'],
+      props:['p-row','p-attr','p-index'],
       mounted() {
-        this.getCurrentMembership(this.pRow.id);
+        //
       },    
+      watch: {
+        pRow: {
+          deep:true,
+          handler:function(){
+            this.confirm=this.pRow.confirm;
+            setTimeout(()=>{this.getCurrentMembership(this.pRow.id)}, (300*this.pIndex));
+          },
+        },
+      },      
       methods:{
         showMore(){
           this.more = true;      

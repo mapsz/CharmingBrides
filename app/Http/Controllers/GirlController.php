@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\SpecialLady;
 use App\User;
+use App\Girl;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -54,7 +55,7 @@ class GirlController extends _adminPanelController
         //Get Model
         $model = new $this->model();
 
-        $model->setColumns([
+        $columns = [
               [
                 'name'        => 'confirm',
                 'caption'     => 'confirm',
@@ -81,7 +82,24 @@ class GirlController extends _adminPanelController
                 'caption'     => 'created at',
                 'timeFormat'  => 'j M Y G:i' 
               ],     
-            ]);  
+            ];
+
+        if(Auth::User() && Auth::User()->role)
+          $role = Auth::User()->role;
+        else
+          $role = 0;
+
+        array_unshift($columns,
+                          [
+                            'name'        => 'confirm',
+                            'caption'     => 'Show',
+                            'relation'    => 'user.role',
+                            'component'   => 'admin-girl-confirm-component',   
+                            'attr'        => $role,
+                          ]
+                  );   
+
+        $model->setColumns($columns);    
 
         //settings 
         $settings = [
@@ -312,6 +330,8 @@ class GirlController extends _adminPanelController
       $custom = $custom->whereHas('user',function($q){
         $q->where('role',1);
       });
+      //Remove hidden
+      $custom = $custom->where('hidden',0);
 
       //New
       if(isset($request->new) && $request->new == '1'){
@@ -347,6 +367,11 @@ class GirlController extends _adminPanelController
 
       //Set up
       $model->setPerPage(50);
+
+
+      //Chat
+      if(isset($request->chat))
+        $model->setInfoColumns();
 
       //Order
       $model->setOrder(['row'=>'id','order'=>'DESC']);
@@ -414,6 +439,15 @@ class GirlController extends _adminPanelController
         if(isset($search->agents) && !$search->agents){
           $custom = $custom->whereDoesntHave('agent');
         }
+      }
+
+      if(!isset($search->showHidden)){
+        //Remove unconfirm
+        $custom = $custom->whereHas('user',function($q){
+          $q->where('role',1);
+        });
+        //Remove hidden
+        $custom = $custom->where('hidden',0);
       }
 
       $model->setCustomQueries($custom);
@@ -554,6 +588,29 @@ class GirlController extends _adminPanelController
       if(!$user->save()) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
 
       return response()->json(['error' => '0']);
+    }
+
+    public function setHidden(request $request){
+
+      $girl = Girl::where('user_id',$request->id)->first();
+
+      if(!$girl) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+
+      $girl->hidden = $request->hidden;
+
+      if(!$girl->save()) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+
+      return response()->json(['error' => '0']);
+    }    
+
+    public function getHidden(request $request){
+
+      $girl = User::where('id',$request->id)->with('girl')->first();
+
+      if(!$girl) return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+
+
+      return response()->json(['error' => '0','data' => ['hide' => $girl->girl->hidden]]);
     }
     
 }
