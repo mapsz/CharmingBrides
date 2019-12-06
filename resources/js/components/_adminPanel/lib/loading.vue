@@ -22,11 +22,13 @@
           },
           showLoading(element){
             //Element exists
-            if(!$(element).length){
+            if($(element).length == 0){
               this.dlog(element + ' not found');
               return false;
             }
             
+            // console.log($(element));
+
             this.l.width = $(element)[0].offsetWidth;
             this.l.height = $(element)[0].offsetHeight;
 

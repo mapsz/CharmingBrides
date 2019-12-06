@@ -94,7 +94,7 @@ class Letter extends _adminPanel
       if(!$l->save()) return false;   
 
       //Send email notification
-      Email::sendEmailNotification($data['user_id'],$data['to_user_id'],'letter');
+      // Email::sendEmailNotification($data['user_id'],$data['to_user_id'],'letter');
 
       return $l->id;
     }    
