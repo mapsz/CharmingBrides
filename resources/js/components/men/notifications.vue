@@ -107,12 +107,9 @@
             this.hideLoading(l);
 
             //Get noties
-            await this.getNotifications();
-
-            
+            await this.getNotifications(); 
           },
           async setPushup(){
-
             let p = 0;
             $.each(this.noty, function(index, val) {
               if(val.pushup == 1){

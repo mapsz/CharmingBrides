@@ -88,8 +88,6 @@ class NotificationController extends Controller
     }else{
       return response()->json(['error' => '0','data' => -1]);
     } 
-
-
   }
 
 }
