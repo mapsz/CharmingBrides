@@ -77,7 +77,16 @@ class Sign extends _adminPanel
       if(!$sign->save()) return false;
 
       //Send email notification
-      // if($like == 1) Email::sendEmailNotification($userId,$toId,'sign of interest');      
+      if($like == 1) {
+        if(User::where('id',$toId)->first()->hasVerifiedEmail()){
+          if((new App\Notification)->get($toId,'letters')['email']){
+            Email::sendEmailNotification($userId,$toId,'sign of interest');
+          }
+        }
+      }
+        
+           
+      }
 
       return true;
 

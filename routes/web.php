@@ -16,10 +16,10 @@
 // });
 // use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 
-
+Auth::routes(['verify' => true]);
 
 Route::group(['middleware' => [
-  // 'under-construction',
+  'under-construction',
   'last-activity'
 ]], function () {
 
@@ -95,6 +95,7 @@ Route::put('/add/girl/favorites','ManFavoriteController@put');
 Route::get('/favorite/girls','ManFavoriteController@index');
 
 
+
 //chat
 Route::get('/chat', 'ChatController@index')->name('chat');
 Route::get('/room', 'ChatController@getRoom')->name('getRoom');
@@ -132,9 +133,20 @@ Route::put('/girl', 'GirlController@_put');
 Route::post('/chat/admin/setOnline', 'ChatController@setHardOnline')->name('setHardOnline')->middleware(['auth','agent']);
 Route::delete('/chat/admin/deleteOnline', 'ChatController@deleteHardOnline')->name('deleteHardOnline')->middleware(['auth','agent']);
 
+  
+Route::get('/sets/notifications','NotificationController@sets');
+Route::get('/verified/notifications','NotificationController@verified');
 
 //Auth
 Route::group(['middleware' => ['auth']],function(){
+
+  //Men
+  Route::get('/profile/notifications','NotificationController@index');
+  Route::get('/men/notifications','NotificationController@get');
+  Route::post('/men/notifications','NotificationController@post');
+
+
+
 
   //Pay
   Route::get('/order',         'PayController@order');

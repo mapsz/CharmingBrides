@@ -8,6 +8,9 @@
   	<header>
   		@include('partials._header')
   	</header>
+    <div class="men-noty">
+      <men-notysetup />
+    </div>
   	<div class="content">
   		@yield('content')
   	</div>

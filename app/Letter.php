@@ -94,8 +94,12 @@ class Letter extends _adminPanel
       if(!$l->save()) return false;   
 
       //Send email notification
-      // Email::sendEmailNotification($data['user_id'],$data['to_user_id'],'letter');
-
+      if(User::where('id',$data['to_user_id'])->first()->hasVerifiedEmail()){
+        if((new App\Notification)->get($data['to_user_id'],'signs')['email']){
+          Email::sendEmailNotification($data['user_id'],$data['to_user_id'],'letter');
+        }
+      }
+        
       return $l->id;
     }    
 
