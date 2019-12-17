@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Auth;
 
+use App\Notification;
+
 
 
 class Letter extends _adminPanel
@@ -95,7 +97,7 @@ class Letter extends _adminPanel
 
       //Send email notification
       if(User::where('id',$data['to_user_id'])->first()->hasVerifiedEmail()){
-        if((new App\Notification)->get($data['to_user_id'],'letters')['email']){
+        if((new Notification)->get($data['to_user_id'],'letters')['email'] == 1){
           Email::sendEmailNotification($data['user_id'],$data['to_user_id'],'letter');
         }
       }

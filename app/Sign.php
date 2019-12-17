@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Email;
+use App\Notification;
 
 class Sign extends _adminPanel
 {
@@ -79,7 +80,7 @@ class Sign extends _adminPanel
       //Send email notification
       if($like == 1) {
         if(User::where('id',$toId)->first()->hasVerifiedEmail()){
-          if((new App\Notification)->get($toId,'signs')['email']){
+          if((new Notification)->get($toId,'signs')['email'] == 1){
             Email::sendEmailNotification($userId,$toId,'sign of interest');
           }
         }
