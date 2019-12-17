@@ -1,6 +1,6 @@
 <template>
-    <div v-if="setup">
-      <div class="email-confirm">
+    <div>
+      <div v-if="email" class="email-confirm">
         Please verify your email address 
         <a href="/email/verify">
           <button class="btn btn-primary">Verify Email</button>
@@ -37,6 +37,7 @@
         data(){
           return {
             setup:false,
+            email:false,
           }
         },
              
@@ -49,7 +50,6 @@
             let r = await this.ax('get','/sets/notifications');
 
             if(r == -1){
-              this.setup = true;
               $('#noty-setup-modal').modal('show');
             }
           },
@@ -57,7 +57,7 @@
             let r = await this.ax('get','/verified/notifications');
 
             if(r == -1){
-              this.setup = true;
+              this.email = true;
             }
           }
         }
