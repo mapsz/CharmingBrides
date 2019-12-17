@@ -26,7 +26,7 @@ class Email extends Model
     $data['name']    = $to->man->name;
     $data['subject']  = "You've got a $type from {$from->girl->name}";
     $data['content']  = "Hello {$to->man->name}! You've got $type from {$from->girl->name} <br> To open it please login to your account on Charming Brides or follow the <a href='$link'>link</a><br>
-      <img src='https://charmingbrides.com/media/gallery/{$from->girl->id}_0.jpg' alt='{$from->girl->name}'>
+      <img src='https://charmingbrides.com/media/gallery/{$from->id}_0.jpg' alt='{$from->girl->name}'>
       
     ";
 
