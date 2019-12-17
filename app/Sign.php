@@ -79,7 +79,7 @@ class Sign extends _adminPanel
       //Send email notification
       if($like == 1) {
         if(User::where('id',$toId)->first()->hasVerifiedEmail()){
-          if((new App\Notification)->get($toId,'letters')['email']){
+          if((new App\Notification)->get($toId,'signs')['email']){
             Email::sendEmailNotification($userId,$toId,'sign of interest');
           }
         }
