@@ -84,9 +84,6 @@ class Sign extends _adminPanel
           }
         }
       }
-        
-           
-      }
 
       return true;
 
