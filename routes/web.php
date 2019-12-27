@@ -54,6 +54,9 @@ Route::get('/home', function () {
 })->name('home');
 
 
+//Log
+Route::put('/logg', 'LogController@log');
+
 //Notifications
 Route::get('/notifications',         'ManNotificationController@get');
 

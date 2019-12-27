@@ -54,6 +54,7 @@
           this.axiosErrors = ['Somethink gone wrong!'];
           this.axiosErrorsCode = 1;         
           if(this.axiosShowErrors) this.showErrors(this.axiosErrors,this.axiosErrorsCode);
+          this.ax('put','/logg',{code:0,text:r});
           return false;
         }
         //Check error
@@ -61,6 +62,7 @@
           this.axiosErrors = ['Somethink gone wrong!'];
           this.axiosErrorsCode = 2;
           if(this.axiosShowErrors) this.showErrors(this.axiosErrors,this.axiosErrorsCode);
+          this.ax('put','/logg',{code:0,text:r});
           return false;
         }
         //Success
@@ -81,10 +83,12 @@
           this.axiosErrors = [r.data.text];
           this.axiosErrorsCode = 3;
           if(this.axiosShowErrors) this.showErrors(this.axiosErrors,this.axiosErrorsCode);
+          this.ax('put','/logg',{code:0,text:r});
         }else{
           this.axiosErrors = ['Somethink gone wrong!'];
           this.axiosErrorsCode = 4;
           if(this.axiosShowErrors) this.showErrors(this.axiosErrors,this.axiosErrorsCode);
+          this.ax('put','/logg',{code:0,text:r});
         }
         return false;   
       },
@@ -118,7 +122,9 @@
           this.axiosErrors = ['Somethink gone wrong!'];
           this.axiosErrorsCode = 8;
           if(this.axiosShowErrors) this.showErrors(this.axiosErrors,this.axiosErrorsCode);
-        }          
+        }     
+
+        this.ax('put','/logg',{code:0,text:error});
         return false;
       },
       isJson(str) {
