@@ -513,17 +513,11 @@ class ManController extends _adminPanelController
 
       $model = new $this->model();
 
-      //Set up
-      $model->setPerPage(50);
+      $perPage = 50;
 
-      //Order
-      $model->setOrder(['row'=>'id','order'=>'DESC']);
-      if(isset($request->order)){
-        $order = json_decode($request->order);
-        if($order->name != ""){
-          $model->setOrder(['row'=>$order->name,'order'=>$order->type]);
-        }
-      }
+      //Set up
+      $model->setPerPage($perPage);
+
 
       if(!isset($request->search)) return response()->json(['error' => '1']);
 
@@ -573,6 +567,35 @@ class ManController extends _adminPanelController
             $q->where('name','LIKE','%'.$val.'%')
               ->orWhere('user_id','LIKE','%'.$val.'%');
           });      
+        }
+      }
+
+
+      //Order
+      $model->setOrder(['row'=>'id','order'=>'DESC']);
+      if(isset($request->order)){
+        $order = json_decode($request->order);
+        if($order->name == 'last_login'){
+
+          //Sort by last login
+          $model->setOrder([]);
+          $users = User::whereHas('man')->orderBy('last_login',$order->type)->paginate($perPage+10);
+
+          //Ids
+          $ids = '';
+          for ($i=count($users); $i > -1; $i--) { 
+            if($users[$i]['id'] != '')
+              $ids .= ','.$users[$i]['id'];
+          }
+
+          
+          //Add query
+          $custom = $custom->orderByRaw('FIELD(user_id'.$ids.') desc');
+
+
+        }
+        elseif($order->name != ""){
+          $model->setOrder(['row'=>$order->name,'order'=>$order->type]);
         }
       }
 

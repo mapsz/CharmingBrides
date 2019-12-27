@@ -12,7 +12,7 @@ class Man extends _adminPanel
   protected $route                = [ 'prefix' => 'admin/' ];
   protected $link                 = "/man/";
   protected $order                = ['row' => 'id','order' => 'DESC'];  
-  
+  protected $parentId = true;
 
   protected $activateSearch = [
     'paramsRoute' => '/parametrs/men',

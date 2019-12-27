@@ -17,7 +17,6 @@ class ChatHistoryController extends Controller
     	//Get histories from DB
         $chatHistories = ChatHistory::with('room.user')->get()->sortByDesc('stop_at');
 
-        
         $r = [];
         foreach($chatHistories as $c){
 
@@ -31,7 +30,8 @@ class ChatHistoryController extends Controller
           		}          		
           	}
 
-          	//Get timestamp
+
+          //Get timestamp
         	$stop = new Carbon($c['stop_at']);
         	$stop = $stop->timestamp;
         	array_push($r, [
@@ -39,8 +39,9 @@ class ChatHistoryController extends Controller
         		'roomId'	=> $c['room']['id'],
         		'start'		=> $c['created_at']->timestamp,
         		'stop'		=> $stop,
+            'lenght'  => gmdate("H:i:s", $stop - $c['created_at']->timestamp),
         		'price'		=> $c['price'],
-        		'man'		=> $man,
+        		'man'		  => $man,
         		'girl'		=> $girl,
           	]);
         }

@@ -27,11 +27,12 @@
               //Data
               confirm:this.pRow.confirm,
               hidden:1,
+              lo:false,
           }
         },
         mounted() {
           this.confirm=this.pRow.confirm;
-          // setTimeout(this.getHide(), (300*this.pIndex));          
+          this.lo = this.showLoading('.admin-girl-confirm-'+this.pRow.id);     
         },
         watch: {
           pRow: {
@@ -39,7 +40,7 @@
             handler:function(){
               this.confirm=this.pRow.confirm;
               // let l = this.showLoading('.admin-girl-confirm-'+this.pRow.id);
-              setTimeout(()=>{this.getHide()}, (300*this.pIndex));
+              setTimeout(()=>{this.getHide()}, (150*this.pIndex));
             },
           },
         },
@@ -73,6 +74,7 @@
               return;
 
             this.hideLoading(l);   
+            if(this.lo) this.hideLoading(this.lo);   
           }
 
         }

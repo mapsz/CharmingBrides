@@ -15,6 +15,7 @@ class Agent extends _adminPanel
     protected $edit      = true;
     // protected $delete    = false;
     // protected $add       = false;
+    protected $parentId = true;
 
     protected $columns  = [
       [

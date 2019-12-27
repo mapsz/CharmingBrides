@@ -119,10 +119,16 @@ class Media
         return $img;
     }
 
-    protected function watermarkPhoto($img){
-    	//@@@
-    	return $img;
-    }
+  public static function watermark($path,$mark,$pos){
+    $img = Image::make(public_path($path));
+   
+    $img->insert(public_path('watermark/bot.png'), 'bottom-right', 10, 10);
+    $img->insert(public_path('watermark/top.png'), 'top-left', 10, 10);
+   
+    $img->save(public_path($path)); 
+  }
+
+  
 	
 	protected function saveFile($file, $path, $name){
 		//Save file

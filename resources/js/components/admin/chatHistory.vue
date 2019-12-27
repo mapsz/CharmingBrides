@@ -22,7 +22,7 @@
                         <td>{{ h.girl.name }} ({{h.man.id}})</td>
                         <td>{{ moment(h.start * 1000).format("DD.MM.YY hh:mm:ss")}}</td>
                         <td>{{ moment(h.stop * 1000).format("DD.MM.YY hh:mm:ss") }}</td>
-                        <td>{{h.stop - h.start}}</td>
+                        <td>{{h.lenght}}</td>
                         <td>{{ h.price }}</td>
                     </tr>
                 </tbody>

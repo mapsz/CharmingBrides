@@ -160,8 +160,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 		
-		// Packs
-		Intervention\Image\ImageServiceProvider::class,
+    		// Packs
+    		Intervention\Image\ImageServiceProvider::class,
 
     ],
 

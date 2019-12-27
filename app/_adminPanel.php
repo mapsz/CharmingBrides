@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Exception;
+use App\Media;
  
 class _adminPanel extends Model
 {	
@@ -33,6 +34,7 @@ class _adminPanel extends Model
     protected $data      = [];
     protected $dbData    = []; 
     protected $customQueries = false;
+    protected $parentId      = false;
         
     //Data settings
     protected $columns  = [];    
@@ -365,7 +367,8 @@ class _adminPanel extends Model
           }
         }
 
-              
+
+        
         
         //Set data
         $this->dbData = $getData->paginate($this->perPage);
@@ -702,19 +705,26 @@ class _adminPanel extends Model
 
       return $serverEnc;
     }
-    public static function saveFileFromCache($fileEnc,$path,$name){
+    public function saveFileFromCache($fileEnc,$path,$name,$watermark){
       $filepond = new Filepond();
-
       //Decode file path
       $chacheFilePath = $filepond->getPathFromServerId($fileEnc);
       //Get File ext
       $ext = pathinfo($chacheFilePath)['extension'];
       // jpeg to jpg
       if($ext == 'jpeg') $ext = 'jpg';
+
+      $fullPath = public_path($path) . '/' . $name . '.' . $ext;
       //Move file
-      if(\File::move($chacheFilePath, $path . '/' . $name . '.' . $ext))
+      if(\File::move($chacheFilePath, $fullPath)){
+        //Watermark
+        if($watermark && count($watermark) > 0){
+          foreach ($watermark as $v) {
+            Media::watermark($path.'/'.$name.'.'.$ext,$v['mark'],$v['pos']);
+          }          
+        }
         return true;
-      else
+      }else
         return false;
     }
     public static function generateFileName($name,$more=false){
@@ -848,7 +858,11 @@ class _adminPanel extends Model
           //Add parent id
           $inputPut[$parent[0]['parent'].'_id'] = $parentPut->id;  //@@@ [0]
         }
+
         //Put Input        
+        if($this->parentId){
+          $inputPut->id = $parentPut->id;
+        }
         if(!$inputPut->save()){
           throw new Exception("Error Processing Request", 2);
         }
@@ -881,7 +895,9 @@ class _adminPanel extends Model
               if(!$fileName) throw new Exception("Error Generating name", 4);
 
               //Save file
-              if(!$this->saveFileFromCache($fileCache,public_path($v['path']), $fileName))
+              $watermark = false;
+              if(isset($v['watermark'])) $watermark = $v['watermark'];
+              if(!$this->saveFileFromCache($fileCache,$v['path'], $fileName,$watermark))
                 throw new Exception("Error Processing Request", 3);
 
               $i++;
@@ -988,7 +1004,9 @@ class _adminPanel extends Model
               if(!$fileName) throw new Exception("Error Generating name", 4);
 
               //Save file
-              if(!$this->saveFileFromCache($fileCache,public_path($v['path']), $fileName))
+              $watermark = false;
+              if(isset($v['watermark'])) $watermark = $v['watermark'];
+              if(!$this->saveFileFromCache($fileCache,$v['path'], $fileName,$watermark))
                 throw new Exception("Error Processing Request", 3);
 
               $i++;

@@ -28,7 +28,6 @@ class GirlController extends _adminPanelController
         parent::__construct($this->model);
     }
 
-
     public function create(){
         //Get Model
         $model = new $this->model();

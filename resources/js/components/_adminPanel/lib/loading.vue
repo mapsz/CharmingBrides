@@ -39,7 +39,11 @@
               //add upper loading @@@
             }
 
-            let id = (this.l.id++) + 1;
+            let id = (this.l.id++);
+            do {
+              id++;
+            } while ($('.loading'+id).length);
+            
             this.editHTML(id);
 
             $(element).prepend(this.loadingHTML);

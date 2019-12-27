@@ -67,7 +67,13 @@
     <div class="row my-3">
       <div class="col-3">
         <div class="girl-main-image">
-          <img class="w-100" :src="'/'+mainPhoto" alt="Juliya">
+          <img 
+            @click="index = fGallery.length - 1" 
+            class="w-100" 
+            :src="'/'+mainPhoto" 
+            alt="Juliya"
+            style="cursor: pointer;"
+          >
         </div>
         <div v-if="pAuth" class="girl-more-info">
           <div class="girl-more-info-rows text-capitalize">
@@ -92,7 +98,7 @@
 
             <!-- Gallery -->
             <div class="row">
-              <gallery :images="images" :index="index" @close="index = null"></gallery>
+              <gallery :images="fGallery" :index="index" @close="index = null"></gallery>
               <div
                 class="girl-image col-3 m-0"
                 v-for="(image, imageIndex) in images"
@@ -253,6 +259,14 @@
              images.push(assets+'/'+val);
           });
           return images;
+        },
+        fGallery:function(){
+          let images = []; 
+          $.each(this.girl.photo, function(index, val) {
+             images.push(assets+'/'+val);
+          });          
+          images.push(assets+'/'+this.mainPhoto);
+          return images;          
         }
       },        
       mounted() {

@@ -49,6 +49,11 @@ class Girl extends _adminPanel
       ]                        
     ];
 
+  protected static $watermark = [
+
+  ];
+  protected $parentId = true;
+
   protected $columns  = [
     [
       'name' => 'id',
@@ -131,7 +136,11 @@ class Girl extends _adminPanel
           'maxFileSize'     => '5mb',
           'fileType'        => ['image/*',],  
           'main'            => '`parentId`_0',
-          'default'         => 'no_photo.png'
+          'default'         => 'no_photo.png',
+          'watermark'       =>  [
+            ['mark' => 'watermark/bot.png', 'pos' =>'bottom-right'],
+            ['mark' => 'watermark/top.png', 'pos' =>'top-left']
+          ],
       ],
       [ //Passport
           'name'            => 'passport',
@@ -377,9 +386,6 @@ class Girl extends _adminPanel
                         'attr'        => $role,
                       ]
               );
-
-    
-
   }
 
   public function validate($request){
@@ -390,7 +396,6 @@ class Girl extends _adminPanel
 
     return $val;
   }
-
 
   public function setInfoColumns(){
 
@@ -425,9 +430,6 @@ class Girl extends _adminPanel
     $this->setColumns($columns);
   }
 
-
-
-
   protected function getMoreInfo($row,$value){
 
       foreach ($this->inputs as $v) {
@@ -440,63 +442,6 @@ class Girl extends _adminPanel
 
       return $value;
   }
-
-
-  // public function setColumns($columns){
-
-  //   $this->columns = $columns;
-
-  //   //Admin
-  //   if (Auth::user() &&  Auth::user()->role == 4) {
-  //     return;
-  //   } 
-
-  //   foreach ($this->columns as $k => $c) {
-  //     if($c['name'] == 'confirm'){
-  //       $this->columns[$k] = [
-  //         'name'        => 'confirm',
-  //         'caption'     => 'confirm',
-  //         'relation'    => 'user.role',
-  //         'attributes'  => [
-  //             ['id' => 0,'name' => 'uncofirm'],
-  //             ['id' => 1,'name' => 'confirm'],
-  //         ]
-  //       ];
-  //     }
-  //     if($c['name'] == 'agent'){
-  //       unset($this->columns[$k]);
-  //     }
-  //   }
-
-  // }
-
-  // public function getPage(){
-
-  //   //Admin
-  //   if (Auth::user() &&  Auth::user()->role == 4) {
-  //      $this->page = 'admin.pages.girls';
-  //   }
-
-  //   //Agent
-  //   if($this->page == "") $this->page = '_adminPanel.list';
-  //   //Return page
-  //   return $this->page;             
-  // }
-
-  // protected function getDbData(){
-    
-  //   //Admin
-  //   if (Auth::user() &&  Auth::user()->role == 4) {
-  //     parent::getDbData();
-  //     return;
-  //   }
-
-  //   //Agent
-  //   $this->dbData = Girl::whereHas('agent', function($q){
-  //       $q->where('id', '=', '1');
-  //   })->get();
-
-  // }
 
 
 
