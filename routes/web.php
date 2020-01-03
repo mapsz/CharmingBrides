@@ -19,7 +19,7 @@
 Auth::routes(['verify' => true]);
 
 Route::group(['middleware' => [
-  'under-construction',
+  // 'under-construction',
   'last-activity'
 ]], function () {
 
