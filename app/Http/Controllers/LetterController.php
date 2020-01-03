@@ -85,58 +85,6 @@ class LetterController extends _adminPanelController
 
 
     public function _index(){
-      // //Get Model
-      // $model = new $this->model();
-      // if(Auth::User()->role == 3){  
-
-      //   $id =  Auth::User()->agent->id; 
-      //   $callback = function($q)use($id) {
-      //     $q->where('id','=',$id);
-      //   };        
-      //   $dbData = letter::with('user.man')
-      //                 ->with('user.girl')
-      //                 ->with(['user.girl.agent' => $callback])
-      //                 ->with('toUser.man')
-      //                 ->with(['toUser.girl.agent' => $callback])                      
-      //                 ->whereHas('user.girl.agent' , $callback)
-      //                 ->orWhereHas('toUser.girl.agent' , $callback)
-      //                 ->orderBy('created_at','DESC')
-      //                 ->paginate(50);
-      // }else{
-      //   $dbData = letter::with('user.man')
-      //                 ->with('user.girl')
-      //                 ->with('user.girl.agent')
-      //                 ->with('toUser.man')
-      //                 ->with('toUser.girl.agent')
-      //                 ->orderBy('created_at','DESC')
-      //                 ->paginate(50);        
-      // }
-
-
-      // //Get Data
-      // $data   = $model->getData($dbData); // Data
-      // $inputs = $model->getInputs();  //Inputs
-      // $names   = $model->getNames();  //Names
-      // $page   = $model->getPage();    //Page
-      // $route = $model->getRoute(); 
-      // $settings = $model->getSettings(); 
-
-
-      // //Encode
-      // $data   = json_encode($data);
-      // $inputs = json_encode($inputs);
-      // $names   = json_encode($names);
-      // $route   = json_encode($route);
-      // $settings   = json_encode($settings);
-
-      // return view($page)
-      //   ->with('data', $data)
-      //   ->with('inputs', $inputs)
-      //   ->with('name', $names)
-      //   ->with('route',$route)
-      //   ->with('settings',$settings);
-
-
       $data['search'] = [
         ['name'=>'period',
         'type'=>'fromToDate',
@@ -177,12 +125,14 @@ class LetterController extends _adminPanelController
           if(User::getWithInfo(Auth::User()->id)['man'] < 3)
             return response()->json(['error' => '1', 'text' => 'bad user']);
         }
+       
 
-        $id = $model::sendLetter([
+        $id = $model->sendLetter([
             'subject'     => $inputs['subject'],
             'body'        => $inputs['body'],
             'user_id'     => $inputs['user_id'],
             'to_user_id'  => $inputs['to_user_id'],
+            'photo'       => $inputs['photo'],
         ]);
 
 
@@ -234,7 +184,9 @@ class LetterController extends _adminPanelController
         $userId = Auth::User()->id;
       }
 
-      $letters = $this->model::getLetters($userId,$request->companionId);
+      $model = new $this->model;
+
+      $letters = $model->getLetters($userId,$request->companionId);
 
       return response()->json(['error' => 0, 'data' => $letters]);
     }

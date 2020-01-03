@@ -70,6 +70,16 @@ class Letter extends _adminPanel
         ]
     ];    
     protected $inputs    = [
+      [ //Photo
+          'name'            => 'photo',
+          'type'            => 'file',
+          'maxFileCount'    => 1,
+          'path'            => 'media/letters',
+          'fileName'        => '`id`',
+          'maxFileSize'     => '5mb',
+          'fileType'        => ['image/*',],  
+          'main'            => '`id`',
+      ],      
     ];
 
     public function __construct(){
@@ -86,7 +96,7 @@ class Letter extends _adminPanel
         return $val;
     }
 
-    public static function sendLetter($data){
+    public function sendLetter($data){
       //Send letter        
       $l = new self;
       $l->subject      = $data['subject'];
@@ -94,6 +104,11 @@ class Letter extends _adminPanel
       $l->user_id      = $data['user_id'];
       $l->to_user_id   = $data['to_user_id'];
       if(!$l->save()) return false;   
+
+      //Save photo      
+      if($data['photo'] && is_array($data['photo'])){
+        $this->saveFileFromCache($data['photo'][0],'/media/letters/', $l->id);
+      }
 
       //Send email notification
       if(User::where('id',$data['to_user_id'])->first()->hasVerifiedEmail()){
@@ -172,7 +187,7 @@ class Letter extends _adminPanel
         return $out;
     }
 
-    public static function getLetters($userId, $companionId){
+    public function getLetters($userId, $companionId){
 
       //Get letters
       $letters = self::where([
@@ -198,6 +213,11 @@ class Letter extends _adminPanel
       }else{
         $man = $companionId;
       }
+
+      //Set photos
+      foreach ($letters as $k => $letter) {
+        $letters[$k]['photos'] = $this->getFiles($letter['id'], 'photo');        
+      }
         
       //Set Pay
       foreach ($letters as $k => $letter) {
@@ -210,6 +230,7 @@ class Letter extends _adminPanel
         if(!isset($letter['letter_pay']) || !$letter['letter_pay']){
           if($user['man'] === 1){
             $letters[$k]['body'] = "";
+            $letters[$k]['photos'] = false;
             $letters[$k]['cost'] = self::getLetterCost($letter['body'], $membership);
           }          
           $letters[$k]['payed'] = false;          

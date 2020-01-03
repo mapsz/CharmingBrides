@@ -10,29 +10,39 @@
         </div>
         <div class="modal-body">
           <div class="form-group row">
-              <label for="subject" class="col-sm-2 col-form-label text-capitalize">
-                Subject:
-              </label>
-              <div class="col-sm-10">                      
-                <input v-model="letter.subject" class="form-control"  id="subject" type="text" name="subject" placeholder="Enter subject">
-              </div>
+            <label for="subject" class="col-sm-2 col-form-label text-capitalize">
+              Subject:
+            </label>
+            <div class="col-sm-10">                      
+              <input v-model="letter.subject" class="form-control"  id="subject" type="text" name="subject" placeholder="Enter subject">
+            </div>
           </div>
           <div class="form-group">
             <label for="letter">Letter:</label>
             <textarea v-model="letter.body" class="form-control" id="letter" rows="5"></textarea>
           </div> 
           <div>
-            <button class="btn btn-primary"><coming-soon></coming-soon>Add Photo</button>
+            <div>
+              <file-upload-component
+                v-if="filesUpload"
+                :p-route="'letter'"
+                :p-name="'photo'"
+                :p-max-file-size="'5mb'"
+                :p-max-file-count="1"
+                :p-file-type="['image/*']"
+                @filesUpdated="updateFiles"
+              />
+            </div>
           </div>
           <!-- errors -->
           <div v-show="errors" class="alert alert-danger">
-              <ul>
-                  <li v-for="error in errors">
-                      <!-- <span v-for="err in error" >                         -->
-                          {{ error }}
-                      <!-- </span>                 -->
-                  </li>
-              </ul>
+            <ul>
+              <li v-for="error in errors">
+                <!-- <span v-for="err in error" >                         -->
+                  {{ error }}
+                <!-- </span>                 -->
+              </li>
+            </ul>
           </div>                
         </div>
         <div class="modal-footer">
@@ -53,8 +63,11 @@
           letter:{
             subject:"",
             body:"",
+            
           },
           errors:false,
+          files:false,
+          filesUpload:true,
         }
       },
       watch: {
@@ -75,6 +88,7 @@
         async sendLetter(){
 
             $('#btn-send').hide();
+            this.filesUpload = false;
 
             let r = await axios({
                     method: 'put',
@@ -84,6 +98,7 @@
                       'body':this.letter.body,
                       'to_user_id':this.pUser.id,
                       'user_id':this.pFrom,
+                      'photo':this.files,
                     },
                   })
                   .then((r) => {                    
@@ -103,6 +118,7 @@
                     $('#letterModal').modal('hide');
                     this.$emit('send-success');
                     this.letterRefresh();
+
                     return r.data.id;
                   })
                   .catch((error) => {   
@@ -115,14 +131,22 @@
                       return false;
                   });
 
+
+            //Files refresh
+            this.filesUpload = true;
+
             $('#btn-send').show();
         },
         letterRefresh(){
           this.letter = {
                 subject:"",
                 body:"",
-              }      
-        }
+              } ;   
+          this.files=false;
+        },
+        updateFiles(data){
+          this.files = data.files;
+        },        
 
 
       }

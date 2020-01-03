@@ -61,7 +61,7 @@ class LetterSendJob implements ShouldQueue
       if($count < 1){
         //Send letter
         $l = new Letter;
-        $id = $l::sendLetter([
+        $id = $l->sendLetter([
             'subject'     => $girl->firstLetterSubject,
             'body'        => $girl->firstLetter,
             'user_id'     => $girl->user_id,

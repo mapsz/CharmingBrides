@@ -705,7 +705,7 @@ class _adminPanel extends Model
 
       return $serverEnc;
     }
-    public function saveFileFromCache($fileEnc,$path,$name,$watermark){
+    public function saveFileFromCache($fileEnc,$path,$name,$watermark = false){
       $filepond = new Filepond();
       //Decode file path
       $chacheFilePath = $filepond->getPathFromServerId($fileEnc);

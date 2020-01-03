@@ -172,7 +172,7 @@ Route::group(['middleware' => ['auth']],function(){
 
   Route::get('/letter/get/companion', ucfirst($model).'Controller@getSingleCompanion')->name('getSingleCompanion');    
   Route::post('/letter/read', ucfirst($model).'Controller@read');
-
+  Route::post('/'.$model.'/file/upload', ucfirst($model).'Controller@_fileUpload');  //File upload  
 
   //Girl 
   $model = 'girl';
@@ -257,7 +257,6 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/letter', 'LetterController@_index')->name($namePrefix.$model);    
   Route::get('/letter/history', ucfirst($model).'Controller@adminLetterHistory');
 
-  //Letter
   Route::get('/letter/girls', 'letterController@getAdminGirls');
 
   //signs

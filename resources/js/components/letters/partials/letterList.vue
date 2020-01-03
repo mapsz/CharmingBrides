@@ -30,7 +30,12 @@
         <!-- message -->
         <div v-if="pUser.man !== 1 || currentLetter.payed"class="message">
             {{currentLetter.body}}
+
         </div>
+        <!-- photo -->
+        <div v-if="currentLetter.photos.length > 0">
+          <img :src="currentLetter.photos[0]" alt="photo" style="width:90%;max-height: 400px;">
+        </div>        
         <hr>
       </li>
     </ul>
