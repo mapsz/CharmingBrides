@@ -269,14 +269,17 @@
             this.pay = letterId;
           },
           successPay(letter){
-            $.each(this.letters, (i, v) => {
-              $.each(v.letters, (j, l) => {
-                if(l.id == letter.id){
-                  this.letters[i].letters[j].body  = letter.body;
-                  this.letters[i].letters[j].payed = true;
-                }
-              });
-            });
+            // $.each(this.letters, (i, v) => {
+            //   $.each(v.letters, (j, l) => {
+            //     if(l.id == letter.id){
+            //       this.letters[i].letters[j].body   = letter.body;
+            //       this.letters[i].letters[j].photos = true;
+            //       this.letters[i].letters[j].payed  = true;
+            //     }
+            //   });
+            // });
+
+            this.refreshLetters();
 
             this.setActiveCompanion(this.activeCompanion);
           },

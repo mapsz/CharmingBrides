@@ -37,7 +37,7 @@
                 Read Letter!
               </button>
               <div v-else class="message">
-                  {{currentLetter.body}}@@@
+                  {{currentLetter.body}}
               </div>
               <hr>
             </li>
