@@ -371,6 +371,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/'.$model.'/recent/get', ucfirst($model).'Controller@_getRecent')->name($namePrefix.'recent'.ucfirst($model));  //Get Recent 
   Route::post('/'.$model.'/file/upload', ucfirst($model).'Controller@_fileUpload')
         ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload   
+  Route::delete('/'.$model.'/file/delete', ucfirst($model).'Controller@_fileDelete');  //Delete 
 
 
 });
