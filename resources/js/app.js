@@ -197,6 +197,10 @@ Vue.component('pre-register', require('./components/registration/preregister.vue
 Vue.component('admin-email', require('./components/admin/email.vue'));
 Vue.component('admin-mailer-man-search', require('./components/admin/mailer/partials/mansearch.vue'));
 
+//Service
+Vue.component('service', require('./components/service/service.vue'));
+
+
 
 const app = new Vue({
     el: '#app'

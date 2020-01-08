@@ -37,7 +37,10 @@
         </li>  
         <li class="nav-item">
           <a class="nav-link" href="{{ route('admin_email') }}">Email</a>
-        </li>                
+        </li>    
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('admin_service') }}">Services</a>
+        </li>                 
       @endif
     </ul>
   </div>

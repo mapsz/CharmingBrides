@@ -22,10 +22,8 @@ class ManController extends _adminPanelController
 
     public function loginAdminMan(request $request){
 
-
       $user = User::find($request->user_id);
       Auth::login($user);
-
 
       return response()->json(['error' => '0', 'text' => $request->user_id]);
 
