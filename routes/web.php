@@ -373,6 +373,23 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
         ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload   
   Route::delete('/'.$model.'/file/delete', ucfirst($model).'Controller@_fileDelete');  //Delete 
 
+  // Service Category
+  $model = 'serviceCategory';
+  $namePrefix = "admin_";
+  Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);                               //Index
+  Route::get('/'.$model.'/get/{id?}', ucfirst($model).'Controller@_get')->name($namePrefix.'get'.ucfirst($model));           //Get
+  Route::get('/'.$model.'/create', ucfirst($model).'Controller@_create')->name($namePrefix.'create'.ucfirst($model));  //Create
+  Route::get('/'.$model.'/edit/{id}', ucfirst($model).'Controller@_edit')->name($namePrefix.'edit'.ucfirst($model));     //edit
+  Route::put('/'.$model, ucfirst($model).'Controller@_put')->name($namePrefix.'put'.ucfirst($model));                  //Put
+  Route::post('/'.$model, ucfirst($model).'Controller@_post')->name($namePrefix.'post'.ucfirst($model));               //Post
+  Route::delete('/'.$model, ucfirst($model).'Controller@_destroy')->name($namePrefix.'delete'.ucfirst($model));        //Delete
+  Route::delete('/'.$model.'/detach', ucfirst($model).'Controller@_detach')->name($namePrefix.'detach'.ucfirst($model));    //Detach
+  Route::put('/'.$model.'/attach', ucfirst($model).'Controller@_attach')->name($namePrefix.'attach'.ucfirst($model));        //Attach  
+  Route::get('/'.$model.'/search', ucfirst($model).'Controller@_search')->name($namePrefix.'search'.ucfirst($model));  //Search
+  Route::get('/'.$model.'/recent/get', ucfirst($model).'Controller@_getRecent')->name($namePrefix.'recent'.ucfirst($model));  //Get Recent 
+  Route::post('/'.$model.'/file/upload', ucfirst($model).'Controller@_fileUpload')
+        ->name($namePrefix.'fileUpload'.ucfirst($model));  //File upload   
+  Route::delete('/'.$model.'/file/delete', ucfirst($model).'Controller@_fileDelete');  //Delete 
 
 });
 

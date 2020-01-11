@@ -9,13 +9,10 @@ class Agent extends _adminPanel
 
     protected $single    = 'agent';
     protected $multi     = 'agents';        
-    // protected $route     = 'admin/agent';
     protected $route     = [ 'prefix' => 'admin/' ];
 
     protected $edit      = true;
-    // protected $delete    = false;
-    // protected $add       = false;
-    protected $parentId = true;
+    protected $parentId  = true;
 
     protected $columns  = [
       [

@@ -4,17 +4,16 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Service extends _adminPanel
+class ServiceCategory extends _adminPanel
 {
-  protected $single               = 'service';
-  protected $multi                = 'services';        
+  protected $single               = 'serviceCategory';
+  protected $multi                = 'serviceCategories';        
   protected $route                = [ 'prefix' => 'admin/' ];
-  protected $link                 = "/service/";
+  protected $link                 = "/serviceCategory/";
 
   protected $columns  = [
     ['name' => 'id'],
-    ['name' => 'name'],    
-    ['name' => 'price'],   
+    ['name' => 'name'],  
     [
       'name' => 'menu',
       'caption' => 'Show in menu',
@@ -22,7 +21,26 @@ class Service extends _adminPanel
         ['id' => 0,'name' => 'no'],
         ['id' => 1,'name' => 'yes']
       ],
-    ],       
+    ], 
+    [
+      'name'         => 'services',
+      'relationMany' => 'service', 
+      'list'         => [
+        ['name' => 'id'],
+        ['name' => 'name'],    
+        ['name' => 'price'], 
+        [
+          'name' => 'category',
+          'caption' => 'category',
+          'relationBelongsToOne' => 'category.name',
+        ],                     
+      ],
+      'settings' => [
+        'route'        => [ 'prefix' => 'admin/', 'r' => 'service' ],
+        'attach'       => true,
+        'detach'       => true,
+      ]        
+    ],          
   ];
   
   protected $inputs   = [
@@ -33,11 +51,8 @@ class Service extends _adminPanel
     [
       'name'      => 'description', 
       'type'      => 'textarea',
-    ],  
-    [
-      'name' => 'price',
-      'type' => 'text',
-    ],              
+      'required'  => false,
+    ],            
     [
       'name' => 'menu',
       'caption' => 'Show in menu',
@@ -51,7 +66,7 @@ class Service extends _adminPanel
       'name'            => 'image',
       'type'            => 'file',
       'maxFileCount'    => 1,
-      'path'            => 'media/services',
+      'path'            => 'media/services/category',
       'fileName'        => '`id`',
       'maxFileSize'     => '5mb',
       'fileType'        => ['image/*',],  
@@ -59,14 +74,12 @@ class Service extends _adminPanel
     ]
   ];
 
+    public function service(){
+      //
+      return $this->belongsToMany('App\Service');
+    } 
+
   public function __construct(){
       parent::__construct($this->single, $this->multi, $this->page, $this->inputs);
   }  
-
-
- 
-    public function category(){
-      return $this->belongsToMany('App\ServiceCategory');
-    }  
-
 }

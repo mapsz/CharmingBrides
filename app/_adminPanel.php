@@ -284,6 +284,8 @@ class _adminPanel extends Model
       $columns = $this->setDataColumns($this->columns);
       $this->setColumns($columns);
       //Set up relations
+
+       
       $this->setUpDefaultRelations();
       //Get from DB
       if($dbData){
@@ -312,7 +314,7 @@ class _adminPanel extends Model
 
         //Add relations
         $getData = $this->addDbRelations($this->columns, $getData);
-       
+              
         //Order
         if($this->order) $getData->orderBy($this->order['row'], $this->order['order']);
         //Count
@@ -408,11 +410,12 @@ class _adminPanel extends Model
 
     private function addDbRelations($columns, $getData, $listRelation = false){
 
+
         if($listRelation) $list = [];
 
         foreach ($columns as $v) {   
           //Relation one
-          if(isset($v['relation'])){
+          if(isset($v['relation'])){            
             if(gettype ($v['relation']) == 'string'){
               //Get table
               $table =  substr($v['relation'], 0, strpos($v['relation'], '.'));
@@ -420,11 +423,12 @@ class _adminPanel extends Model
                 //Add relation
                 $getData = $getData->with($table);
               }else{                
-                //Add list              
+                //Add list           
                 array_push($list, $listRelation.'.'.$table);
               }
-            }    
+            }   
           }  
+
           //Relation Belong to One
           elseif(isset($v['relationBelongsToOne'])){ 
             //Get table
@@ -437,6 +441,7 @@ class _adminPanel extends Model
               array_push($list, $listRelation.'.'.$table);
             }
           }
+
           //Relation Has Many
           if(isset($v['relationMany'])){ 
             if(isset($v['list'])){
@@ -446,7 +451,6 @@ class _adminPanel extends Model
           }    
         }      
 
-        // dd($getData);
 
         if($listRelation)  return $list; else return $getData;
     }
@@ -520,6 +524,7 @@ class _adminPanel extends Model
             //Relation Belongs to one
             elseif(isset($c['relationBelongsToOne'])){ 
 
+
               $column = substr($c['relationBelongsToOne'], 0, strpos($c['relationBelongsToOne'], '.'));
               $name =  substr($c['relationBelongsToOne'], strpos($c['relationBelongsToOne'], '.') + 1);
 
@@ -533,7 +538,7 @@ class _adminPanel extends Model
             //Relation Many
             elseif(isset($c['relationMany'])){
               if(isset($c['list'])){     
-                //Has many                 
+                //Has many          
                 $val = $this->formDatafromDb($c['list'],$dbValue[$c['relationMany']]);
               }    
 
