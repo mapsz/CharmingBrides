@@ -18,7 +18,7 @@ class ServiceCategory extends _adminPanel
       'name' => 'menu',
       'caption' => 'Show in menu',
       'attributes' => [
-        ['id' => 0,'name' => 'no'],
+        ['id' => -1,'name' => 'no'],
         ['id' => 1,'name' => 'yes']
       ],
     ], 
@@ -58,7 +58,7 @@ class ServiceCategory extends _adminPanel
       'caption' => 'Show in menu',
       'type' => 'radio',
       'attributes' => [
-        ['id' => 0,'name' => 'no'],
+        ['id' => -1,'name' => 'no'],
         ['id' => 1,'name' => 'yes']
       ],  
     ],  
