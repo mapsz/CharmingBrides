@@ -79,7 +79,7 @@
             <span class="col-8">From {{prefferFrom}} To {{prefferTo}}</span>  
             <!-- Hair color: -->
             <span class="col-4 font-weight-bold">Hair color:</span>
-            <span class="col-8">{{man.girl_hair}}</span> 
+            <span class="col-8">{{man.girlHair}}</span> 
             <!-- Height (cm): -->
             <span class="col-4 font-weight-bold">Height (cm):</span>
             <span class="col-8">From {{heightFrom}} To {{heightTo}}</span>  
@@ -88,25 +88,25 @@
             <span class="col-8">From {{weightFrom}} To {{weightTo}}</span>  
             <!-- Smoking: -->
             <span class="col-4 font-weight-bold">Smoking:</span>
-            <span class="col-8">{{man.girl_smoking}}</span>  
+            <span class="col-8">{{man.girlSmoking}}</span>  
             <!-- Alcohol: -->
             <span class="col-4 font-weight-bold">Alcohol:</span>
-            <span class="col-8">{{man.girl_alcohol}}</span>              
+            <span class="col-8">{{man.girlAlcohol}}</span>              
             <!-- Education: -->
             <span class="col-4 font-weight-bold">Education:</span>
-            <span class="col-8">{{man.girl_education}}</span>  
+            <span class="col-8">{{man.girlEducation}}</span>  
             <!-- Profession: -->
             <span class="col-4 font-weight-bold">Profession:</span>
-            <span class="col-8">{{man.girl_profession}}</span>  
+            <span class="col-8">{{man.girlProfession}}</span>  
             <!-- Marital Status: -->
             <span class="col-4 font-weight-bold">Marital Status:</span>
-            <span class="col-8">{{man.girl_maritial}}</span>  
+            <span class="col-8">{{man.girlMaritial}}</span>  
             <!-- Children: -->
             <span class="col-4 font-weight-bold">Children:</span>
-            <span class="col-8">{{man.girl_children}}</span>  
+            <span class="col-8">{{man.girlChildren}}</span>  
             <!-- More about my match: -->
             <span class="col-12 font-weight-bold">More About My Match:</span>
-            <span class="col-12">{{man.girl_info}}</span>  
+            <span class="col-12">{{man.girlInfo}}</span>  
           </div>
         </div>
       </div>

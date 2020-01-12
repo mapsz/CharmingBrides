@@ -274,49 +274,49 @@ class Man extends _adminPanel
         ],   
       ],
       [ //preffer from
-        'name' => 'preffer_from',
+        'name' => 'prefferFrom',
         'caption' => 'Preffer Girl Age From',
         'type' => 'number',
         'example' => '25',
         'required' => false,
       ],
       [ //preffer to
-        'name' => 'preffer_to',
+        'name' => 'preffertTo',
         'caption' => 'Preffer Girl Age To',
         'type' => 'number',
         'example' => '45',
         'required' => false,
       ],
       [ //girl_weight_from
-        'name' => 'girl_weight_from',
+        'name' => 'girlWeightFrom',
         'caption' => 'Preffer Girl Weight From',
         'type' => 'number',
         'example' => '55',
         'required' => false,
       ],
       [ //girl_weight_to
-        'name' => 'girl_weight_to',
+        'name' => 'girlWeightTo',
         'caption' => 'Preffer Girl Weight To',
         'type' => 'number',
         'example' => '70',
         'required' => false,
       ],
       [ //girl_height_from
-        'name' => 'girl_height_from',
+        'name' => 'girlHeightFrom',
         'caption' => 'Preffer Girl Height From',
         'type' => 'number',
         'example' => '160',
         'required' => false,
       ],
       [ //girl_height_to
-        'name' => 'girl_height_to',
+        'name' => 'girlHeightTo',
         'caption' => 'Preffer Girl Height To',
         'type' => 'number',
         'example' => '170',
         'required' => false,
       ],
       [ //girl_hair
-        'name' => 'girl_hair',
+        'name' => 'girlHair',
         'caption' => 'Preffer Girl Hair',
         'type' => 'radio',
         'required' => false,
@@ -330,7 +330,7 @@ class Man extends _adminPanel
         ],
       ],
       [ //girl_smoking
-        'name' => 'girl_smoking',
+        'name' => 'girlSmoking',
         'caption' => 'Preffer Girl Smoking',
         'type' => 'radio',
         'required' => false,
@@ -340,7 +340,7 @@ class Man extends _adminPanel
         ],
       ],
       [ //girl_education
-        'name' => 'girl_education',
+        'name' => 'girlEducation',
         'caption' => 'Preffer Girl Education',
         'type' => 'radio',
         'required' => false,
@@ -354,7 +354,7 @@ class Man extends _adminPanel
         ],
       ],
       [ //girl_proffesion
-        'name' => 'girl_proffesion',
+        'name' => 'girlProffesion',
         'caption' => 'Preffer Girl Proffesion',
         'type' => 'radio',
         'required' => false,
@@ -368,7 +368,7 @@ class Man extends _adminPanel
         ],
       ],
       [ //girl_maritial
-        'name' => 'girl_maritial',
+        'name' => 'girlMaritial',
         'caption' => 'Preffer Girl Maritial Status',
         'type' => 'radio',
         'required' => false,
@@ -381,7 +381,7 @@ class Man extends _adminPanel
         'required' => false,
       ],
       [ //girl_children
-        'name' => 'girl_children',
+        'name' => 'girlChildren',
         'caption' => 'Preffer Girl Children',
         'type' => 'radio',
         'required' => false,
@@ -396,7 +396,7 @@ class Man extends _adminPanel
         'required' => false,
       ],
       [ //girl_info
-        'name' => 'girl_info',
+        'name' => 'girlInfo',
         'caption' => 'About Girl',
         'type' => 'textarea',
         'row' => 5,
@@ -412,7 +412,7 @@ class Man extends _adminPanel
     $val = $request->validate([
         'email'          => 'required|unique:users',
         'password'       => 'required',
-        'name'       => 'required',
+        'name'           => 'required',
     ]);
 
     return $val;
