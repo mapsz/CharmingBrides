@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="py-4">
     <center>
       <h4 class="mt-0"><strong>{{pService.name}}</strong></h4>     
       <img 
@@ -8,7 +8,8 @@
         :src="'/'+photo" 
         alt="Generic placeholder image"
       >      <br>  
-      <span class="price">{{pService.price}}</span>             
+
+      <span v-if="!pCategory" class="price">{{pService.price}}</span>             
       <a :href="(pCategory ? '/service/category/' : '/service/') + pService.id">
         <button class="btn btn-primary">More</button>
       </a>
