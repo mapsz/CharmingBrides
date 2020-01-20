@@ -73,7 +73,7 @@ class PayController extends Controller
     }
     //Service
     if($request->cat == 'service'){
-      $order = Service::where('id',$request->id)->first();
+      $product = Service::where('id',$request->id)->first();
     }   
 
     if(!$product) return false;
