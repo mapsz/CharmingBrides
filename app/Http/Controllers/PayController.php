@@ -6,6 +6,7 @@ use App\Pay;
 use App\Membership;
 use Illuminate\Http\Request;
 use App\Order;
+use App\Service;
 use Auth;
 
 use PayPal\Api\Item;
@@ -36,6 +37,12 @@ class PayController extends Controller
     if($request->cat == 'membership'){
       $order = Membership::where('id',$request->id)->first();
     }
+
+    //Service
+    if($request->cat == 'service'){
+      $order = Service::where('id',$request->id)->first();
+    }    
+
     if(!$order) return view('pages.home');
 
 

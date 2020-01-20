@@ -21,9 +21,9 @@
           <center>
             <span class="price">{{service.price}}</span> 
             <span class="order-button">
-              <button class="btn btn-primary">
-                <coming-soon></coming-soon>Order Now!
-              </button>
+              <a :href="'/order?cat=service&id='+service._id">
+                <button class="btn btn-primary">Order Now!</button>
+              </a> 
             </span>
           </center>
         </div>   
