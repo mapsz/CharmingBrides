@@ -43,16 +43,31 @@
               </div>
             </li>
             <!-- services -->
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown service-menu">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Services
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="/memberships">Memberships</a>
-                <a class="dropdown-item" href="#"><coming-soon></coming-soon>Matchmaker</a>
-                <a class="dropdown-item" href="#"><coming-soon></coming-soon>Chatting</a>
-                <a class="dropdown-item" href="#"><coming-soon></coming-soon>Photos & Videos</a>
-                <a class="dropdown-item" href="#"><coming-soon></coming-soon>Local City Services</a>
+                <a class="dropdown-item" href="/services">All Services</a>
+                <!-- Services -->
+                <a 
+                  v-if="serviceMenu.services != undefined"
+                  v-for="m in serviceMenu.services" 
+                  :href="'/service/' + m.id"
+                  class="dropdown-item" 
+                >
+                  {{m.name}}                              
+                </a>
+                <!-- Categories -->
+                <a 
+                  v-if="serviceMenu.categories != undefined"
+                  v-for="m in serviceMenu.categories" 
+                  :href="'/service/category/' + m.id"
+                  class="dropdown-item" 
+                >
+                  {{m.name}}                              
+                </a>
               </div>
             </li> 
             <!-- Help -->
@@ -75,7 +90,7 @@
             <fa-icon icon="comments" /> ONLINE CHAT
           </a>
 
-          <a 
+          <a
             v-if="auth" 
             class="nav-link" 
             href="/letters"
@@ -144,6 +159,7 @@
           l:0,
           s:0,
         },
+        serviceMenu:[],
       }
     },
     computed:{
@@ -164,6 +180,7 @@
     },  
     mounted() {
       this.getNotifications();
+      this.getServiceMenu();
     },          
     methods: {
       async logout(){
@@ -176,7 +193,19 @@
         if(!r) return;
 
         this.noty = r;
-      }
+      },
+      async getServiceMenu(){
+        let l = this.loading('.service-menu');
+        let r = await this.ax('get','/service/get/menu');
+
+        if(!r) {
+          this.hideLoading(l);
+          return;
+        }
+
+        this.serviceMenu = r;
+        this.hideLoading(l);
+      }      
     }
   }
 </script>

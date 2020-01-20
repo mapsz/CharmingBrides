@@ -199,6 +199,9 @@ Vue.component('admin-mailer-man-search', require('./components/admin/mailer/part
 
 //Service
 Vue.component('service', require('./components/service/service.vue'));
+Vue.component('all-services', require('./components/service/all_services.vue'));
+Vue.component('service-cart', require('./components/service/partials/cart.vue'));
+Vue.component('service-category', require('./components/service/category.vue'));
 
 
 

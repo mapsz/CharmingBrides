@@ -20,7 +20,11 @@
         <div class="service-footer">
           <center>
             <span class="price">{{service.price}}</span> 
-            <span class="order-button"><button class="btn btn-primary">Order Now!</button></span>
+            <span class="order-button">
+              <button class="btn btn-primary">
+                <coming-soon></coming-soon>Order Now!
+              </button>
+            </span>
           </center>
         </div>   
       </div> 
@@ -63,14 +67,11 @@
         methods: {
           async getService(){
 
-            let r = await this.ax('get', '/service/get/'+this.id);
-            
+            let r = await this.ax('get', '/service/get/'+this.id);            
 
             if(!r) return false;
 
             this.service = r;
-
-
 
             this.hideLoading(this.lo);
             return r;

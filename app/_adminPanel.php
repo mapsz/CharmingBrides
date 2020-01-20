@@ -368,14 +368,9 @@ class _adminPanel extends Model
             }            
           }
         }
-
-
-        
         
         //Set data
         $this->dbData = $getData->paginate($this->perPage);
-
-
     }
     private function setFilesFromColumns(){
       

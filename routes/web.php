@@ -140,6 +140,12 @@ Route::delete('/chat/admin/deleteOnline', 'ChatController@deleteHardOnline')->na
 Route::get('/sets/notifications','NotificationController@sets');
 Route::get('/verified/notifications','NotificationController@verified');
 
+//Service
+Route::get('/service/get/menu', 'ServiceController@getMenu');
+Route::get('/services', 'ServiceController@allIndex');
+Route::get('/service/get/all', 'ServiceController@getAll');
+Route::get('/service/category/{id}', 'ServiceController@getCategory');
+
 //Auth
 Route::group(['middleware' => ['auth']],function(){
 
