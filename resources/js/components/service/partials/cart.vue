@@ -1,5 +1,5 @@
 <template>
-  <div class="py-4">
+  <div class="py-4 service-item">
     <center>
       <h4 class="mt-0"><strong>{{pService.name}}</strong></h4>     
       <img 
@@ -49,5 +49,11 @@
     content: "€";
   }
 
+  .service-item{
+    border:1px solid black;
+    margin: 10px;
+    border-radius: 7px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  }
 
 </style>
