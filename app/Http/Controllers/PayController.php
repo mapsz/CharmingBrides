@@ -66,7 +66,7 @@ class PayController extends Controller
     ){
       return false;
     }
-    
+
     //Membership 
     if($request->cat == "membership"){
       $product = Membership::where('id',$request->id)->first();
@@ -212,6 +212,8 @@ class PayController extends Controller
       $order->transaction = $result->id;
 
       $order->save();                    
+
+      if($order->category == 'service') return $result;
 
       //Attach membership
       Membership::attachMembership($userId, $membership);
