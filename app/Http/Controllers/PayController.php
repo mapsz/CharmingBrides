@@ -66,10 +66,16 @@ class PayController extends Controller
     ){
       return false;
     }
- 
+    
+    //Membership 
     if($request->cat == "membership"){
       $product = Membership::where('id',$request->id)->first();
     }
+    //Service
+    if($request->cat == 'service'){
+      $order = Service::where('id',$request->id)->first();
+    }   
+
     if(!$product) return false;
 
     //Make order
