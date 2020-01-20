@@ -96,7 +96,11 @@ class ServiceController extends _adminPanelController
       return response()->json(['error' => '0','data' => json_encode($data)]);
     }
 
-    public function getCategory($id){
+    public function categoryIndex($id){
+      return view('pages.vue')->with('vue','service-category')->with('data',$id);
+    }
+
+     public function getCategoryServices($id){
 
       $columns = [
         [
@@ -120,8 +124,9 @@ class ServiceController extends _adminPanelController
       $data['services']  = $model->getData()['data'];
       $data['name']  = ServiceCategory::where('id','=',$id)->first()->name;
 
-      return view('pages.vue')->with('vue','service-category')->with('data',json_encode($data));
-    }
+      return response()->json(['error' => '0','data' => json_encode($data)]);
+
+     }
 
     public function __construct(){
         parent::__construct($this->model);

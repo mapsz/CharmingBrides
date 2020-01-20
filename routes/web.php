@@ -144,7 +144,8 @@ Route::get('/verified/notifications','NotificationController@verified');
 Route::get('/service/get/menu', 'ServiceController@getMenu');
 Route::get('/services', 'ServiceController@allIndex');
 Route::get('/service/get/all', 'ServiceController@getAll');
-Route::get('/service/category/{id}', 'ServiceController@getCategory');
+Route::get('/service/category/{id}', 'ServiceController@categoryIndex');
+Route::get('/service/get/category/{id}', 'ServiceController@getCategoryServices');
 
 //Auth
 Route::group(['middleware' => ['auth']],function(){
