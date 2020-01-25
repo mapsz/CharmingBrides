@@ -392,6 +392,8 @@ class Girl extends _adminPanel
     $val = $request->validate([
         'email'          => 'required|unique:users',
         'name'           => 'required',
+        'birth'           => 'required',
+        'location'           => 'required',
     ]);
 
     return $val;

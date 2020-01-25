@@ -145,6 +145,31 @@ class GirlController extends _adminPanelController
       }
     }
 
+    public function _put(Request $request){
+        //Get Model
+        $model = new $this->model; 
+        
+        //Validate
+        $validate = $model->validate($request); 
+
+        //Save
+        $r = $model->saveRow($request->all());
+
+
+        if(Auth::user()->role == 3){
+          $girl = Girl::find($r);
+          $girl->agent()->attach(Auth::user()->agent->id);
+
+        }
+
+        //response
+        if($r){
+            return response()->json(['error' => '0', 'id' => $r]);
+        }else{
+            return response()->json(['error' => '1', 'text' => 'something gone wrong']);
+        }
+    }
+
 
     public function index($id) {
 

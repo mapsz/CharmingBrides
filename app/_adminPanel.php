@@ -766,7 +766,8 @@ class _adminPanel extends Model
       //@@@
       //get id
       $id = substr($fileName,0,strpos($fileName,'_'));
-      $mainFile = $path.self::generateFileName($main,['parentId' => $id]).'.jpg';
+      $mainFile = self::generateFileName($main,['parentId' => $id]).'.jpg';
+
       
       //Rename old main
       if(File::isFile($mainFile)){
@@ -780,16 +781,18 @@ class _adminPanel extends Model
 
         if(!$fileName2) return false;
 
+
         File::move(
           $mainFile,
-          $path . $fileName2. '.jpg' 
+          $fileName2. '.jpg' 
         );
       }
 
 
+
       //rename new main
         File::move(
-          $path.$fileName,
+          $fileName,
           $mainFile
         );
 
