@@ -278,7 +278,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','admin']],function(){
 
   //Statisctic
-  Route::get('/statistic','StatisticController@index');
+  Route::get('/statistic','StatisticController@index')->name('statistics');
   Route::get('/statistic/agents','StatisticController@agents');
   Route::get('/statistic/agents/get','StatisticController@getAgents');
   Route::get('/statistic/memberships','StatisticController@memberships');

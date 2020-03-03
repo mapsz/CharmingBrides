@@ -57,6 +57,36 @@
         </div>
       </div>      
     </div>
+    
+    <!-- modal -->
+    <div id="membership-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>   
+          <div class="modal-body">       
+            <table class="table">
+              <thead class="thead-light">
+                <tr>
+                  <!-- <th>Date</th>
+                  <th>Client</th>
+                  <th>Price</th>
+                  <th>Balance</th>
+                  <th>Expire</th> -->
+                </tr>
+              </thead>
+              <tbody>
+                <!--  -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div> 
+
   </div>
 </template>
 

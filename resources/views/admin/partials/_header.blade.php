@@ -43,6 +43,9 @@
         </li>    
         <li class="nav-item">
           <a class="nav-link" href="{{ route('admin_serviceCategory') }}">Service Categories</a>
+        </li>  
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('statistics') }}">Statistics</a>
         </li>                    
       @endif
     </ul>
