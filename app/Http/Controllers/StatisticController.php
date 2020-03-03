@@ -68,9 +68,11 @@ class StatisticController extends Controller
     $dates = [];
     $dates['from'] = Carbon::createFromTimestamp($request->from);
     $dates['to'] = Carbon::createFromTimestamp($request->to);    
-    $memberships = Membership::with('user')
-      ->wherePivot('created_at', '>', $dates['from'])
-      ->wherePivot('created_at', '<', $dates['to'])
+    $memberships = Membership::with(['user' => function($q)use($dates){
+        $q
+          ->where('membership_user.created_at', '>', $dates['from'])
+          ->where('membership_user.created_at', '<', $dates['to']);
+      }])
       ->get();
 
     return response()->json(['error' => '0', 'data' => $memberships]);
