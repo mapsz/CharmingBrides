@@ -5,7 +5,7 @@
       <div class="col-2">
         <statistic-categories></statistic-categories>
       </div>
-      <div class="col-10">
+      <div class="col-10 statistics-agents">
         <h1>Agents</h1>
         <!-- Period -->
         <div class="row" style="max-width:400px">
@@ -37,7 +37,15 @@
               </tr>
             </thead>
             <tbody>
-              
+              <tr v-for="agent in agents" :key="agent.id">
+                <td>{{agent.name}}</td>
+                <td></td>
+                <td></td>
+                <td>{{countLetters(agent.id)}}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -48,6 +56,38 @@
 
 <script>
 export default {
+  mixins: [ mMoreAxios, mNotifications, mLoading ],
+  data(){return{
+    agents:[],
+
+    
+  }},
+  mounted() {
+    this.getAgents();
+  },
+  methods:{
+    async getAgents(){
+      let l = this.loading('.statistics-agents');
+      let r = await this.ax('get','/admin/statistic/agents/get');
+      if(!r){
+        this.hideLoading(l);
+        return false;
+      }
+
+      this.agents = r;
+
+      this.hideLoading(l);
+    },
+    countLetters(id){
+      let count = 0;
+      let agent = this.agents.find(x => x.id == id);
+      $.each( agent.girl, ( k, v ) => {
+        count += v.user.letter.length;
+      });
+
+      return count;
+    }
+  }
 
 }
 </script>

@@ -280,6 +280,7 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   //Statisctic
   Route::get('/statistic','StatisticController@index');
   Route::get('/statistic/agents','StatisticController@agents');
+  Route::get('/statistic/agents/get','StatisticController@getAgents');
 
   //Special Ladies
   Route::delete('/girls/special/ladies','admin\GirlController@deleteSpecialLadies')->name('deleteSpecialLadies');

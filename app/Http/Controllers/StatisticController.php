@@ -15,28 +15,10 @@ class StatisticController extends Controller
     return view('admin.pages.vue')->with('vue','statistic');
   }  
   public function agents(){
+    return view('admin.pages.vue')->with('vue','statistic-agents');
+  }  
 
-    // ->whereHas('agent', function($q)use($id){
-    //   $q->where('id', '=', $id);
-    // })
-    // ->where(function($q) {
-    //   $q->where('Cab', 2)
-    //   ->orWhere('Cab', 4);
-    // })
-
-
-    // $a = 
-    // Agent::whereHas('girl', function($q){
-    //   $q->whereHas('user', function($q2){
-    //     $q2->whereHas('letter', function($q3){
-    //       $q3->whereHas('LetterPay');
-    //     });
-    //   });
-    // })
-    // ->with('girl.user.letter.LetterPay')    
-    // ->get()->toArray();
-
-
+  public function getAgents(){
 
     $agentsDb = Agent::
       whereHas('girl.user.letter.LetterPay' , function($q){
@@ -67,9 +49,8 @@ class StatisticController extends Controller
       }
     }
 
-    // dd($agentsFormated);
 
+    return response()->json(['error' => '0', 'data' => $agentsDb]);
 
-    return view('admin.pages.vue')->with('vue','statistic-agents')->with('data', json_encode($agentsDb));
-  }  
+  }
 }
