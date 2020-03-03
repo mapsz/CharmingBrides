@@ -65,7 +65,13 @@ class StatisticController extends Controller
   }
 
   public function getMemberships(Request $request){
-    $memberships = Membership::with('user')->get();
+    $dates = [];
+    $dates['from'] = Carbon::createFromTimestamp($request->from);
+    $dates['to'] = Carbon::createFromTimestamp($request->to);    
+    $memberships = Membership::with('user')
+      ->wherePivot('created_at', '>', $dates['from'])
+      ->wherePivot('created_at', '<', $dates['to'])
+      ->get();
 
     return response()->json(['error' => '0', 'data' => $memberships]);
   }
