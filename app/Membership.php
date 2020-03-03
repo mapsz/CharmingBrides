@@ -199,6 +199,6 @@ class Membership extends _adminPanel
     //Relations
     public function user()
     {
-        return $this->belongsToMany('App\User');
+        return $this->belongsToMany('App\User')->withTimestamps();
     }
 }

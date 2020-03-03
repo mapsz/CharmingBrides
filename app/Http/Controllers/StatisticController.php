@@ -9,6 +9,7 @@ use App\User;
 use App\Agent;
 use App\Girl;
 use App\LetterPay;
+use App\Membership;
 
 class StatisticController extends Controller
 {
@@ -17,6 +18,9 @@ class StatisticController extends Controller
   }  
   public function agents(){
     return view('admin.pages.vue')->with('vue','statistic-agents');
+  }  
+  public function memberships(){
+    return view('admin.pages.vue')->with('vue','statistic-memberships');
   }  
 
   public function getAgents(Request $request){
@@ -58,5 +62,11 @@ class StatisticController extends Controller
 
     return response()->json(['error' => '0', 'data' => $agentsDb]);
 
+  }
+
+  public function getMemberships(Request $request){
+    $memberships = Membership::with('user')->get();
+
+    return response()->json(['error' => '0', 'data' => $memberships]);
   }
 }

@@ -75,6 +75,7 @@ window.mLoading         = require ('./components/_adminPanel/lib/loading');
 //Statistic
 Vue.component('statistic', require('./components/admin/statistic/statistic.vue'));
 Vue.component('statistic-agents', require('./components/admin/statistic/partials/agents.vue'));
+Vue.component('statistic-memberships', require('./components/admin/statistic/partials/memberships.vue'));
 Vue.component('statistic-categories', require('./components/admin/statistic/partials/categories.vue'));
 
 //Mailer

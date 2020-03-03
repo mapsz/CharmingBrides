@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="statistic-menu">
-      <a href="#">Membership Balance</a>
+      <a href="/admin/statistic/memberships">Membership Balance</a>
       <a href="/admin/statistic/agents">Agents</a>
       <a href="#">Girls</a>
     </div>
