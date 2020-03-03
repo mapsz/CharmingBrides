@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 use App\User;
 use App\Agent;
@@ -18,19 +19,24 @@ class StatisticController extends Controller
     return view('admin.pages.vue')->with('vue','statistic-agents');
   }  
 
-  public function getAgents(){
-
+  public function getAgents(Request $request){
+    $dates = [];
+    $dates['from'] = Carbon::createFromTimestamp($request->from);
+    $dates['to'] = Carbon::createFromTimestamp($request->to);
     $agentsDb = Agent::
-      whereHas('girl.user.letter.LetterPay' , function($q){
-        $q->where('created_at', '>', '2019-11-19 15:25:30');
+      whereHas('girl.user.letter.LetterPay' , function($q)use($dates){
+        $q->where('created_at', '>', $dates['from'])
+          ->where('created_at', '<', $dates['to']);
       })
-      ->with(['girl' => function($q){
-        $q->whereHas('user.letter.LetterPay' , function($q){
-          $q->where('created_at', '>', '2019-11-19 15:25:30');
+      ->with(['girl' => function($q)use($dates){
+        $q->whereHas('user.letter.LetterPay' , function($q)use($dates){
+          $q->where('created_at', '>', $dates['from'])
+            ->where('created_at', '<', $dates['to']);
         })
-        ->with(['user.letter' => function($q){
-          $q->whereHas('LetterPay' , function($q){
-            $q->where('created_at', '>', '2019-11-19 15:25:30');
+        ->with(['user.letter' => function($q)use($dates){
+          $q->whereHas('LetterPay' , function($q)use($dates){
+            $q->where('created_at', '>', $dates['from'])
+              ->where('created_at', '<', $dates['to']);
           })
           ->with('LetterPay');
         }]);

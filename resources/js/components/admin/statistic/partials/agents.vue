@@ -8,18 +8,24 @@
       <div class="col-10 statistics-agents">
         <h1>Agents</h1>
         <!-- Period -->
-        <div class="row" style="max-width:400px">
+        <div class="row">
           <div class="input-group input-group-sm mb-3">
             <span class="pr-2">Period:</span>  
             <div class="input-group-prepend">
               <span class="input-group-text" id="inputGroup-sizing-sm">From</span>
             </div>
-            <input type="text" class="form-control">
+            <datepicker  
+              v-model="from"
+              :monday-first="true"
+            ></datepicker>
             <div class="input-group-prepend">
               <span class="input-group-text" id="inputGroup-sizing-sm">To</span>
             </div>
-            <input type="text" class="form-control"> 
-            <button class="btn btn-sm btn-primary ml-2">Search</button>         
+            <datepicker  
+              v-model="to"
+              :monday-first="true"
+            ></datepicker>
+            <button @click="getAgents()" class="btn btn-sm btn-primary ml-2">Search</button>         
           </div>
         </div>       
         <!-- List -->
@@ -55,12 +61,16 @@
 </template>
 
 <script>
-export default {
+import Datepicker from 'vuejs-datepicker';
+export default {  
   mixins: [ mMoreAxios, mNotifications, mLoading ],
+  components: {
+    Datepicker
+  },  
   data(){return{
     agents:[],
-
-    
+    from:moment().subtract(1, 'months').format(),    
+    to:moment().format(),       
   }},
   mounted() {
     this.getAgents();
@@ -68,7 +78,10 @@ export default {
   methods:{
     async getAgents(){
       let l = this.loading('.statistics-agents');
-      let r = await this.ax('get','/admin/statistic/agents/get');
+      let r = await this.ax('get','/admin/statistic/agents/get',{
+        from:moment(this.from).unix(),
+        to:moment(this.to).unix()
+      });
       if(!r){
         this.hideLoading(l);
         return false;
@@ -86,7 +99,8 @@ export default {
       });
 
       return count;
-    }
+    },
+
   }
 
 }
