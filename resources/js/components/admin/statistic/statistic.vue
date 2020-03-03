@@ -8,7 +8,7 @@
         </statistic-categories>
       </div>
       <div class="col-10">
-        hoho 
+        choose category
       </div>      
     </div>
   </div>
