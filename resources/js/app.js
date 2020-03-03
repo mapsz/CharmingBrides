@@ -59,6 +59,8 @@ const options = {
   warn: toast
 }
 
+
+
 Vue.use(VueNotifications, options);
 
 //Mixins
@@ -69,6 +71,11 @@ window.mMoreAxios       = require ('./components/_adminPanel/lib/moreAxios');
 window.mDebug           = require ('./components/_adminPanel/lib/debug');
 window.mNotifications   = require ('./components/_adminPanel/lib/notifications');
 window.mLoading         = require ('./components/_adminPanel/lib/loading');
+
+//Statistic
+Vue.component('statistic', require('./components/admin/statistic/statistic.vue'));
+Vue.component('statistic-agents', require('./components/admin/statistic/partials/agents.vue'));
+Vue.component('statistic-categories', require('./components/admin/statistic/partials/categories.vue'));
 
 //Mailer
 Vue.component('mailer', require('./components/admin/mailer/mailer.vue'));

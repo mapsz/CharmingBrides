@@ -12,7 +12,7 @@
 */
 
 // Route::get('/', function () {
-//     return view('welcome');
+//     return view('welcome'); 
 // });
 // use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 
@@ -276,6 +276,10 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
 
 //Admin
 Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','admin']],function(){
+
+  //Statisctic
+  Route::get('/statistic','StatisticController@index');
+  Route::get('/statistic/agents','StatisticController@agents');
 
   //Special Ladies
   Route::delete('/girls/special/ladies','admin\GirlController@deleteSpecialLadies')->name('deleteSpecialLadies');

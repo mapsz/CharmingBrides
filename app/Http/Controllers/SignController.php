@@ -27,7 +27,7 @@ class SignController extends _adminPanelController
         'toName'=>'periodTo'],      
       ];
 
-      return view('admin.pages.vue')->with('vue','admin-signs')->with('data', json_encode($data));;
+      return view('admin.pages.vue')->with('vue','admin-signs')->with('data', json_encode($data));
     }
 
     public function getSigns (Request $request){
