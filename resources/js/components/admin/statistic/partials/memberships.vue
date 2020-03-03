@@ -40,7 +40,7 @@
             </thead>
             <tbody>
               <tr v-for="membership in memberships" :key="membership.id">
-                <td>{{membership.name}}</td>
+                <td @click="openModal(membership.id)"><a href="#">{{membership.name}}</a></td>
                 <td>{{membership.user.length}}</td>
                 <td>{{membership.price * membership.user.length}}</td>
               </tr>
@@ -49,6 +49,41 @@
         </div>
       </div>      
     </div>
+
+    <!-- modal -->
+    <div id="membership-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>   
+          <div class="modal-body">       
+            <table class="table">
+              <thead class="thead-light">
+                <tr>
+                  <th>Date</th>
+                  <th>Client</th>
+                  <th>Price</th>
+                  <th>Balance</th>
+                  <th>Expire</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="user in cMembership.user" :key="user.id">
+                  <td>{{user.pivot.created_at}}</td>
+                  <td>{{user.id}} {{user.man.name}} {{user.man.surname}}</td>
+                  <td>{{cMembership.price}}</td>
+                  <td>{{user.man.balance}}</td>
+                  <td>{{expire(user.pivot.created_at,cMembership.period)}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>  
   </div>
 </template>
 
@@ -63,6 +98,7 @@ export default {
     from:moment().subtract(1, 'months').format(),
     to:moment().format(),
     memberships:[],
+    cMembership:[],
   }},
   mounted() {
     this.getMemberships();
@@ -83,6 +119,14 @@ export default {
 
       this.hideLoading(l);
     },
+    openModal(id){
+      $('#membership-modal').modal('show');
+      let membership = this.memberships.find(x => x.id == id);
+      this.cMembership = membership;
+    },
+    expire(date,period){
+      return moment(date).add(period, 'day').format("DD-MM-YYYY");;
+    }
   }
 }
 </script>

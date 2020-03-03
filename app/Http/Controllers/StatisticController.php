@@ -71,7 +71,8 @@ class StatisticController extends Controller
     $memberships = Membership::with(['user' => function($q)use($dates){
         $q
           ->where('membership_user.created_at', '>', $dates['from'])
-          ->where('membership_user.created_at', '<', $dates['to']);
+          ->where('membership_user.created_at', '<', $dates['to'])
+          ->with('man');
       }])
       ->get();
 
