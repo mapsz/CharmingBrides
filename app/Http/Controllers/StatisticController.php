@@ -27,12 +27,13 @@ class StatisticController extends Controller
     $dates = [];
     $dates['from'] = Carbon::createFromTimestamp($request->from);
     $dates['to'] = Carbon::createFromTimestamp($request->to);
+    
     $agentsDb = Agent::
-      whereHas('girl.user.letter.LetterPay' , function($q)use($dates){
-        $q->where('created_at', '>', $dates['from'])
-          ->where('created_at', '<', $dates['to']);
-      })
-      ->with(['girl' => function($q)use($dates){
+      // whereHas('girl.user.letter.LetterPay' , function($q)use($dates){
+      //   $q->where('created_at', '>', $dates['from'])
+      //     ->where('created_at', '<', $dates['to']);
+      // })
+      with(['girl' => function($q)use($dates){
         $q->whereHas('user.letter.LetterPay' , function($q)use($dates){
           $q->where('created_at', '>', $dates['from'])
             ->where('created_at', '<', $dates['to']);

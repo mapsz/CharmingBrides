@@ -73,7 +73,7 @@
               <tbody>
                 <tr v-for="user in cMembership.user" :key="user.id">
                   <td>{{user.pivot.created_at}}</td>
-                  <td>{{user.id}} {{user.man.name}} {{user.man.surname}}</td>
+                  <td><a :href='"/man/"+user.id'>{{user.id}} {{user.man.name}} {{user.man.surname}}</a></td>
                   <td>{{cMembership.price}}</td>
                   <td>{{user.man.balance}}</td>
                   <td>{{expire(user.pivot.created_at,cMembership.period)}}</td>
