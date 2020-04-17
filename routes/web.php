@@ -96,6 +96,8 @@ Route::get('/parametrs/men','ManController@getMenParametr');
 Route::get('/all/men/search','ManController@search');
 Route::put('/add/girl/favorites','ManFavoriteController@put');
 Route::get('/favorite/girls','ManFavoriteController@index');
+Route::get('/profile/history','ManController@history');
+Route::get('/profile/json/history','ManController@jsonHistory');
 
 
 

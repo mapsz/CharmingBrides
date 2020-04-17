@@ -168,6 +168,7 @@ Vue.component('man-admin', require('./components/admin/man/adminman.vue'));
 Vue.component('favorite-girls', require('./components/men/favoritegirls.vue'));
 Vue.component('men-notifications', require('./components/men/notifications.vue'));
 Vue.component('men-notysetup', require('./components/men/partials/notysetup.vue'));
+Vue.component('men-history', require('./components/men/manHistory.vue'));
 
 //Membership
 Vue.component('memberships', require('./components/membership/membership.vue'));

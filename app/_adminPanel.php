@@ -727,7 +727,7 @@ class _adminPanel extends Model
       }else
         return false;
     }
-    public static function generateFileName($name,$more=false){
+    public static function generateFileName($name,$more=false,$rand=['from' => 10000,'to' => 99999]){
       if(is_array($more)){
         if(isset($more['id']))        $name = str_replace('`id`',$more['id'],$name);
         if(isset($more['parentId']))  $name = str_replace('`parentId`',$more['parentId'],$name);
@@ -735,7 +735,7 @@ class _adminPanel extends Model
       }      
 
       //Random
-      $name = str_replace('`rand`',rand(10000,99999),$name);
+      $name = str_replace('`rand`',rand($rand['from'],$rand['to']),$name);
       
       return $name;
     }

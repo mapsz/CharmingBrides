@@ -27,7 +27,7 @@
         </div>
         <div class="col-6">
           <h4>Photo</h4>
-          <div v-for="photo in man.photo" class="col">            
+          <div v-for="(photo,k) in man.photo" :key="k" class="col">            
             <img :src="'/'+photo" style="height:75px">
           </div>
         </div>

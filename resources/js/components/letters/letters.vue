@@ -120,6 +120,7 @@
             let companions = await this.ax('get', 'letter/get/companions',{'userId':this.userFrom.id});
 
             this.hideLoading(l);
+            
             if(!companions) return false;
 
             //set companions
@@ -176,13 +177,18 @@
             let l = this.showLoading('.companions');
             this.companions = []; //@@@
             this.activeCompanion = false; //@@@            
-            await this.getCompanions();
+            await this.getCompanions();           
             //Set active companion
             if(this.with){
               await this.setActiveCompanion(this.with);
               this.with = false;
-            }            
-            if(this.companions[0] != undefined && this.activeCompanion == false){
+            }          
+
+            if(this.companions[0] == undefined && this.activeCompanion == false){
+              await this.setActiveCompanion(this.queryCompanion);
+            }
+            
+            if(this.companions[0] != undefined && this.activeCompanion == false){              
               //set from query
               if(this.queryCompanion){
                 await this.setActiveCompanion(this.queryCompanion);

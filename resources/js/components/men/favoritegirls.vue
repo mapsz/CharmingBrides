@@ -4,7 +4,8 @@
 
     <div 
       class='row'
-      v-for="girl in girls"
+      v-for="(girl,k) in girls"
+      :key="k"
     >
       <div class="col my-3">
         <a :href="'/girl/'+girl.id">

@@ -4,6 +4,7 @@
       <div class="col"><h1>Profile</h1></div>
       <div class="col">
         <a class=" pr-3" style="float: right; font-size: 16pt;" href="/favorite/girls"><b>Favorite Girls</b></a>
+        <a class=" pr-3" style="float: right; font-size: 16pt;" href="/profile/history"><b>History</b></a>
         <a class=" pr-3" style="float: right; font-size: 16pt;" href="/profile/membership"><b>Membership</b></a>
         <a class=" pr-3" style="float: right; font-size: 16pt;" href="/profile/notifications"><b>Notifications</b></a>
       </div>

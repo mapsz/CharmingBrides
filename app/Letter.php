@@ -73,6 +73,16 @@ class Letter extends _adminPanel
       [ //Photo
           'name'            => 'photo',
           'type'            => 'file',
+          'maxFileCount'    => 4,
+          'path'            => 'media/letters',
+          'fileName'        => '`id`_`rand`',
+          'maxFileSize'     => '5mb',
+          'fileType'        => ['image/*',],  
+          'main'            => '`id`',
+      ],   
+      [ //Photo Old
+          'name'            => 'photo_old',
+          'type'            => 'file',
           'maxFileCount'    => 1,
           'path'            => 'media/letters',
           'fileName'        => '`id`',
@@ -103,11 +113,34 @@ class Letter extends _adminPanel
       $l->body         = $data['body'];
       $l->user_id      = $data['user_id'];
       $l->to_user_id   = $data['to_user_id'];
-      if(!$l->save()) return false;   
+      if(!$l->save()) return false;         
 
       //Save photo      
       if($data['photo'] && is_array($data['photo'])){
-        $this->saveFileFromCache($data['photo'][0],'/media/letters/', $l->id);
+        //Get photo settings
+        $photoSettings = false;
+        foreach ($this->inputs as $key => $input) {
+          if($input['name'] == 'photo' && $input['type'] == 'file'){
+            $photoSettings = $input;
+            break;
+          }
+        }
+        if($photoSettings){
+          //Generate names
+          $names = [];
+          foreach ($data['photo'] as $k => $photo) {
+            $name = $this->generateFileName(
+              $photoSettings['fileName'], 
+              ['id' => $l->id],
+              ['from' => ($k+1) * 1000, 'to' => (($k+2) * 1000) - 1]            
+            );
+            array_push($names,$name);            
+          }
+        }
+        //Save Filse
+        foreach ($data['photo'] as $k => $photo) {
+          $this->saveFileFromCache($photo,$photoSettings['path'], $names[$k]);
+        }        
       }
 
       //Send email notification
@@ -119,8 +152,6 @@ class Letter extends _adminPanel
         
       return $l->id;
     }    
-
-
 
     public static function getLetterType($id){
       
@@ -216,7 +247,9 @@ class Letter extends _adminPanel
 
       //Set photos
       foreach ($letters as $k => $letter) {
-        $letters[$k]['photos'] = $this->getFiles($letter['id'], 'photo');        
+        $letters[$k]['photos'] = $this->getFiles($letter['id'], 'photo');
+        $photo_old = $this->getFiles($letter['id'], 'photo_old');
+        $letters[$k]['photos'] = array_merge($letters[$k]['photos'],$photo_old);
       }
         
       //Set Pay

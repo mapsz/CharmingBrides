@@ -13,5 +13,6 @@ class OrderController extends _adminPanelController
     public function __construct(){
         parent::__construct($this->model);
     }
+    
 
 }

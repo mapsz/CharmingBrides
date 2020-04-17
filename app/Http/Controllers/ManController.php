@@ -615,4 +615,23 @@ class ManController extends _adminPanelController
       return response()->json(['error' => '0','data' => $data]);
     }
 
+    public function history(request $request){
+      return view('pages.vue')->with('vue','men-history');
+    }
+
+    public function jsonHistory(){
+
+      $history = (
+        Order::
+          where('user_id',Auth::User()->id)
+        ->where('status_id',1)
+        ->orderBy('created_at')
+        ->get()
+      );
+
+      return response()->json(['error' => '0','data' => $history]);
+
+    }
+
+
 }

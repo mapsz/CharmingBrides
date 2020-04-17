@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid p-0">
     <ul>
-      <li v-for="currentLetter in pLetters">
+      <li v-for="(currentLetter,k) in pLetters" :key="k">
         <!-- Letter -->
         From {{getName(currentLetter.user_id)}}<br>
         {{formateDate(currentLetter.created_at)}}<br>
@@ -27,14 +27,17 @@
             </span>
           </div>
         </div>
+        
         <!-- message -->
-        <div v-if="pUser.man !== 1 || currentLetter.payed"class="message">
+        <div v-if="pUser.man !== 1 || currentLetter.payed" class="message">
             {{currentLetter.body}}
-
         </div>
+
         <!-- photo -->
         <div v-if="currentLetter.photos.length > 0">
-          <img :src="currentLetter.photos[0]" alt="photo" style="width:90%;max-height: 400px;">
+          <div v-for="(photo,k) in currentLetter.photos" :key="k">
+            <img :src="photo" alt="photo" style="width:90%;max-height: 400px; margin-bottom:20px">
+          </div>          
         </div>        
         <hr>
       </li>

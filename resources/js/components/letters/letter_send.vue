@@ -28,7 +28,7 @@
                 :p-route="'letter'"
                 :p-name="'photo'"
                 :p-max-file-size="'5mb'"
-                :p-max-file-count="1"
+                :p-max-file-count="4"
                 :p-file-type="['image/*']"
                 @filesUpdated="updateFiles"
               />
@@ -37,7 +37,7 @@
           <!-- errors -->
           <div v-show="errors" class="alert alert-danger">
             <ul>
-              <li v-for="error in errors">
+              <li v-for="(error,k) in errors" :key="k">
                 <!-- <span v-for="err in error" >                         -->
                   {{ error }}
                 <!-- </span>                 -->
