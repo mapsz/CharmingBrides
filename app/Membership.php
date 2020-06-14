@@ -136,9 +136,10 @@ class Membership extends _adminPanel
     	//Get memberships
       $user = user::where('id','=',$user_id)->with('membership')->with('man')->first();
 
+      $defaultMembership = self::where('id','=',1)->first();
       //No membership
       if(!isset($user->membership[0])){
-         $CurrentMembership = self::where('id','=',1)->first();
+         $CurrentMembership = $defaultMembership;
          $CurrentMembership->balance = $user->man->balance;
       	return $CurrentMembership;
       }
@@ -156,7 +157,7 @@ class Membership extends _adminPanel
       	}        	
       }
 
-      if(!count($memberships)) return false;
+      if(!count($memberships)) return $defaultMembership;
 
       //Find profitable membership
       // profitable
@@ -170,7 +171,7 @@ class Membership extends _adminPanel
       	if($membership->letter_price > $minLetterPrice) unset($memberships[$k]);
       }
 
-      if(!count($memberships)) return false;
+      if(!count($memberships)) return $defaultMembership;
 
       //Get longest end date membership
       $latestDate = [
@@ -184,10 +185,10 @@ class Membership extends _adminPanel
       	}
       }
        
-       $CurrentMembership = $memberships[$latestDate['k']];
-       $CurrentMembership->balance = $user->man->balance;
+      $CurrentMembership = $memberships[$latestDate['k']];
+      $CurrentMembership->balance = $user->man->balance;
 
-       return $CurrentMembership;
+      return $CurrentMembership;
     }
 
     // public static function getChatPrice($userId){

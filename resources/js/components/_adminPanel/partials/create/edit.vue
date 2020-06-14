@@ -90,17 +90,17 @@
             
             let l = this.showLoading('.edit');
             let data = {};
+
             $.each(this.data, (i,input) => {  
-              if(input != ""){
+              if(input !== ""){
                 data[i] = input;
               }
             });
             data.id = this.pEditData['_id'];
 
-            console.log({data:data});
             let r = await this.ax('post', '/'+this.route, data);
 
-            Error
+            // Error
             if(!r){
               this.hideLoading(l);
               return false;

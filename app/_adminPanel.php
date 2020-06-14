@@ -320,9 +320,7 @@ class _adminPanel extends Model
         //Count
         if($this->count) $getData->take($this->count);
         //Search
-        if($this->search){
-          dd('search');
-          $quey = [];
+        if($this->search && $this->search != '{}'){
           foreach ($this->columns as $k => $v) {
             //File
             if(isset($v['file'])){

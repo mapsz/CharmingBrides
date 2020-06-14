@@ -148,6 +148,7 @@ Route::get('/services', 'ServiceController@allIndex');
 Route::get('/service/get/all', 'ServiceController@getAll');
 Route::get('/service/category/{id}', 'ServiceController@categoryIndex');
 Route::get('/service/get/category/{id}', 'ServiceController@getCategoryServices');
+Route::put('/service/buy/', 'ServiceController@buyService');
 
 //Auth
 Route::group(['middleware' => ['auth']],function(){
@@ -359,11 +360,10 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::post('/man/login', 'ManController@loginAdminMan');
 
   //Orders
-
-    // Signs
   $model = 'order';
   $namePrefix = "admin_";
   Route::get('/'.$model, ucfirst($model).'Controller@_index')->name($namePrefix.$model);
+  Route::get('/'.$model.'/search', ucfirst($model).'Controller@_search')->name($namePrefix.'search'.ucfirst($model));  //Search
 
 
   //Email

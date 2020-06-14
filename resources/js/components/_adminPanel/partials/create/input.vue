@@ -82,7 +82,7 @@
               >
                 <option v-if="!pEditData" value="" selected="">Choose...</option> <!-- @@@перевод -->
                 <option 
-                  v-for="attribute in input.attributes"
+                  v-for="attribute in input.attributes" :key='attribute.id'
                   :value="attribute.id"                        
                   :id="[[input.name]]+[[attribute.id]]+'Input'"
                   >

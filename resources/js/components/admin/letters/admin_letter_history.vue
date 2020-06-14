@@ -30,7 +30,7 @@
               :class="setDay(i) ? 'next' : ''"
             >
               <td>
-                <a :href="/man/+letter.user.id">{{letter.user.man.name}} {{letter.user.man.surname}}({{letter.user.id}})</a>
+                <a :href="/man/+letter.user.id">{{letter.user.man.name}} ({{letter.user.id}})</a>
               </td>
               <td>
                 <a :href="/girl/+letter.to_user.id">{{letter.to_user.girl.name}}({{letter.to_user.id}})</a>

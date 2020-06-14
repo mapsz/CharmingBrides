@@ -6,7 +6,7 @@
           <div class="list-group">
             <!-- Companion -->
             <div 
-              v-for="letter in letters"
+              v-for="letter in letters" :key='letter.id'
               class="user-item list-group-item list-group-item-action"
               v-bind:class="{'item-active' : activeCompanion == letter.companion.user_id}"
               @click="setActive(letter.companion.user_id)"
@@ -25,7 +25,7 @@
         <!-- Letter list -->
         <div class="col-9">
           <ul>
-            <li v-for="currentLetter in currentLetters">
+            <li v-for="currentLetter in currentLetters" :key='currentLetter.id'>
               <!-- Letter -->
               from:{{currentLetter.user_id}}  To:{{currentLetter.to_user_id}}<br>
               {{currentLetter.created_at}}<br>

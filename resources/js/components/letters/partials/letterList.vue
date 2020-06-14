@@ -15,6 +15,7 @@
           >
             Read Letter!
           </button>      
+          
           <!-- Pay info -->
           <div v-if="pUser.man !== 1">
             <!-- payed -->
@@ -24,6 +25,12 @@
             <!-- not payed -->
             <span v-if="currentLetter.payed === false" style="color:tomato">
               not payed
+            </span>
+            <!-- Type -->
+            <span>
+              <i v-if="currentLetter.body.length > 350">long letter </i>
+              <i v-else >short letter</i>
+              ({{currentLetter.body.length}})
             </span>
           </div>
         </div>

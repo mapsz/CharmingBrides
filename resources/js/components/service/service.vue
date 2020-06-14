@@ -18,17 +18,36 @@
           </div>
         </div>  
         <div class="service-footer">
+          <!-- Price -->
           <center>
             <span class="price">{{service.price}}</span> 
-            <span class="order-button">
-              <a :href="'/order?cat=service&id='+service._id">
-                <button class="btn btn-primary">Order Now!</button>
-              </a> 
-            </span>
           </center>
-        </div>   
-      </div> 
+        </div> 
 
+        <!-- Text -->
+        <div style="font-size: 16pt;">
+          <div v-if="buyError" class="text-danger">
+            {{buyError}}
+          </div>
+          <div v-if="buySuccess" class="text-success">
+            {{buySuccess}}
+          </div>
+        </div>
+        <!-- Comment -->
+        <div v-if="!buy" class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon3">Commentary</span>
+          </div>
+          <input v-model="comment" type="text" class="form-control" id="basic-url">
+        </div>        
+        <!-- Buy -->
+        <div v-if="!buy"  class="d-flex justify-content-around">        
+          <a :href="'/order?cat=service&id='+service._id">
+            <button class="btn btn-primary">Buy via PayPal</button>
+          </a> 
+          <button @click="buyService()" class="btn btn-primary">Buy via Site Balance</button>
+        </div>
+      </div> 
     </div>
 </template>
 
@@ -45,7 +64,11 @@
               description:"",
               price:"",
             },
-            lo:false
+            comment:"",
+            lo:false,
+            buy:false,
+            buyError:false,
+            buySuccess:false,
           }
         },           
         computed:{
@@ -67,7 +90,7 @@
         methods: {
           async getService(){
 
-            let r = await this.ax('get', '/service/get/'+this.id);            
+            let r = await this.ax('get', '/service/get/'+this.id);
 
             if(!r) return false;
 
@@ -76,6 +99,18 @@
             this.hideLoading(this.lo);
             return r;
 
+          },
+          async buyService(){
+            this.buy = true;
+            let r = await this.ax('put', '/service/buy/',{id:this.id,comment:this.comment});
+            
+            if(r == 2){
+              this.buy = false;
+              this.buyError = 'Insufficient funds!'
+            }             
+            if(r == 1){
+              this.buySuccess = 'Done!'
+            } 
           }
         }
     }

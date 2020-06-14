@@ -62,11 +62,9 @@ class Service extends _adminPanel
   public function __construct(){
       parent::__construct($this->single, $this->multi, $this->page, $this->inputs);
   }  
-
-
  
-    public function category(){
-      return $this->belongsToMany('App\ServiceCategory');
-    }  
+  public function category(){
+    return $this->belongsToMany('App\ServiceCategory');
+  }  
 
 }

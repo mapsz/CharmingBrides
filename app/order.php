@@ -13,6 +13,7 @@ class Order extends _adminPanel
   protected $add     = false;        
   protected $delete     = false;      
   protected $order       = ['row' => 'id','order' => 'DESC'];  
+  protected $route                = [ 'prefix' => 'admin/' ];
 
   protected $columns  = [
     [
@@ -25,13 +26,17 @@ class Order extends _adminPanel
       'relation' => false,
     ],
     [
-            'name' => 'user_id',
-            'caption' => 'email',
-            'relation' => 'user.email',
+      'name' => 'user_id',
+      'caption' => 'email',
+      'relation' => 'user.email',
     ],
     [
       'name' => 'name',
     ],
+    [
+      'name' => 'comment',
+      'relation' => 'OrderComment.comment'
+    ],    
     [
       'name' => 'category',
     ],
@@ -59,6 +64,10 @@ class Order extends _adminPanel
       parent::__construct($this->single, $this->multi, $this->page, $this->inputs);
   }
 
+  
+  public function OrderComment(){
+    return $this->hasOne('App\OrderComment');
+  }
 
   public function user(){
     return $this->belongsTo('App\User');

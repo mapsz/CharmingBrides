@@ -486,10 +486,31 @@
               return false;
             }
 
-            console.log(JSON.parse(r.settings).pages);
 
-            this.data    = JSON.parse(r.data);
-            this.pages   = JSON.parse(r.settings).pages;
+            //Data
+            if(typeof(r.data) == 'string'){
+              this.data = JSON.parse(r.data);
+            }else{
+              this.data = r.data;
+            }
+
+            //Columns
+            if(r.columns != undefined){
+              if(typeof(r.columns) == 'string'){
+                this.columns = JSON.parse(r.columns);
+              }else{
+                this.columns = r.columns;
+              }
+            }
+
+            //Settings
+            if(r.settings != undefined){
+              if(typeof(r.settings) == 'string'){
+                this.settings = JSON.parse(r.settings);
+              }else{
+                this.settings = r.settings;
+              }
+            }
 
             this.hideLoading(l);
           },
