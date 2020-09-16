@@ -8,7 +8,20 @@
               :p-active-companion="activeCompanion"
               @set-active-companion="setActiveCompanion"
             />
+
+          <div style="display: flex;justify-content: center;margin-top: 20px;">
+            <ul  class="pagination">
+              <li v-if="companionPage > 1" class="page-item" style="cursor: pointer;">
+                <a @click.prevent="companionPage--" class="page-link">Prev</a>
+              </li> 
+              <li style="cursor: pointer;"> 
+                <a @click.prevent="companionPage++" class="page-link">Next</a>
+              </li>
+            </ul>
+          </div>
+            
         </div>
+
         <!-- Letter list -->
         <div class="letter-list col-9">
           <div class="row" style="border-bottom: 2px solid #bf005a73; padding-bottom:10px;">
@@ -39,6 +52,7 @@
         </div>
       </div>
 
+
       <letter-buy-component 
         v-if="pay"
         :p-letter="pay"
@@ -63,6 +77,7 @@
           return {
             userFrom:false,
             //Companions
+            companionPage:1,
             with:false,
             companions:[],
             activeCompanion:false,
@@ -77,6 +92,9 @@
           }
         },
         watch: {
+          companionPage: function(){
+            this.refreshCompanions();
+          },
           pUserFrom: {
             deep:true,
             handler:function(){
@@ -117,7 +135,7 @@
           async getCompanions(){
             let l = this.showLoading('.companions');
 
-            let companions = await this.ax('get', 'letter/get/companions',{'userId':this.userFrom.id});
+            let companions = await this.ax('get', 'letter/get/companions',{'userId':this.userFrom.id,'companion_page':this.companionPage});
 
             this.hideLoading(l);
             
