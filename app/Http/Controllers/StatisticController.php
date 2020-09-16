@@ -28,25 +28,35 @@ class StatisticController extends Controller
     $dates['from'] = Carbon::createFromTimestamp($request->from);
     $dates['to'] = Carbon::createFromTimestamp($request->to);
     
-    $agentsDb = Agent::
-      // whereHas('girl.user.letter.LetterPay' , function($q)use($dates){
-      //   $q->where('created_at', '>', $dates['from'])
-      //     ->where('created_at', '<', $dates['to']);
-      // })
-      with(['girl' => function($q)use($dates){
-        $q->whereHas('user.letter.LetterPay' , function($q)use($dates){
+    $query =  new Agent;
+      
+
+    //With
+
+    
+    $query = $query->with('girl.user.room.chats');
+    $query = $query->with(['girl.user.room.user' => function($q){
+      $q->whereHas('man');
+    }]);
+
+    $query = $query->with(['girl' => function($q)use($dates){      
+      $q->whereHas('user.letter.LetterPay' , function($q)use($dates){
+        $q->where('created_at', '>', $dates['from'])
+          ->where('created_at', '<', $dates['to']);
+      })
+      ->with(['user.letter' => function($q)use($dates){
+        $q->whereHas('LetterPay' , function($q)use($dates){
           $q->where('created_at', '>', $dates['from'])
             ->where('created_at', '<', $dates['to']);
         })
-        ->with(['user.letter' => function($q)use($dates){
-          $q->whereHas('LetterPay' , function($q)use($dates){
-            $q->where('created_at', '>', $dates['from'])
-              ->where('created_at', '<', $dates['to']);
-          })
-          ->with('LetterPay');
-        }]);
-      }])
-      ->get();
+        ->with('LetterPay');
+      }]);
+    }]);
+
+
+
+    //Get
+    $agentsDb = $query->get();
 
     $agentsFormated = [];
     foreach ($agentsDb as $agent) {      
@@ -54,12 +64,13 @@ class StatisticController extends Controller
  
       $agentsFormated[$agent->id] = [];
 
-      // dd($agent);
       foreach ($agent->girl as $girl) {        
         array_push($agentsFormated[$agent->id],$girl->id);
       }
     }
 
+
+    // dd($agentsDb);
 
     return response()->json(['error' => '0', 'data' => $agentsDb]);
 

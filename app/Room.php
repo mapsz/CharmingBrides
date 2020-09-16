@@ -182,5 +182,9 @@ on m.customers_id = i.customers_info_id
     public function message()
     {
         return $this->hasMany('App\Message');
+    }  
+    public function chats()
+    {
+        return $this->hasMany('App\ChatHistory');
     }   
 }

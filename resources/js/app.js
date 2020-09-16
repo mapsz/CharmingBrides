@@ -74,9 +74,9 @@ window.mLoading         = require ('./components/_adminPanel/lib/loading');
 
 //Statistic
 Vue.component('statistic', require('./components/admin/statistic/statistic.vue'));
-Vue.component('statistic-agents', require('./components/admin/statistic/partials/agents.vue'));
-Vue.component('statistic-memberships', require('./components/admin/statistic/partials/memberships.vue'));
-Vue.component('statistic-categories', require('./components/admin/statistic/partials/categories.vue'));
+Vue.component('statistic-memberships', require('./components/admin/statistic/_partials/memberships.vue'));
+Vue.component('statistic-categories', require('./components/admin/statistic/_partials/categories.vue'));
+Vue.component('statistic-agents', require('./components/admin/statistic/agents/agents.vue'));
 
 //Mailer
 Vue.component('mailer', require('./components/admin/mailer/mailer.vue'));

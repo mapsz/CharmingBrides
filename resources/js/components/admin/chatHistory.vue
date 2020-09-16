@@ -15,11 +15,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="h in chatHistories" :id="'row' + h.id" >
+                    <tr v-for="h in chatHistories" :id="'row' + h.id" :key="h.id" >
                         <td>{{ h.id }}</td>
                         <td>{{ h.roomId }}</td>
-                        <td>{{ h.man.name }} ({{h.girl.id}})</td>
-                        <td>{{ h.girl.name }} ({{h.man.id}})</td>
+                        <td>{{ h.man.name }} ({{h.man.id}})</td>
+                        <td>{{ h.girl.name }} ({{h.girl.id}})</td>
                         <td>{{ moment(h.start * 1000).format("DD.MM.YY hh:mm:ss")}}</td>
                         <td>{{ moment(h.stop * 1000).format("DD.MM.YY hh:mm:ss") }}</td>
                         <td>{{h.lenght}}</td>
