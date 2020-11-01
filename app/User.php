@@ -153,5 +153,10 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Membership')->withPivot('created_at');
     }   
 
+    
+    public function statisticService(){
+        return $this->hasMany('App\StatisticService','agent_id');
+    }
+
 
 }

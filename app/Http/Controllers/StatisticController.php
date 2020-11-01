@@ -10,18 +10,11 @@ use App\Agent;
 use App\Girl;
 use App\LetterPay;
 use App\Membership;
+use App\StatisticService;
+use Illuminate\Support\Facades\Validator;
 
 class StatisticController extends Controller
 {
-  public function index(){
-    return view('admin.pages.vue')->with('vue','statistic');
-  }  
-  public function agents(){
-    return view('admin.pages.vue')->with('vue','statistic-agents');
-  }  
-  public function memberships(){
-    return view('admin.pages.vue')->with('vue','statistic-memberships');
-  }  
 
   public function getAgents(Request $request){
     $dates = [];
@@ -31,9 +24,7 @@ class StatisticController extends Controller
     $query =  new Agent;
       
 
-    //With
-
-    
+    //With    
     $query = $query->with('girl.user.room.chats');
     $query = $query->with(['girl.user.room.user' => function($q){
       $q->whereHas('man');
@@ -53,13 +44,16 @@ class StatisticController extends Controller
       }]);
     }]);
 
+    $query = $query->with('user.statisticService');
+
 
 
     //Get
     $agentsDb = $query->get();
 
     $agentsFormated = [];
-    foreach ($agentsDb as $agent) {      
+    $out = [];
+    foreach ($agentsDb as $k => $agent) {
       if(count($agent->girl) == 0) continue;
  
       $agentsFormated[$agent->id] = [];
@@ -70,7 +64,16 @@ class StatisticController extends Controller
     }
 
 
-    // dd($agentsDb);
+    foreach ($agentsDb as $k => $agent) {
+      $agentsDb[$k]['statistic_services'] = $agent->user->statisticService;
+
+      $agentsDb[$k]['statistic_services_total'] = 0;
+
+      foreach ($agentsDb[$k]['statistic_services'] as $statistic_services) {
+        $agentsDb[$k]['statistic_services_total'] += $statistic_services->paid_to_agent;
+      }
+    }
+
 
     return response()->json(['error' => '0', 'data' => $agentsDb]);
 
@@ -90,4 +93,68 @@ class StatisticController extends Controller
 
     return response()->json(['error' => '0', 'data' => $memberships]);
   }
+
+  public function getStatisticService(){
+
+    $ss = new StatisticService;
+
+    $ss = $ss->with('service');
+    $ss = $ss->with('agent');
+    $ss = $ss->with('agent.agent');
+    $ss = $ss->with('man');
+    $ss = $ss->with('man.man');
+    $ss = $ss->with('girl');
+    $ss = $ss->with('girl.girl');
+
+    $ss = $ss->get();
+
+    return response()->json(['error' => '0', 'data' => $ss]);
+  }
+
+  //Statistic
+  public function putService(Request $request){
+
+    $validate = [
+      'date'            => ['required','date'],
+      'agentId'         => ['required','exists:users,id'],
+      'girlId'          => ['required','exists:users,id'],
+      'manId'           => ['required','exists:users,id'],
+      'paidtoAgent'     => ['required','numeric'],
+      'serviceId'       => ['required','exists:services,id'],
+    ];
+
+    // dd($request->all());
+
+    Validator::make($request->all(), $validate)->validate();
+
+
+    $ser = new StatisticService;
+    $ser->date            = $request->date;
+    $ser->service_id      = $request->serviceId;
+    $ser->agent_id        = $request->agentId;
+    $ser->girl_id         = $request->girlId;
+    $ser->man_id          = $request->manId;
+    $ser->paid_to_agent   = $request->paidtoAgent;
+
+    if(!$ser->save()){
+      return response()->json(['error' => '1']);
+    }
+      
+    return response()->json(['error' => '0', 'data' => $ser]);
+
+  }
+
+
+
+
+  //Indexses  
+  public function index(){
+    return view('admin.pages.vue')->with('vue','statistic');
+  }  
+  public function agents(){
+    return view('admin.pages.vue')->with('vue','statistic-agents');
+  }  
+  public function memberships(){
+    return view('admin.pages.vue')->with('vue','statistic-memberships');
+  }  
 }

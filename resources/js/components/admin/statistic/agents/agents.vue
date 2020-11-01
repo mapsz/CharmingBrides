@@ -62,8 +62,8 @@
                   <span v-else>0</span>
                 </td>
                 <td>$ {{agent.letter != undefined ? agent.letter.amount.toFixed(2) : 0}}</td>
-                <td></td>
-                <td></td>
+                <td>$ {{agent.statistic_services_total.toFixed(2)}}</td>
+                <td>$ {{(agent.statistic_services_total + agent.letter.amount + agent.chats.amount).toFixed(2)}}</td>
               </tr>
             </tbody>
           </table>

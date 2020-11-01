@@ -77,6 +77,7 @@ Vue.component('statistic', require('./components/admin/statistic/statistic.vue')
 Vue.component('statistic-memberships', require('./components/admin/statistic/_partials/memberships.vue'));
 Vue.component('statistic-categories', require('./components/admin/statistic/_partials/categories.vue'));
 Vue.component('statistic-agents', require('./components/admin/statistic/agents/agents.vue'));
+Vue.component('statistic-services', require('./components/admin/statistic/services/services.vue'));
 
 //Mailer
 Vue.component('mailer', require('./components/admin/mailer/mailer.vue'));

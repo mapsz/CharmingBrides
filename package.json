@@ -52,6 +52,7 @@
         "vue-gallery": "^2.0.0",
         "vue-notifications": "^0.9.0",
         "vue-plain-pagination": "^0.3.0",
+        "vue-template-compiler": "^2.6.12",
         "vue-timers": "^1.10.0",
         "vue2-editor": "^2.10.2",
         "vuejs-countdown-timer": "^2.1.1",

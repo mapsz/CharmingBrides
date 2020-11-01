@@ -286,6 +286,10 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/statistic/agents/get','StatisticController@getAgents');
   Route::get('/statistic/memberships','StatisticController@memberships');
   Route::get('/statistic/memberships/get','StatisticController@getMemberships');
+  //Statisctic services
+  Route::get('/statistic/services',function(){return view('admin.pages.vue')->with('vue','statistic-services');});
+  Route::get('/statistic/services/get','StatisticController@getStatisticService');
+  Route::put('/statistic/service','StatisticController@putService');
 
   //Special Ladies
   Route::delete('/girls/special/ladies','admin\GirlController@deleteSpecialLadies')->name('deleteSpecialLadies');

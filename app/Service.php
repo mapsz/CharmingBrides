@@ -14,7 +14,7 @@ class Service extends _adminPanel
   protected $columns  = [
     ['name' => 'id'],
     ['name' => 'name'],    
-    ['name' => 'price'],   
+    ['name' => 'price'],
     [
       'name' => 'menu',
       'caption' => 'Show in menu',

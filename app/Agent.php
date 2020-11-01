@@ -138,6 +138,7 @@ class Agent extends _adminPanel
       return $this->belongsTo('App\User');
     }
 
+
     public function girl(){
       //
       return $this->belongsToMany('App\Girl');
