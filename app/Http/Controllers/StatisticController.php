@@ -9,6 +9,7 @@ use App\User;
 use App\Agent;
 use App\Girl;
 use App\LetterPay;
+use App\Letter;
 use App\Membership;
 use App\StatisticService;
 use Illuminate\Support\Facades\Validator;
@@ -45,6 +46,13 @@ class StatisticController extends Controller
     }]);
 
     $query = $query->with('user.statisticService');
+    $query = $query->with('user.statisticService.agent');
+    $query = $query->with('user.statisticService.agent.agent');
+    $query = $query->with('user.statisticService.man');
+    $query = $query->with('user.statisticService.man.man');
+    $query = $query->with('user.statisticService.girl');
+    $query = $query->with('user.statisticService.girl.girl');
+    $query = $query->with('user.statisticService.service');
 
 
 
@@ -109,6 +117,113 @@ class StatisticController extends Controller
     $ss = $ss->get();
 
     return response()->json(['error' => '0', 'data' => $ss]);
+  }
+
+  public function getGirls(Request $request){
+
+    //Dates
+    $dates = [];
+    $dates['from'] = Carbon::createFromTimestamp($request->from);
+    $dates['to'] = Carbon::createFromTimestamp($request->to);
+    
+    //Letters
+    if('letters'){
+      //Short letter
+      $query = new Letter;
+      
+      //With
+      $query = $query->with('LetterPay');
+      $query = $query->with('user.man');
+      $query = $query->with('user.girl');
+
+      //Where
+      $query = $query->whereHas('LetterPay');
+      $query = $query->where('created_at', '>', $dates['from']);
+      $query = $query->where('created_at', '<', $dates['to']);
+      $query = $query->whereRaw('Length(body) < 200');
+      if($request->id > 0){
+        $query = $query->where('user_id',$request->id);
+      }
+
+      //Get
+      $shortLetters = $query->get();
+
+      //Long letter    
+      $query = new Letter;
+      
+      //With
+      $query = $query->with('LetterPay');
+      $query = $query->with('user.man');
+      $query = $query->with('user.girl');
+
+
+      //Where
+      $query = $query->whereHas('LetterPay');
+      $query = $query->where('created_at', '>', $dates['from']);
+      $query = $query->where('created_at', '<', $dates['to']);
+      $query = $query->whereRaw('Length(body) > 199');
+      if($request->id > 0){
+        $query = $query->where('user_id',$request->id);
+      }
+
+      //Get
+      $longLetters = $query->get();
+    }
+
+    //All
+    if('all'){
+      $all = [];
+
+      //Long letters
+      foreach ($longLetters as $key => $value) {
+        $v['letter'] = $value;
+        $v['girl'] = $value->user_id . '_' . $value->user->girl->name;
+        $v['client'] = $value->to_user_id . '_' . $value->toUser->man->name;
+        $v['type'] = 'LongLetter';
+        $v['item_timestamp'] = $value->created_at->timestamp;
+        $v['item_date'] = Carbon::parse($value->created_at)->format('Y-m-d');
+        array_push($all,$v);
+      }      
+
+      //Short letter
+      foreach ($shortLetters as $key => $value) {
+        $v['letter'] = $value;
+        $v['girl'] = $value->user_id . '_' . $value->user->girl->name;
+        $v['client'] = $value->to_user_id . '_' . $value->toUser->man->name;
+        $v['type'] = 'ShortLetter';
+        $v['item_timestamp'] = $value->created_at->timestamp;
+        $v['item_date'] = Carbon::parse($value->created_at)->format('Y-m-d');
+        array_push($all,$v);
+      }
+
+      //Sort by date
+      usort($all, function ($a, $b) { return ($a['item_timestamp'] <=> $b['item_timestamp']); });
+
+      //By date
+      $byDate = [];
+      foreach ($all as $key => $row){
+        //Date
+        if(!isset($byDate[$row['item_date']])){
+          $byDate[$row['item_date']] = [];
+        }
+        //Type
+        if(!isset( $byDate [$row['item_date']] [$row['type']])){
+          $byDate[$row['item_date']][$row['type']] = [];
+        }
+        //Girl
+        if(!isset( $byDate [$row['item_date']] [$row['type']] [$row['girl']])){
+          $byDate [$row['item_date']] [$row['type']] [$row['girl']] = [];
+        }
+
+        //Client
+        if(!isset( $byDate [$row['item_date']] [$row['type']] [$row['girl']] [$row['client']])){
+          $byDate [$row['item_date']] [$row['type']] [$row['girl']] [$row['client']] = [];
+        }
+        array_push($byDate[$row['item_date']][$row['type']][$row['girl']][$row['client']], $row);
+      }
+    }
+
+    return response()->json(['error' => '0', 'data' => $byDate]);
   }
 
   //Statistic

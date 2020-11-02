@@ -290,6 +290,9 @@ Route::group(['name' => 'admin', 'prefix' => 'admin', 'middleware' => ['auth','a
   Route::get('/statistic/services',function(){return view('admin.pages.vue')->with('vue','statistic-services');});
   Route::get('/statistic/services/get','StatisticController@getStatisticService');
   Route::put('/statistic/service','StatisticController@putService');
+  //Statisctic girls
+  Route::get('/statistic/girls',function(){return view('admin.pages.vue')->with('vue','statistic-girls');});
+  Route::get('/statistic/girls/get','StatisticController@getGirls');
 
   //Special Ladies
   Route::delete('/girls/special/ladies','admin\GirlController@deleteSpecialLadies')->name('deleteSpecialLadies');

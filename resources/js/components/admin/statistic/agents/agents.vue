@@ -50,19 +50,24 @@
                   </span>                  
                 </td>
                 <td>                  
-                  <button v-if="agent.chats != undefined && agent.chats.count > 0" @click="chatsShow=agent" class="btn btn-link">
+                  <button v-if="agent.chats != undefined && agent.chats.count > 0" @click="chatsShow=false;chatsShow=agent" class="btn btn-link">
                     {{agent.chats.count}}
                   </button>
                   <span v-else>0</span></td>
                 <td>$ {{agent.chats != undefined ? agent.chats.amount.toFixed(2) : 0}}</td>
                 <td>
-                  <button v-if="agent.letter != undefined && agent.letter.count > 0" @click="messageShow=agent" class="btn btn-link">
+                  <button v-if="agent.letter != undefined && agent.letter.count > 0" @click="messageShow=false;messageShow=agent" class="btn btn-link">
                     {{agent.letter.count}}
                   </button>
                   <span v-else>0</span>
                 </td>
                 <td>$ {{agent.letter != undefined ? agent.letter.amount.toFixed(2) : 0}}</td>
-                <td>$ {{agent.statistic_services_total.toFixed(2)}}</td>
+                <td>
+                  <button v-if="agent.statistic_services_total != undefined && agent.statistic_services_total > 0" @click="servicesShow=false;servicesShow=agent" class="btn btn-link">
+                    $ {{agent.statistic_services_total.toFixed(2)}}
+                  </button>
+                  <span v-else>0</span>
+                </td>
                 <td>$ {{(agent.statistic_services_total + agent.letter.amount + agent.chats.amount).toFixed(2)}}</td>
               </tr>
             </tbody>
@@ -149,6 +154,46 @@
       </div>
     </div> 
 
+    <!-- services modal -->
+    <div id="service-show-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>   
+          <div class="modal-body">
+            <h2>{{messageShow.name}} Additional</h2>  
+            <!-- {{servicesShow.statistic_services}} -->
+            <table class="table">
+              <thead class="thead-light">
+                <tr>
+                  <th>Date</th>
+                  <th>Item</th>
+                  <th>Agent</th>
+                  <th>Girl</th>
+                  <th>Man</th>
+                  <th>Paid to Agent</th>
+                </tr>
+              </thead>
+              <tbody v-if="servicesShow.statistic_services != undefined">  
+                <tr v-for="(service, i) in servicesShow.statistic_services" :key="i" >
+                  <td>{{service.date}}</td>
+                  <td>{{service.service.name}}</td>
+                  <td><span>{{service.agent.id}} {{service.agent.agent.name}}</span></td>
+                  <td><span>{{service.girl.id}} {{service.girl.girl.name}}</span></td>
+                  <td><span>{{service.man.id}} {{service.man.man.name}}</span></td>
+                  <td>{{service.paid_to_agent}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div> 
+
+
   </div>
 </template>
 
@@ -156,13 +201,12 @@
 import Datepicker from 'vuejs-datepicker';
 export default {  
   mixins: [ mMoreAxios, mNotifications, mLoading ],
-  components: {
-    Datepicker
-  },  
+  components: {Datepicker},  
   data(){return{
     moment:moment,
     messageShow:false,
     chatsShow:false,
+    servicesShow:false,
     agentsFetched:[],
     from:moment().subtract(1, 'months').format(),    
     to:moment().format(),       
@@ -173,6 +217,9 @@ export default {
     },
     chatsShow: function(){
       if(this.chatsShow) $('#chats-show-modal').modal('show');
+    },
+    servicesShow: function(){
+      if(this.servicesShow) $('#service-show-modal').modal('show');
     },
   },
   computed:{
@@ -269,13 +316,9 @@ export default {
 
       this.agentsFetched = r;
       
-      // this.countStats();
 
       this.hideLoading(l);
     },
-    // countStats(){
-
-    // },
 
   }
 

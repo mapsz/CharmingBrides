@@ -3,7 +3,7 @@
     <div class="statistic-menu">
       <a href="/admin/statistic/memberships">Membership Balance</a>
       <a href="/admin/statistic/agents">Agents</a>
-      <a href="#">Girls</a>
+      <a href="/admin/statistic/girls">Girls</a>
       <a href="/admin/statistic/services">Addit. Services</a>
     </div>
   </div>
